@@ -230,6 +230,7 @@ void Insert::_on_commit_records(const CommitID cid) {
     // This fence ensures that the changes to TID (which are not sequentially consistent) are visible to other threads.
     std::atomic_thread_fence(std::memory_order_release);
   }
+  _target_table = nullptr;
 }
 
 void Insert::_on_rollback_records() {
@@ -271,6 +272,7 @@ void Insert::_on_rollback_records() {
     // This fence ensures that the changes to TID (which are not sequentially consistent) are visible to other threads.
     std::atomic_thread_fence(std::memory_order_release);
   }
+  _target_table = nullptr;
 }
 
 std::shared_ptr<AbstractOperator> Insert::_on_deep_copy(

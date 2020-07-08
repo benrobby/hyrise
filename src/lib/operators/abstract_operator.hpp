@@ -161,7 +161,8 @@ class AbstractOperator : public std::enable_shared_from_this<AbstractOperator>, 
   // Is nullptr until the operator is executed
   std::shared_ptr<const Table> _output;
 
-  // Weak pointer breaks cyclical dependency between operators and context
+  // Weak pointer breaks cyclical dependency between operators and context. Also, we do not want a cached operator to
+  // prevent the destruction of the TransactionContext.
   std::optional<std::weak_ptr<TransactionContext>> _transaction_context;
 };
 

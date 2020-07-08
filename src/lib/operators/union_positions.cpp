@@ -345,6 +345,10 @@ bool UnionPositions::_compare_reference_matrix_rows(const ReferenceMatrix& left_
   return false;
 }
 
+void UnionPositions::_on_cleanup() {
+  _referenced_tables.clear();
+}
+
 bool UnionPositions::VirtualPosListCmpContext::operator()(size_t left, size_t right) const {
   for (const auto& reference_matrix_column : reference_matrix) {
     const auto left_row_id = reference_matrix_column[left];

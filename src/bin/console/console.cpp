@@ -152,6 +152,7 @@ Console::Console()
   register_command("setting", std::bind(&Console::_change_runtime_setting, this, std::placeholders::_1));
   register_command("load_plugin", std::bind(&Console::_load_plugin, this, std::placeholders::_1));
   register_command("unload_plugin", std::bind(&Console::_unload_plugin, this, std::placeholders::_1));
+  register_command("drop_caches", std::bind(&Console::_drop_caches, this, std::placeholders::_1));
 }
 
 Console::~Console() {
@@ -454,6 +455,12 @@ int Console::_help(const std::string&) {
   // clang-format on
 
   return Console::ReturnCode::Ok;
+}
+
+int Console::_drop_caches(const std::string& args) {
+  _lqp_cache->clear();
+  _pqp_cache->clear();
+  return ReturnCode::Ok;
 }
 
 int Console::_generate_tpcc(const std::string& args) {

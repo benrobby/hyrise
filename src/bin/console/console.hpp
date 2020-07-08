@@ -112,6 +112,7 @@ class Console : public Singleton<Console> {
   int _generate_tpcc(const std::string& args);
   int _generate_tpch(const std::string& args);
   int _generate_tpcds(const std::string& args);
+  int _drop_caches(const std::string& args);
   int _load_table(const std::string& args);
   int _export_table(const std::string& args);
   int _exec_script(const std::string& script_file);

@@ -95,6 +95,8 @@ class UnionPositions : public AbstractReadOnlyOperator {
       const std::shared_ptr<AbstractOperator>& copied_right_input) const override;
   void _on_set_parameters(const std::unordered_map<ParameterID, AllTypeVariant>& parameters) override;
 
+  void _on_cleanup() override;
+
   /**
    * Validates the input AND initializes some utility data it uses (_column_cluster_offsets, _referenced_tables,
    * _referenced_column_ids).

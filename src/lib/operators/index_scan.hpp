@@ -49,8 +49,8 @@ class IndexScan : public AbstractReadOnlyOperator {
   const std::vector<AllTypeVariant> _right_values;
   const std::vector<AllTypeVariant> _right_values2;
 
-  std::shared_ptr<const Table> _in_table;
-  std::shared_ptr<Table> _out_table;
+  std::shared_ptr<const Table> _in_table; // TODO 
+  std::shared_ptr<Table> _out_table; // TODO 
 };
 
 }  // namespace opossum

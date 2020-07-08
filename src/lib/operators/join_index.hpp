@@ -94,7 +94,7 @@ class JoinIndex : public AbstractJoinOperator {
   OperatorJoinPredicate _adjusted_primary_predicate;
   std::shared_ptr<Table> _output_table;
 
-  std::shared_ptr<const Table> _probe_input_table;
+  std::shared_ptr<const Table> _probe_input_table;  // TODO
   std::shared_ptr<const Table> _index_input_table;
 
   std::shared_ptr<RowIDPosList> _probe_pos_list;

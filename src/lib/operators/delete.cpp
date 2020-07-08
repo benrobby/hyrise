@@ -104,6 +104,7 @@ void Delete::_on_commit_records(const CommitID commit_id) {
       // We do not unlock the rows so subsequent transactions properly fail when attempting to update these rows.
     }
   }
+  _referencing_table = nullptr;
 }
 
 void Delete::_on_rollback_records() {
@@ -125,9 +126,13 @@ void Delete::_on_rollback_records() {
       // If the above operation fails, it means the row is locked by another transaction. This must have been
       // the reason why the rollback was initiated. Since _on_execute stopped at this row, we can stop
       // unlocking rows here as well.
-      if (!result) return;
+      if (!result) {
+        _referencing_table = nullptr;
+        return;
+      }
     }
   }
+  _referencing_table = nullptr;
 }
 
 std::shared_ptr<AbstractOperator> Delete::_on_deep_copy(
