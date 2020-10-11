@@ -46,7 +46,7 @@ class Worker : public std::enable_shared_from_this<Worker>, private Noncopyable 
   void operator()();
   void _work();
 
-  template <typename TaskType>
+  template <typename TaskType>  // TODO move to cpp
   void _wait_for_tasks(const std::vector<std::shared_ptr<TaskType>>& tasks) {
     auto tasks_completed = [&tasks]() {
       // Reversely iterate through the list of tasks, because unfinished tasks are likely at the end of the list.
