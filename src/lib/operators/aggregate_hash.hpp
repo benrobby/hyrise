@@ -10,9 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "../../third_party/robin-map/include/tsl/robin_map.h"
+#include <boost/container/small_vector.hpp>
 #include <boost/container/pmr/polymorphic_allocator.hpp>
 #include <boost/container/scoped_allocator.hpp>
 #include <boost/functional/hash.hpp>
+#include <uninitialized_vector.hpp>
 
 #include "abstract_aggregate_operator.hpp"
 #include "abstract_read_only_operator.hpp"
@@ -53,10 +56,10 @@ This result contains:
 */
 template <typename ColumnDataType, typename AggregateType>
 struct AggregateResult {
-  std::optional<AggregateType> current_primary_aggregate;
-  std::vector<AggregateType> current_secondary_aggregates;
+  AggregateType current_primary_aggregate;  // TODO use aggregate_count instead of optional?
+//  std::vector<AggregateType> current_secondary_aggregates;
   size_t aggregate_count = 0;
-  std::set<ColumnDataType> distinct_values;
+//  std::set<ColumnDataType> distinct_values;
   RowID row_id;
 };
 
@@ -71,7 +74,7 @@ using AggregateResultIdMapAllocator = PolymorphicAllocator<std::pair<const Aggre
 
 template <typename AggregateKey>
 using AggregateResultIdMap =
-    ska::bytell_hash_map<AggregateKey, AggregateResultId, std::hash<AggregateKey>, std::equal_to<AggregateKey>,
+    tsl::robin_map<AggregateKey, AggregateResultId, std::hash<AggregateKey>, std::equal_to<AggregateKey>,
                          AggregateResultIdMapAllocator<AggregateKey>>;
 
 // The key type that is used for the aggregation map.
@@ -81,7 +84,7 @@ using AggregateKeyEntry = uint64_t;
 struct EmptyAggregateKey {};
 
 template <typename AggregateKey>
-using AggregateKeys = std::vector<AggregateKey>;
+using AggregateKeys = std::conditional_t<std::is_same_v<AggregateKey, boost::container::small_vector<AggregateKeyEntry, 4>>, std::vector<AggregateKey>, uninitialized_vector<AggregateKey>>;
 
 template <typename AggregateKey>
 using KeysPerChunk = pmr_vector<AggregateKeys<AggregateKey>>;
@@ -139,7 +142,7 @@ class AggregateHash : public AbstractAggregateOperator {
 
   template <typename ColumnDataType, AggregateFunction function, typename AggregateKey>
   void _aggregate_segment(ChunkID chunk_id, ColumnID column_index, const AbstractSegment& abstract_segment,
-                          const KeysPerChunk<AggregateKey>& keys_per_chunk);
+                          KeysPerChunk<AggregateKey>& keys_per_chunk);
 
   template <typename AggregateKey>
   std::shared_ptr<SegmentVisitorContext> _create_aggregate_context(const DataType data_type,
@@ -159,8 +162,8 @@ struct hash<opossum::EmptyAggregateKey> {
 };
 
 template <>
-struct hash<std::vector<opossum::AggregateKeyEntry>> {
-  size_t operator()(const std::vector<opossum::AggregateKeyEntry>& key) const {
+struct hash<boost::container::small_vector<opossum::AggregateKeyEntry, 4>> {
+  size_t operator()(const boost::container::small_vector<opossum::AggregateKeyEntry, 4>& key) const {
     return boost::hash_range(key.begin(), key.end());
   }
 };
