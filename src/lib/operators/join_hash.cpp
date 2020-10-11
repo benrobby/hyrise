@@ -581,7 +581,7 @@ class JoinHash::JoinHashImpl : public AbstractJoinOperatorImpl {
       // A lower number of output chunks reduces the overhead, especially when multi-threading is used. However,
       // merging chunks destroys a potential references_single_chunk property of the PosList that would have been
       // emitted otherwise. Search for guarantee_single_chunk in join_hash_steps.hpp for details.
-      constexpr auto MIN_SIZE = 500;
+      constexpr auto MIN_SIZE = 1;
       constexpr auto MAX_SIZE = MIN_SIZE * 2;
       build_side_pos_list->reserve(MAX_SIZE);
       probe_side_pos_list->reserve(MAX_SIZE);
