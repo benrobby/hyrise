@@ -102,6 +102,7 @@ size_t JoinHash::calculate_radix_bits(const size_t build_relation_size, const si
   // Bytell hash map has a maximum fill factor of 0.9375. Since it's hard to estimate the actual size of
   // a radix partition (and thus the size of each hash table), we accomodate a little bit extra space for
   // slightly skewed data distributions and aim for a fill level of 80%.
+  // TODO adapt to new hash map
   const auto complete_hash_map_size =
       // number of items in map
       static_cast<double>(build_relation_size) *
@@ -253,7 +254,7 @@ class JoinHash::JoinHashImpl : public AbstractJoinOperatorImpl {
 
   std::shared_ptr<Table> _output_table;
 
-  const size_t _radix_bits;
+  size_t _radix_bits;
 
   // Determine correct type for hashing
   using HashedType = typename JoinHashTraits<BuildColumnType, ProbeColumnType>::HashType;
@@ -322,33 +323,47 @@ class JoinHash::JoinHashImpl : public AbstractJoinOperatorImpl {
      */
 
     auto build_side_bloom_filter = BloomFilter{};
+    auto probe_side_bloom_filter = BloomFilter{};
 
-    Timer timer_materialization;
-    if (keep_nulls_build_column) {
-      materialized_build_column = materialize_input<BuildColumnType, HashedType, true>(
-          _build_input_table, _column_ids.first, histograms_build_column, _radix_bits, build_side_bloom_filter);
-    } else {
-      materialized_build_column = materialize_input<BuildColumnType, HashedType, false>(
-          _build_input_table, _column_ids.first, histograms_build_column, _radix_bits, build_side_bloom_filter);
-    }
-    _performance.set_step_runtime(OperatorSteps::BuildSideMaterializing, timer_materialization.lap());
+    const auto materialize_build_side = [&](const auto& input_bloom_filter) {
+      if (keep_nulls_build_column) {
+        materialized_build_column = materialize_input<BuildColumnType, HashedType, true>(
+            _build_input_table, _column_ids.first, histograms_build_column, _radix_bits, build_side_bloom_filter, input_bloom_filter);
+      } else {
+        materialized_build_column = materialize_input<BuildColumnType, HashedType, false>(
+            _build_input_table, _column_ids.first, histograms_build_column, _radix_bits, build_side_bloom_filter, input_bloom_filter);
+      }
+    };
 
     /**
      * 1.2. Materialize the larger probe partition. Use the bloom filter from the probe partition to skip rows that
      *       will not find a join partner.
      */
-    auto probe_side_bloom_filter = BloomFilter{};
+    const auto materialize_probe_side = [&](const auto& input_bloom_filter) {
+      if (keep_nulls_probe_column) {
+        materialized_probe_column = materialize_input<ProbeColumnType, HashedType, true>(
+            _probe_input_table, _column_ids.second, histograms_probe_column, _radix_bits, probe_side_bloom_filter,
+            input_bloom_filter);
+      } else {
+        materialized_probe_column = materialize_input<ProbeColumnType, HashedType, false>(
+            _probe_input_table, _column_ids.second, histograms_probe_column, _radix_bits, probe_side_bloom_filter,
+            input_bloom_filter);
+      }
+    };
 
-    if (keep_nulls_probe_column) {
-      materialized_probe_column = materialize_input<ProbeColumnType, HashedType, true>(
-          _probe_input_table, _column_ids.second, histograms_probe_column, _radix_bits, probe_side_bloom_filter,
-          build_side_bloom_filter);
+    Timer timer_materialization;
+    if (_build_input_table->row_count() < _probe_input_table->row_count()) {
+      // TODO fix default arg
+      materialize_build_side(~BloomFilter(BLOOM_FILTER_SIZE));
+      _performance.set_step_runtime(OperatorSteps::BuildSideMaterializing, timer_materialization.lap());
+      materialize_probe_side(build_side_bloom_filter);
+      _performance.set_step_runtime(OperatorSteps::ProbeSideMaterializing, timer_materialization.lap());
     } else {
-      materialized_probe_column = materialize_input<ProbeColumnType, HashedType, false>(
-          _probe_input_table, _column_ids.second, histograms_probe_column, _radix_bits, probe_side_bloom_filter,
-          build_side_bloom_filter);
+      materialize_probe_side(~BloomFilter(BLOOM_FILTER_SIZE));
+      _performance.set_step_runtime(OperatorSteps::ProbeSideMaterializing, timer_materialization.lap());
+      materialize_build_side(probe_side_bloom_filter);
+      _performance.set_step_runtime(OperatorSteps::BuildSideMaterializing, timer_materialization.lap());
     }
-    _performance.set_step_runtime(OperatorSteps::ProbeSideMaterializing, timer_materialization.lap());
 
     /**
      * 2. Perform radix partitioning for build and probe sides. The bloom filters are not used in this step. Future work
