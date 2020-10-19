@@ -36,6 +36,10 @@ class PredicateNode;
  *
  * We call p2 the REDUCED NODE on the reduced side and p1 the REDUCER NODE on the reducing side.
  *
+ * The whole purpose of a semi-join reduction is to be pushed below aggregates, projections, or less selective filters.
+ * This is done by the PredicatePlacementRule. If that rule is unsuccessful and the semi join reduction remains right
+ * below the original join, it is largely pointless. As such, it should be removed by the SemiJoinRemovalRule.
+ *
  * A different approach to this would be to propagate predicates across joins. However, our current LQP architecture
  * makes it somewhat difficult to identify which predicates can be propagated, especially when multiple joins come
  * into play. Also, predicates might be based on projections and/or joined columns, which makes propagation even more

@@ -281,4 +281,7 @@ template <typename Value>
 using LQPNodeUnorderedMap =
     std::unordered_map<std::shared_ptr<AbstractLQPNode>, Value, LQPNodeSharedPtrHash, LQPNodeSharedPtrEqual>;
 
+using LQPNodeUnorderedSet =
+    std::unordered_set<std::shared_ptr<AbstractLQPNode>, LQPNodeSharedPtrHash, LQPNodeSharedPtrEqual>;
+
 }  // namespace opossum
