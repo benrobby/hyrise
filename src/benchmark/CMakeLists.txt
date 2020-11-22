@@ -49,6 +49,21 @@ target_link_libraries(
     benchmark
 )
 
+add_executable(
+    hyriseBenchmarkColumnCompression
+
+    benchmark_column_compression.cpp
+    micro_benchmark_main.cpp
+    micro_benchmark_utils.cpp
+    micro_benchmark_utils.hpp
+)
+
+target_link_libraries(
+    hyriseBenchmarkColumnCompression
+
+    benchmark
+)
+
 # General purpose benchmark runner
 add_executable(
     hyriseBenchmarkFileBased
