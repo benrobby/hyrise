@@ -40,7 +40,7 @@ std::vector<ValueT> get_with_sequential_numbers() {
 std::vector<ValueT> get_with_huge_numbers() {
   std::vector<ValueT> vec(65'000);
   std::generate(vec.begin(), vec.end(), []() {
-    static ValueT v = 0;
+    static ValueT v = 331;
     v = 1'000'000 + ((v * 7) % 1'000'000);
     return v;
   });
@@ -50,11 +50,11 @@ std::vector<ValueT> get_with_huge_numbers() {
 std::vector<ValueT> get_with_random_walk() {
   std::vector<ValueT> vec(65'000);
   std::generate(vec.begin(), vec.end(), []() {
-    static ValueT v = 1'000'000;
+    static ValueT v = 945713;
     if ((v * 13 % 7) > 3) {
-      v = v + 5;
+      v = v + 13;
     } else {
-      v = v - 5;
+      v = v - 11;
     }
     return v;
   });
@@ -81,7 +81,6 @@ void fastPFOR_benchmark_encoding(const std::vector<ValueT>& vec, IntegerCODEC& c
 void fastPFOR_256_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   fastPFOR_benchmark_encoding(vec, *CODECFactory::getFromName("fastpfor256"), state);
 }
-
 
 void fastPFOR_benchmark_decoding(const std::vector<ValueT>& vec, IntegerCODEC& codec, benchmark::State& state) {
   // Encode
@@ -151,6 +150,11 @@ float fastPFOR_compute_bitsPerInt(std::vector<ValueT>& _vec, IntegerCODEC& codec
     csvFile << std::endl;
     csvFile.close();
   }
+
+
+// MaskedVByte
+
+
 
 class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
  public:
