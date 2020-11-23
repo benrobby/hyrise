@@ -1,7 +1,8 @@
 #include <memory>
 
 #include "benchmark/benchmark.h"
-
+#include "varintencode.h"
+#include "varintdecode.h"
 #include "headers/codecfactory.h"
 
 #define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(setupMethod, benchmarkMethodEncode, benchmarkMethodDecode) COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethodEncode); COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethodDecode);
@@ -18,6 +19,7 @@ using ValueT = uint32_t;
 
 
 std::vector<ValueT> get_with_small_numbers() {
+  
     std::vector<ValueT> vec(65'000);
     std::generate(vec.begin(), vec.end(), []() {
       static ValueT v = 0;
@@ -155,6 +157,65 @@ float fastPFOR_compute_bitsPerInt(std::vector<ValueT>& _vec, IntegerCODEC& codec
 // MaskedVByte
 
 
+void maskedVbyte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) { 
+  int N = vec.size();
+	ValueT* datain = new ValueT[N];
+  std::copy(vec.begin(), vec.end(), datain);
+
+	uint8_t* compressedbuffer = (uint8_t*) malloc(N * sizeof(ValueT));
+
+  for (auto _ : state){
+    vbyte_encode(datain, vec.size(), compressedbuffer);
+  }
+}
+
+void maskedVbyte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+  // Encode
+  int N = vec.size();
+	ValueT* datain = new ValueT[N];
+  std::copy(vec.begin(), vec.end(), datain);
+  uint8_t* compressedbuffer = (uint8_t*) malloc(N * sizeof(ValueT));
+  vbyte_encode(datain, vec.size(), compressedbuffer);
+
+  // Decode
+	ValueT* data_recovered = new ValueT[N];
+
+  for (auto _ : state) {
+    masked_vbyte_decode(compressedbuffer, data_recovered, N);
+  }
+}
+
+float maskedVByte_compute_bitsPerInt(std::vector<ValueT>& vec) {
+    // Encode
+    int N = vec.size();
+    ValueT* datain = new ValueT[N];
+    std::copy(vec.begin(), vec.end(), datain);
+    uint8_t* compressedbuffer = (uint8_t*) malloc(N * sizeof(ValueT));
+    vbyte_encode(datain, vec.size(), compressedbuffer);
+
+    // Decode
+	  ValueT* data_recovered = new ValueT[N];
+    size_t computed_size = masked_vbyte_decode(compressedbuffer, data_recovered, N);
+
+    return computed_size / N * 4; // since computed size is givenout in byte
+}
+
+  void maskedVByte_writeBitsPerInt() {
+    std::ofstream csvFile("masked_vbyte_bits_per_int.csv");
+    csvFile << "name,bitsPerInt" << std::endl;
+
+
+    std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_numbers(),
+        get_with_huge_numbers(), get_with_random_walk()};
+    std::vector<std::string> names = {"small_numbers", "sequential_numbers", "huge_numbers","random_walk"};
+    for (int i = 0; i < (int) inputs.size(); i++){
+        float bits_per_int = maskedVByte_compute_bitsPerInt(inputs[i]);
+        csvFile << names[i] << bits_per_int << std::endl;
+    }
+    csvFile << std::endl;
+    csvFile.close();
+}
+
 
 class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
  public:
@@ -167,7 +228,15 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_sequential_numbers, fast
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_huge_numbers, fastPFOR_256_benchmark_encoding, fastPFOR_256_benchmark_decoding);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_random_walk, fastPFOR_256_benchmark_encoding, fastPFOR_256_benchmark_decoding);
 
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_sequential_numbers, maskedVbyte_benchmark_encoding, maskedVbyte_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, maskedVbyte_benchmark_encoding, maskedVbyte_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_huge_numbers, maskedVbyte_benchmark_encoding, maskedVbyte_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_random_walk, maskedVbyte_benchmark_encoding, maskedVbyte_benchmark_decoding);
+
+
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)
 BENCHMARK_F(BenchmarkColumnCompressionFixture, write_BitsPerInt)(benchmark::State& state) { write_bitsPerInt(); }
+BENCHMARK_F(BenchmarkColumnCompressionFixture, maskedVByte_writeBitsPerInt)(benchmark::State& state) { maskedVByte_writeBitsPerInt(); }
+
 
 }  // namespace opossum
