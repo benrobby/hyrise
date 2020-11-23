@@ -31,26 +31,6 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
   std::vector<ValueT> _dec;
 };
 
-/**
- * Reference implementation, growing the vector on demand
- */
-BENCHMARK_F(BenchmarkColumnCompressionFixture, BM_Column_Compression_Dummy)(benchmark::State& state) {
-  // Add some benchmark-specific setup here
-
-  for (auto _ : state) {
-    std::vector<size_t> result;
-    benchmark::DoNotOptimize(result.data());  // Do not optimize out the vector
-    const auto size = _vec.size();
-    for (size_t i = 0; i < size; ++i) {
-      if (_vec[i] == 2) {
-        result.push_back(i);
-        benchmark::ClobberMemory();  // Force that record to be written to memory
-      }
-    }
-  }
-
-}
-
 BENCHMARK_F(BenchmarkColumnCompressionFixture, BM_Column_Compression_FastPFOR_Encoding)(benchmark::State& state) {
   // Add some benchmark-specific setup here
 
