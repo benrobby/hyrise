@@ -1,8 +1,8 @@
 #include <memory>
 
 #include "benchmark/benchmark.h"
-#include "varintencode.h"
 #include "varintdecode.h"
+#include "varintencode.h"
 #include "headers/codecfactory.h"
 
 #define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(setupMethod, benchmarkMethodEncode, benchmarkMethodDecode) COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethodEncode); COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethodDecode);

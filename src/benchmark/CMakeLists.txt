@@ -59,12 +59,10 @@ add_executable(
     micro_benchmark_utils.hpp
 )
 
-find_library(MASKEDVBYTE maskedvbyte PATHS "usr/local/lib")
-
 target_link_libraries(
     hyriseBenchmarkColumnCompression
     FastPFOR
-    ${MASKEDVBYTE}
+    maskedvbyte
     benchmark
 )
 
