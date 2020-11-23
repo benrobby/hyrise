@@ -4,6 +4,9 @@
 
 #include "headers/codecfactory.h"
 
+#define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(setupMethod, benchmarkMethodEncode, benchmarkMethodDecode) COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethodEncode); COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethodDecode);
+#define COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethod) BENCHMARK_F(BenchmarkColumnCompressionFixture, benchmarkMethod ## _ ## setupMethod)(benchmark::State& state) { setupMethod(); benchmarkMethod(_vec, state); }
+
 using namespace FastPForLib;
 
 namespace opossum {
@@ -21,6 +24,9 @@ void fastPFOR_benchmark_encoding(const std::vector<ValueT>& _vec, IntegerCODEC& 
     enc.shrink_to_fit();
     benchmark::ClobberMemory();
   }
+}
+void fastPFOR_256_benchmark_encoding(const std::vector<ValueT>& _vec, benchmark::State& state) {
+  fastPFOR_benchmark_encoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
 }
 
 void fastPFOR_benchmark_decoding(const std::vector<ValueT>& _vec, IntegerCODEC& codec, benchmark::State& state) {
@@ -40,6 +46,9 @@ void fastPFOR_benchmark_decoding(const std::vector<ValueT>& _vec, IntegerCODEC& 
     dec.resize(recoveredsize);
     benchmark::ClobberMemory();
   }
+}
+void fastPFOR_256_benchmark_decoding(const std::vector<ValueT>& _vec, benchmark::State& state) {
+  fastPFOR_benchmark_decoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
 }
 
 float fastPFOR_compute_bitsPerInt(std::vector<ValueT>& _vec, IntegerCODEC& codec) {
@@ -74,16 +83,16 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
     float bitsPerInt = 0.0;
 
     IntegerCODEC& codec = *CODECFactory::getFromName("fastpfor256");
-    set_up_with_small_numbers();
+    set_up_small_numbers();
     bitsPerInt = fastPFOR_compute_bitsPerInt(_vec, codec);
     csvFile << "FastPFOR_Small_Numbers," << bitsPerInt << std::endl;
-    set_up_with_sequential_numbers();
+    set_up_sequential_numbers();
     bitsPerInt = fastPFOR_compute_bitsPerInt(_vec, codec);
     csvFile << "FastPFOR_Sequential_Numbers," << bitsPerInt << std::endl;
-    set_up_with_huge_numbers();
+    set_up_huge_numbers();
     bitsPerInt = fastPFOR_compute_bitsPerInt(_vec, codec);
     csvFile << "FastPFOR_Huge_Numbers," << bitsPerInt << std::endl;
-    set_up_with_random_walk();
+    set_up_random_walk();
     bitsPerInt = fastPFOR_compute_bitsPerInt(_vec, codec);
     csvFile << "FastPFOR_Random_Walk," << bitsPerInt << std::endl;
 
@@ -91,7 +100,7 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
     csvFile.close();
   }
 
-  void set_up_with_small_numbers() {
+  void set_up_small_numbers() {
     _vec.resize(65'000);
     std::generate(_vec.begin(), _vec.end(), []() {
       static ValueT v = 0;
@@ -100,7 +109,7 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
     });
   }
 
-  void set_up_with_sequential_numbers() {
+  void set_up_sequential_numbers() {
     _vec.resize(65'000);
     std::generate(_vec.begin(), _vec.end(), []() {
       static ValueT v = 0;
@@ -109,7 +118,7 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
     });
   }
 
-  void set_up_with_huge_numbers() {
+  void set_up_huge_numbers() {
     _vec.resize(65'000);
     std::generate(_vec.begin(), _vec.end(), []() {
       static ValueT v = 0;
@@ -118,7 +127,7 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
     });
   }
 
-  void set_up_with_random_walk() {
+  void set_up_random_walk() {
     _vec.resize(65'000);
     std::generate(_vec.begin(), _vec.end(), []() {
       static ValueT v = 1'000'000;
@@ -135,45 +144,10 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
   std::vector<ValueT> _vec;
 };
 
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Small_Numbers_Encoding)(benchmark::State& state) {
-  set_up_with_small_numbers();
-  fastPFOR_benchmark_encoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
-
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Small_Numbers_Decoding)(benchmark::State& state) {
-  set_up_with_small_numbers();
-  fastPFOR_benchmark_decoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
-
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Sequential_Numbers_Encoding)(benchmark::State& state) {
-  set_up_with_sequential_numbers();
-  fastPFOR_benchmark_encoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
-
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Sequential_Numbers_Decoding)(benchmark::State& state) {
-  set_up_with_sequential_numbers();
-  fastPFOR_benchmark_decoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
-
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Huge_Numbers_Encoding)(benchmark::State& state) {
-  set_up_with_huge_numbers();
-  fastPFOR_benchmark_encoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
-
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Huge_Numbers_Decoding)(benchmark::State& state) {
-  set_up_with_huge_numbers();
-  fastPFOR_benchmark_decoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
-
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Random_Walk_Encoding)(benchmark::State& state) {
-  set_up_with_random_walk();
-  fastPFOR_benchmark_encoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
-
-BENCHMARK_F(BenchmarkColumnCompressionFixture, FastPFOR_Random_Walk_Decoding)(benchmark::State& state) {
-  set_up_with_random_walk();
-  fastPFOR_benchmark_decoding(_vec, *CODECFactory::getFromName("fastpfor256"), state);
-}
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(set_up_small_numbers, fastPFOR_256_benchmark_encoding, fastPFOR_256_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(set_up_sequential_numbers, fastPFOR_256_benchmark_encoding, fastPFOR_256_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(set_up_huge_numbers, fastPFOR_256_benchmark_encoding, fastPFOR_256_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(set_up_random_walk, fastPFOR_256_benchmark_encoding, fastPFOR_256_benchmark_decoding);
 
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)
 BENCHMARK_F(BenchmarkColumnCompressionFixture, write_BitsPerInt)(benchmark::State& state) { write_bitsPerInt(); }
