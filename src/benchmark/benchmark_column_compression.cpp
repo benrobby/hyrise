@@ -7,6 +7,7 @@
 
 #include "benchmark_column_compression_fastPFOR.hpp"
 #include "benchmark_column_compression_maskedVByte.hpp"
+#include "benchmark_column_compression_streamVByte.hpp"
 
 #define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(setupMethod, benchmarkMethodEncode, benchmarkMethodDecode) \
   COLUMN_COMPRESSION_BENCHMARK(setupMethod, benchmarkMethodEncode);                                               \
@@ -75,8 +76,9 @@ void writeBitsPerInt() {
   csvFile << "name,dataName,bitsPerInt" << std::endl;
 
   std::vector<float (*)(std::vector<ValueT> & vec)> functions = {maskedVByte_compute_bitsPerInt,
-                                                                 fastPFOR_compute_bitsPerInt};
-  std::vector<std::string> functionNames = {"maskedVByte", "fastPFOR"};
+                                                                 fastPFOR_compute_bitsPerInt,
+                                                                 streamVByte_compute_bitsPerInt };
+  std::vector<std::string> functionNames = { "maskedVByte", "fastPFOR", "streamVByte" };
 
   for (size_t j = 0; j < functions.size(); j++) {
     std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_numbers(),
@@ -113,6 +115,16 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_huge_numbers, maskedVbyt
                                                maskedVbyte_benchmark_decoding);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_random_walk, maskedVbyte_benchmark_encoding,
                                                maskedVbyte_benchmark_decoding);
+
+
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_sequential_numbers, streamVByte_benchmark_encoding,
+                                               streamVByte_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, streamVByte_benchmark_encoding,
+                                               streamVByte_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_huge_numbers, streamVByte_benchmark_encoding,
+                                               streamVByte_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_random_walk, streamVByte_benchmark_encoding,
+                                               streamVByte_benchmark_decoding);                                          
 
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)
 BENCHMARK_F(BenchmarkColumnCompressionFixture, write_BitsPerInt)(benchmark::State& state) { writeBitsPerInt(); }

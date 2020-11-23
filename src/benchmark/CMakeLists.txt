@@ -56,6 +56,7 @@ add_executable(
     benchmark_column_compression.cpp
     benchmark_column_compression_fastPFOR.hpp
     benchmark_column_compression_maskedVByte.hpp
+    benchmark_column_compression_streamVByte.hpp
     micro_benchmark_main.cpp
     micro_benchmark_utils.cpp
     micro_benchmark_utils.hpp
@@ -65,6 +66,7 @@ target_link_libraries(
     hyriseBenchmarkColumnCompression
     FastPFOR
     maskedvbyte
+    streamvbyte
     benchmark
 )
 
