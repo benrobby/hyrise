@@ -219,7 +219,7 @@ public:
 		size_t group = array_index / detail::group_size;
 		size_t index = array_index % detail::group_size;
 		if (group > ngroups || index > tail_.size())
-			throw std::out_of_range("array index out of range");
+			throw std::out_of_range("array index out of range in oroch");
 
 		for (; group < ngroups; group++) {
 			std::array<original_t, detail::group_size> buffer;

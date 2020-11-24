@@ -58,6 +58,7 @@ add_executable(
     benchmark_column_compression_maskedVByte.hpp
     benchmark_column_compression_streamVByte.hpp
     benchmark_column_compression_oroch_varint.hpp
+    benchmark_column_compression_oroch_integerArray.hpp
 
     micro_benchmark_main.cpp
     micro_benchmark_utils.cpp
