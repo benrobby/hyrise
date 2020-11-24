@@ -57,9 +57,16 @@ add_executable(
     benchmark_column_compression_fastPFOR.hpp
     benchmark_column_compression_maskedVByte.hpp
     benchmark_column_compression_streamVByte.hpp
+    benchmark_column_compression_oroch_varint.hpp
+
     micro_benchmark_main.cpp
     micro_benchmark_utils.cpp
     micro_benchmark_utils.hpp
+)
+
+target_include_directories(
+    hyriseBenchmarkColumnCompression
+    PUBLIC third_party/Oroch/oroch
 )
 
 target_link_libraries(
