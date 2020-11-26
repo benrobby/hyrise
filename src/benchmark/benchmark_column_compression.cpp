@@ -12,6 +12,8 @@
 #include "benchmark_column_compression_oroch_varint.hpp"
 #include "benchmark_column_compression_streamVByte.hpp"
 
+#define BENCHMARK_NAMES 
+
 #define COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(benchmarkName)                                   \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, benchmarkName##_benchmark_encoding,      \
                                                  benchmarkName##_benchmark_decoding);                             \
@@ -87,10 +89,11 @@ void writeBitsPerInt() {
   std::ofstream csvFile("bits_per_int.csv");
   csvFile << "name,dataName,bitsPerInt" << std::endl;
 
+  // keep both in sync
   std::vector<float (*)(std::vector<ValueT> & vec)> functions = {
       maskedVByte_compute_bitsPerInt, maskedVByteDelta_compute_bitsPerInt, fastPFOR_fastpfor256_compute_bitsPerInt, streamVByte_compute_bitsPerInt,
-      oroch_varint_compute_bitsPerInt};
-  std::vector<std::string> functionNames = {"maskedVByte", "maskedVByteDelta", "fastPFOR_fastpfor256", "streamVByte", "oroch_varint", ""};
+      oroch_varint_compute_bitsPerInt, oroch_integerArray_compute_bitsPerInt};
+  std::vector<std::string> functionNames = {"maskedVByte", "maskedVByteDelta", "fastPFOR_fastpfor256", "streamVByte", "oroch_varint", "oroch_integerArray"};
 
   for (size_t j = 0; j < functions.size(); j++) {
     std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_numbers(),
