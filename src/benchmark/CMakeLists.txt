@@ -56,6 +56,7 @@ add_executable(
     benchmark_column_compression.cpp
     benchmark_column_compression_fastPFOR.hpp
     benchmark_column_compression_maskedVByte.hpp
+    benchmark_column_compression_maskedVByteDelta.hpp
     benchmark_column_compression_streamVByte.hpp
     benchmark_column_compression_oroch_varint.hpp
     benchmark_column_compression_oroch_integerArray.hpp

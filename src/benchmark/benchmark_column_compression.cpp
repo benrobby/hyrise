@@ -7,6 +7,7 @@
 
 #include "benchmark_column_compression_fastPFOR.hpp"
 #include "benchmark_column_compression_maskedVByte.hpp"
+#include "benchmark_column_compression_maskedVByteDelta.hpp"
 #include "benchmark_column_compression_streamVByte.hpp"
 #include "benchmark_column_compression_oroch_varint.hpp"
 #include "benchmark_column_compression_oroch_integerArray.hpp"
@@ -145,8 +146,17 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, oroch_int
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_huge_numbers, oroch_integerArray_benchmark_encoding,
                                                oroch_integerArray_benchmark_decoding);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_random_walk, oroch_integerArray_benchmark_encoding,
-                                               oroch_integerArray_benchmark_decoding);                                                                                                                        
+                                               oroch_integerArray_benchmark_decoding);    
 
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_sequential_numbers, maskedVByteDelta_benchmark_encoding,
+                                               maskedVByteDelta_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, maskedVByteDelta_benchmark_encoding,
+                                               maskedVByteDelta_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_huge_numbers, maskedVByteDelta_benchmark_encoding,
+                                               maskedVByteDelta_benchmark_decoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_random_walk, maskedVByteDelta_benchmark_encoding,
+                                               maskedVByteDelta_benchmark_decoding);
+                                                  
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)
 BENCHMARK_F(BenchmarkColumnCompressionFixture, write_BitsPerInt)(benchmark::State& state) { writeBitsPerInt(); }
 
