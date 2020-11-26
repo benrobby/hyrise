@@ -17,9 +17,11 @@ void maskedVbyte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::S
   std::copy(vec.begin(), vec.end(), datain);
 
   uint8_t* compressedbuffer = (uint8_t*)malloc(N * sizeof(ValueT));
+  benchmark::DoNotOptimize(compressedbuffer);
 
   for (auto _ : state) {
     vbyte_encode(datain, vec.size(), compressedbuffer);
+    benchmark::ClobberMemory();
   }
 }
 
@@ -33,9 +35,11 @@ void maskedVbyte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
 
   // Decode
   ValueT* data_recovered = new ValueT[N];
+  benchmark::DoNotOptimize(data_recovered);
 
   for (auto _ : state) {
     masked_vbyte_decode(compressedbuffer, data_recovered, N);
+    benchmark::ClobberMemory();
   }
 }
 
@@ -45,13 +49,13 @@ float maskedVByte_compute_bitsPerInt(std::vector<ValueT>& vec) {
   ValueT* datain = new ValueT[N];
   std::copy(vec.begin(), vec.end(), datain);
   uint8_t* compressedbuffer = (uint8_t*)malloc(N * sizeof(ValueT));
-  vbyte_encode(datain, vec.size(), compressedbuffer);
+  size_t compressedBufferSize = vbyte_encode(datain, vec.size(), compressedbuffer);
 
   // Decode
   ValueT* data_recovered = new ValueT[N];
-  size_t computed_size = masked_vbyte_decode(compressedbuffer, data_recovered, N);
+  masked_vbyte_decode(compressedbuffer, data_recovered, N);
 
-  return computed_size / N * 4;  // since computed size is givenout in byte
+  return 8.0 * compressedBufferSize / N;
 }
 
 }
