@@ -11,7 +11,7 @@ using ValueT = uint32_t;
 
 namespace opossum {
 
-void maskedVbyte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+void maskedVByte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   int N = vec.size();
   ValueT* datain = new ValueT[N];
   std::copy(vec.begin(), vec.end(), datain);
@@ -25,7 +25,7 @@ void maskedVbyte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::S
   }
 }
 
-void maskedVbyte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+void maskedVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   // Encode
   int N = vec.size();
   ValueT* datain = new ValueT[N];
