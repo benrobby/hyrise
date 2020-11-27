@@ -69,7 +69,7 @@ add_executable(
 
 target_include_directories(
     hyriseBenchmarkColumnCompression
-    PUBLIC ../../third_party/Oroch/oroch
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/Oroch/oroch
 )
 
 find_library(SDSL_PATH sdsl PATH /usr/local/)
