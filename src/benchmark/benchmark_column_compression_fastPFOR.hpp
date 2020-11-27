@@ -10,14 +10,14 @@ using ValueT = uint32_t;
 namespace opossum {
 
 #define FASTPFOR_BENCHMARK_METHODS(codec) \
-  void fastPFOR_fastpfor256_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) { \
-    fastPFOR_benchmark_encoding(vec, *CODECFactory::getFromName(codec), state); \
+  void fastPFOR_ ## codec ## _benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) { \
+    fastPFOR_benchmark_encoding(vec, *CODECFactory::getFromName(#codec), state); \
   }; \
-  void fastPFOR_fastpfor256_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) { \
-    fastPFOR_benchmark_decoding(vec, *CODECFactory::getFromName(codec), state); \
+  void fastPFOR_ ## codec ## _benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) { \
+    fastPFOR_benchmark_decoding(vec, *CODECFactory::getFromName(#codec), state); \
   }; \
-  float fastPFOR_fastpfor256_compute_bitsPerInt(std::vector<ValueT>& _vec) { \
-     return fastPFOR_compute_bitsPerInt(_vec, *CODECFactory::getFromName(codec)); \
+  float fastPFOR_ ## codec ## _compute_bitsPerInt(std::vector<ValueT>& _vec) { \
+     return fastPFOR_compute_bitsPerInt(_vec, *CODECFactory::getFromName(#codec)); \
   };
 
 void fastPFOR_benchmark_encoding(const std::vector<ValueT>& vec, IntegerCODEC& codec, benchmark::State& state) {
@@ -72,12 +72,46 @@ float fastPFOR_compute_bitsPerInt(std::vector<ValueT>& _vec, IntegerCODEC &codec
   codec.decodeArray(enc.data(), enc.size(), dec.data(), recoveredsize);
   dec.resize(recoveredsize);
 
-  if (_vec != dec) throw std::runtime_error("bug!");
+  if (_vec != dec) {
+    std::cerr << "bug in codec" << std::endl;
+  }
 
   // # bits (encoded) / # elements to encode
   return 32.0 * static_cast<double>(enc.size()) / static_cast<double>(_vec.size());
 }
 
-FASTPFOR_BENCHMARK_METHODS("fastpfor256");
-
+FASTPFOR_BENCHMARK_METHODS(fastbinarypacking8);
+FASTPFOR_BENCHMARK_METHODS(fastbinarypacking16);
+FASTPFOR_BENCHMARK_METHODS(fastbinarypacking32);
+FASTPFOR_BENCHMARK_METHODS(BP32);
+FASTPFOR_BENCHMARK_METHODS(vsencoding);
+FASTPFOR_BENCHMARK_METHODS(fastpfor128);
+FASTPFOR_BENCHMARK_METHODS(fastpfor256);
+FASTPFOR_BENCHMARK_METHODS(simdfastpfor128);
+FASTPFOR_BENCHMARK_METHODS(simdfastpfor256);
+FASTPFOR_BENCHMARK_METHODS(simplepfor);
+FASTPFOR_BENCHMARK_METHODS(simdsimplepfor);
+FASTPFOR_BENCHMARK_METHODS(pfor);
+FASTPFOR_BENCHMARK_METHODS(simdpfor);
+FASTPFOR_BENCHMARK_METHODS(pfor2008);
+FASTPFOR_BENCHMARK_METHODS(simdnewpfor);
+FASTPFOR_BENCHMARK_METHODS(newpfor);
+FASTPFOR_BENCHMARK_METHODS(optpfor);
+FASTPFOR_BENCHMARK_METHODS(simdoptpfor);
+FASTPFOR_BENCHMARK_METHODS(varint);
+FASTPFOR_BENCHMARK_METHODS(vbyte);
+FASTPFOR_BENCHMARK_METHODS(maskedvbyte);
+FASTPFOR_BENCHMARK_METHODS(streamvbyte);
+FASTPFOR_BENCHMARK_METHODS(varintgb);
+FASTPFOR_BENCHMARK_METHODS(simple16);
+FASTPFOR_BENCHMARK_METHODS(simple9);
+FASTPFOR_BENCHMARK_METHODS(simple9_rle);
+FASTPFOR_BENCHMARK_METHODS(simple8b);
+FASTPFOR_BENCHMARK_METHODS(simple8b_rle);
+FASTPFOR_BENCHMARK_METHODS(varintg8iu);
+FASTPFOR_BENCHMARK_METHODS(snappy);
+FASTPFOR_BENCHMARK_METHODS(simdbinarypacking);
+FASTPFOR_BENCHMARK_METHODS(simdgroupsimple);
+FASTPFOR_BENCHMARK_METHODS(simdgroupsimple_ringbuf);
+FASTPFOR_BENCHMARK_METHODS(copy);
 }
