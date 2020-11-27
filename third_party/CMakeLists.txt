@@ -76,7 +76,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(sqlparser PRIVATE -Wno-unneeded-internal-declaration -Wno-format)
 endif()
 
-
 ## Build MaskVbyte
 
 add_library(

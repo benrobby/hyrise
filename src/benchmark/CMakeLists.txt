@@ -60,6 +60,7 @@ add_executable(
     benchmark_column_compression_streamVByte.hpp
     benchmark_column_compression_oroch_varint.hpp
     benchmark_column_compression_oroch_integerArray.hpp
+        benchmark_column_compression_sdsl_lite.hpp
 
     micro_benchmark_main.cpp
     micro_benchmark_utils.cpp
@@ -68,8 +69,10 @@ add_executable(
 
 target_include_directories(
     hyriseBenchmarkColumnCompression
-    PUBLIC third_party/Oroch/oroch
+    PUBLIC ../../third_party/Oroch/oroch
 )
+
+find_library(SDSL_PATH sdsl PATH /usr/local/)
 
 target_link_libraries(
     hyriseBenchmarkColumnCompression
@@ -77,6 +80,7 @@ target_link_libraries(
     maskedvbyte
     streamvbyte
     benchmark
+    ${SDSL_PATH}
 )
 
 # General purpose benchmark runner

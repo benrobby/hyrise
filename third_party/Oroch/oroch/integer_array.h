@@ -168,7 +168,7 @@ public:
 		size_t ngroups = groups_.size();
 		size_t group = npos / detail::group_size;
 		size_t index = npos % detail::group_size;
-		if (group > ngroups || index > tail_.size())
+		if (group > ngroups && index > tail_.size())
 			throw std::out_of_range("array index out of range");
 
 		if (group < ngroups)
