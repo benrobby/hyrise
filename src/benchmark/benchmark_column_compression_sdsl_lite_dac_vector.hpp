@@ -4,8 +4,7 @@
 
 
 #include <iostream>
-#include <sdsl/vlc_vector.hpp>
-#include <sdsl/int_vector.hpp>
+#include <sdsl/dac_vector.hpp>
 #include "benchmark/benchmark.h"
 #include "streamvbyte.h"
 
@@ -13,16 +12,16 @@ using ValueT = uint32_t;
 
 namespace opossum {
 
-void sdsl_lite_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+void sdsl_lite_dac_vector_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   for (auto _ : state) {
-    sdsl::vlc_vector<sdsl::coder::elias_delta> encoded(vec);
+    sdsl::dac_vector<> encoded(vec);
     benchmark::ClobberMemory();
   }
 }
 
-void sdsl_lite_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+void sdsl_lite_dac_vector_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   // Encode
-  sdsl::vlc_vector<sdsl::coder::elias_delta> encoded(vec);
+  sdsl::dac_vector<> encoded(vec);
 
   // Decode
   std::vector<ValueT> decoded = std::vector<ValueT>(vec.size());
@@ -34,7 +33,7 @@ void sdsl_lite_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::Sta
   }
 }
 
-float sdsl_lite_compute_bitsPerInt(std::vector<ValueT>& vec) {
+float sdsl_lite_dac_vector_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // Encode
   sdsl::vlc_vector<sdsl::coder::elias_delta> encoded(vec);
 
