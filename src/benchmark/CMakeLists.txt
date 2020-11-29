@@ -60,8 +60,9 @@ add_executable(
     benchmark_column_compression_streamVByte.hpp
     benchmark_column_compression_oroch_varint.hpp
     benchmark_column_compression_oroch_integerArray.hpp
-    benchmark_column_compression_sdsl_lite_vlc_vector.hpp
+    benchmark_column_compression_sdsl_lite_vlc_vector.hpp    
     benchmark_column_compression_sdsl_lite_dac_vector.hpp
+
 
     micro_benchmark_main.cpp
     micro_benchmark_utils.cpp
@@ -73,6 +74,12 @@ target_include_directories(
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/Oroch/oroch
 )
 
+target_include_directories(
+        hyriseBenchmarkColumnCompression
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/
+)
+
+find_library(TURBOPFOR_PATH ic ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/ REQUIRED)
 find_library(SDSL_PATH sdsl PATH /usr/local/)
 
 target_link_libraries(
@@ -82,6 +89,7 @@ target_link_libraries(
     streamvbyte
     benchmark
     ${SDSL_PATH}
+    ${TURBOPFOR_PATH}
 )
 
 # General purpose benchmark runner

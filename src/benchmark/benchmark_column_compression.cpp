@@ -12,7 +12,8 @@
 #include "benchmark_column_compression_oroch_varint.hpp"
 #include "benchmark_column_compression_streamVByte.hpp"
 #include "benchmark_column_compression_sdsl_lite_vlc_vector.hpp"
-
+#include "benchmark_column_compression_sdsl_lite_dac_vector.hpp"
+#include "benchmark_column_compression_turboPFOR.hpp"
 
 #define BENCHMARK_NAMES 
 
@@ -136,7 +137,10 @@ void writeBitsPerInt() {
       oroch_varint_compute_bitsPerInt, 
       oroch_integerArray_compute_bitsPerInt,
 
-      sdsl_lite_vlc_vector_compute_bitsPerInt
+      sdsl_lite_vlc_vector_compute_bitsPerInt,
+      sdsl_lite_dac_vector_compute_bitsPerInt, 
+      
+      turboPFOR_compute_bitsPerInt
       };
   std::vector<std::string> functionNames = {
     "maskedVByte", 
@@ -182,7 +186,9 @@ void writeBitsPerInt() {
     "oroch_varint", 
     "oroch_integerArray",
 
-    "sdsl_lite_vlc_vector_compute_bitsPerInt"
+    "sdsl_lite_vlc_vector",
+    "sdsl_lite_dac_vector",
+    "turboPFOR"
   };
 
   for (size_t j = 0; j < functions.size(); j++) {
@@ -247,6 +253,9 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_varint);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_integerArray);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_vlc_vector);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_dac_vector);
+
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
 
 
 
