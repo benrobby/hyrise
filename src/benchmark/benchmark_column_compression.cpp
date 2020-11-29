@@ -10,9 +10,11 @@
 #include "benchmark_column_compression_maskedVByteDelta.hpp"
 #include "benchmark_column_compression_oroch_integerArray.hpp"
 #include "benchmark_column_compression_oroch_varint.hpp"
-#include "benchmark_column_compression_streamVByte.hpp"
-#include "benchmark_column_compression_sdsl_lite.hpp"
+#include "benchmark_column_compression_sdsl_lite_vlc_vector.hpp"
+#include "benchmark_column_compression_sdsl_lite_dac_vector.hpp"
+#include "benchmark_column_compression_turboPFOR.hpp"
 
+#include "benchmark_column_compression_streamVByte.hpp"
 
 #define BENCHMARK_NAMES 
 
@@ -94,10 +96,11 @@ void writeBitsPerInt() {
   // keep both in sync
   std::vector<float (*)(std::vector<ValueT> & vec)> functions = {
       maskedVByte_compute_bitsPerInt, maskedVByteDelta_compute_bitsPerInt, fastPFOR_fastpfor256_compute_bitsPerInt, streamVByte_compute_bitsPerInt,
-      oroch_varint_compute_bitsPerInt, oroch_integerArray_compute_bitsPerInt, sdsl_lite_compute_bitsPerInt};
+      oroch_varint_compute_bitsPerInt, oroch_integerArray_compute_bitsPerInt,
+      sdsl_lite_vlc_vector_compute_bitsPerInt, sdsl_lite_dac_vector_compute_bitsPerInt, turboPFOR_compute_bitsPerInt};
   std::vector<std::string> functionNames = {"maskedVByte", "maskedVByteDelta", "fastPFOR_fastpfor256", "streamVByte", "oroch_varint",
-                                            "oroch_integerArray", "sdsl_lite_compute_bitsPerInt"};
-
+                                            "oroch_integerArray", "sdsl_lite_vlc_vector", "sdsl_lite_dac_vector",
+                                              "turboPFOR"};
   for (size_t j = 0; j < functions.size(); j++) {
     std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_numbers(),
                                                get_with_huge_numbers(), get_with_random_walk()};
@@ -122,7 +125,11 @@ COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastpfor256);
 COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(streamVByte);
 COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_varint);
 COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_integerArray);
-COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite);
+COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_vlc_vector);
+COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_dac_vector);
+COLUMNN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
+
+
 
 
 
