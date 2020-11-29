@@ -38,8 +38,5 @@ dnl Check command line arguments
 
 AC_CONFIG_FILES([
 	Makefile
-	oroch/Makefile
-	tests/Makefile
-	tests/bench/Makefile
-	tests/unit/Makefile])
+	oroch/Makefile])
 AC_OUTPUT

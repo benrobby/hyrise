@@ -13,7 +13,6 @@ namespace opossum {
 void oroch_integerArray_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   for (auto _ : state) {
     oroch::integer_array<ValueT> enc;
-
     for (size_t i = 0; i < vec.size(); i++) {
       enc.insert(i, vec[i]);
     }
@@ -34,7 +33,9 @@ void oroch_integerArray_benchmark_decoding(const std::vector<ValueT>& vec, bench
   dec.resize(vec.size());
 
   for (auto _ : state) {
-    enc.decode(dec.begin(), dec.end());
+    for (size_t i = 0; i < vec.size(); i++) {
+      dec[i] = enc.at(i);
+    }
     benchmark::ClobberMemory();
   }
 }
@@ -54,8 +55,8 @@ float oroch_integerArray_compute_bitsPerInt(std::vector<ValueT>& vec) {
 
   if (vec != dec) throw std::runtime_error("bug!");
 
-  // # bits (encoded) / # elements to encode
-  return 32.0 * static_cast<double>(enc.size()) / static_cast<double>(vec.size());
+  // # NOT IMPLEMENTED YET - How could we do it?
+  return -1;
 }
 
 }  // namespace opossum
