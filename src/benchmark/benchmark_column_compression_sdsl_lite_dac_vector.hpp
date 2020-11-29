@@ -46,7 +46,7 @@ float sdsl_lite_dac_vector_compute_bitsPerInt(std::vector<ValueT>& vec) {
   if (vec != decoded) throw std::runtime_error("bug!");
 
   // # bits (encoded) / # elements to encode
-  return sdsl::size_in_bytes(encoded) * 8 / vec.size();
+  return sdsl::size_in_bytes(encoded) * 8.0 / vec.size();
 }
 
 }  // namespace opossum

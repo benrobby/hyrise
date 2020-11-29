@@ -50,7 +50,7 @@ float turboPFOR_compute_bitsPerInt(std::vector<ValueT>& vec) {
   }
 
   // # bits (encoded) / # elements to encode
-  return decompressedSizeInBytes * 8 / vec.size();
+  return decompressedSizeInBytes * 8.0 / vec.size();
 }
 
 }  // namespace opossum

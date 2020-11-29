@@ -97,32 +97,32 @@ void writeBitsPerInt() {
       maskedVByte_compute_bitsPerInt, 
       maskedVByteDelta_compute_bitsPerInt,
 
-      // fastPFOR_fastbinarypacking8_compute_bitsPerInt,
-      // fastPFOR_fastbinarypacking16_compute_bitsPerInt,
-      // fastPFOR_fastbinarypacking32_compute_bitsPerInt,
-      // fastPFOR_BP32_compute_bitsPerInt,
-      // fastPFOR_vsencoding_compute_bitsPerInt,
-      // fastPFOR_fastpfor128_compute_bitsPerInt,
-      // fastPFOR_fastpfor256_compute_bitsPerInt,
-      // fastPFOR_simdfastpfor128_compute_bitsPerInt,
+      fastPFOR_fastbinarypacking8_compute_bitsPerInt,
+      fastPFOR_fastbinarypacking16_compute_bitsPerInt,
+      fastPFOR_fastbinarypacking32_compute_bitsPerInt,
+      fastPFOR_BP32_compute_bitsPerInt,
+      fastPFOR_vsencoding_compute_bitsPerInt,
+      fastPFOR_fastpfor128_compute_bitsPerInt,
+      fastPFOR_fastpfor256_compute_bitsPerInt,
+      fastPFOR_simdfastpfor128_compute_bitsPerInt,
       fastPFOR_simdfastpfor256_compute_bitsPerInt,
-      // fastPFOR_simplepfor_compute_bitsPerInt,
-      // fastPFOR_simdsimplepfor_compute_bitsPerInt,
-      // fastPFOR_pfor_compute_bitsPerInt,
-      // fastPFOR_simdpfor_compute_bitsPerInt,
-      // fastPFOR_pfor2008_compute_bitsPerInt,
-      // fastPFOR_simdnewpfor_compute_bitsPerInt,
-      // fastPFOR_newpfor_compute_bitsPerInt,
-      // fastPFOR_optpfor_compute_bitsPerInt,
-      // fastPFOR_simdoptpfor_compute_bitsPerInt,
-      // fastPFOR_varint_compute_bitsPerInt,
-      // fastPFOR_vbyte_compute_bitsPerInt,
-      // fastPFOR_maskedvbyte_compute_bitsPerInt,
-      // fastPFOR_streamvbyte_compute_bitsPerInt,
-      // fastPFOR_varintgb_compute_bitsPerInt,
-      // fastPFOR_simple16_compute_bitsPerInt,
-      // fastPFOR_simple9_compute_bitsPerInt,
-      // fastPFOR_simple9_rle_compute_bitsPerInt,
+      fastPFOR_simplepfor_compute_bitsPerInt,
+      fastPFOR_simdsimplepfor_compute_bitsPerInt,
+      fastPFOR_pfor_compute_bitsPerInt,
+      fastPFOR_simdpfor_compute_bitsPerInt,
+      fastPFOR_pfor2008_compute_bitsPerInt,
+      fastPFOR_simdnewpfor_compute_bitsPerInt,
+      fastPFOR_newpfor_compute_bitsPerInt,
+      fastPFOR_optpfor_compute_bitsPerInt,
+      fastPFOR_simdoptpfor_compute_bitsPerInt,
+      fastPFOR_varint_compute_bitsPerInt,
+      fastPFOR_vbyte_compute_bitsPerInt,
+      //fastPFOR_maskedvbyte_compute_bitsPerInt,
+      //fastPFOR_streamvbyte_compute_bitsPerInt,
+      //fastPFOR_varintgb_compute_bitsPerInt,
+      //fastPFOR_simple16_compute_bitsPerInt,
+      //fastPFOR_simple9_compute_bitsPerInt,
+      //fastPFOR_simple9_rle_compute_bitsPerInt,
       // fastPFOR_simple8b_compute_bitsPerInt,
       // fastPFOR_simple8b_rle_compute_bitsPerInt,
       // fastPFOR_varintg8iu_compute_bitsPerInt,
@@ -146,27 +146,27 @@ void writeBitsPerInt() {
     "maskedVByte", 
     "maskedVByteDelta", 
 
-    // "fastPFOR_fastbinarypacking8",
-    // "fastPFOR_fastbinarypacking16",
-    // "fastPFOR_fastbinarypacking32",
-    // "fastPFOR_BP32",
-    // "fastPFOR_vsencoding",
-    // "fastPFOR_fastpfor128",
-    // "fastPFOR_fastpfor256",
-    // "fastPFOR_simdfastpfor128",
+    "fastPFOR_fastbinarypacking8",
+    "fastPFOR_fastbinarypacking16",
+    "fastPFOR_fastbinarypacking32",
+    "fastPFOR_BP32",
+    "fastPFOR_vsencoding",
+    "fastPFOR_fastpfor128",
+    "fastPFOR_fastpfor256",
+    "fastPFOR_simdfastpfor128",
     "fastPFOR_simdfastpfor256",
-    // "fastPFOR_simplepfor",
-    // "fastPFOR_simdsimplepfor",
-    // "fastPFOR_pfor",
-    // "fastPFOR_simdpfor",
-    // "fastPFOR_pfor2008",
-    // "fastPFOR_simdnewpfor",
-    // "fastPFOR_newpfor",
-    // "fastPFOR_optpfor",
-    // "fastPFOR_simdoptpfor",
-    // "fastPFOR_varint",
-    // "fastPFOR_vbyte",
-    // "fastPFOR_maskedvbyte",
+    "fastPFOR_simplepfor",
+    "fastPFOR_simdsimplepfor",
+    "fastPFOR_pfor",
+    "fastPFOR_simdpfor",
+    "fastPFOR_pfor2008",
+    "fastPFOR_simdnewpfor",
+    "fastPFOR_newpfor",
+    "fastPFOR_optpfor",
+    "fastPFOR_simdoptpfor",
+    "fastPFOR_varint",
+    "fastPFOR_vbyte",
+    // "fastPFOR_maskedvbyte", // todo debug why the decoded output is different from the input
     // "fastPFOR_streamvbyte",
     // "fastPFOR_varintgb",
     // "fastPFOR_simple16",
@@ -212,26 +212,26 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(maskedVByte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(maskedVByteDelta);
 
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastbinarypacking8);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastbinarypacking16);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastbinarypacking32);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_BP32);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vsencoding);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastpfor128);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastpfor256);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdfastpfor128);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastbinarypacking8);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastbinarypacking16);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastbinarypacking32);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_BP32);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vsencoding);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastpfor128);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_fastpfor256);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdfastpfor128);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdfastpfor256);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simplepfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdsimplepfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_pfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdpfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_pfor2008);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdnewpfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_newpfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_optpfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdoptpfor);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varint);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vbyte);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simplepfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdsimplepfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_pfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdpfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_pfor2008);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdnewpfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_newpfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_optpfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdoptpfor);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varint);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vbyte);
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_maskedvbyte);
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_streamvbyte);
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintgb);
