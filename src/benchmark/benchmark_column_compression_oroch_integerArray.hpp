@@ -40,6 +40,30 @@ void oroch_integerArray_benchmark_decoding(const std::vector<ValueT>& vec, bench
   }
 }
 
+void oroch_integerArray_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  // Encode
+  oroch::integer_array<ValueT> enc;
+  for (size_t i = 0; i < vec.size(); i++) {
+    enc.insert(i, vec[i]);
+  }
+
+  // Decode
+  std::vector<ValueT> dec(0);
+  dec.resize(vec.size());
+
+  std::vector<ValueT> points {};
+  points.resize(pointIndices.size());
+  benchmark::DoNotOptimize(points);
+
+  for (auto _ : state) {
+    for (size_t i = 0; i < pointIndices.size(); i++) {
+      points[i] = enc.at(pointIndices[i]);
+    }
+
+    benchmark::ClobberMemory();
+  }
+}
+
 float oroch_integerArray_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // Encode
   oroch::integer_array<ValueT> enc;
