@@ -30,6 +30,7 @@ void sdsl_lite_dac_vector_benchmark_decoding(const std::vector<ValueT>& vec, ben
     for (size_t i = 0; i < vec.size(); i++) {
       decoded[i] = encoded[i];
     }
+    benchmark::ClobberMemory();
   }
 }
 
