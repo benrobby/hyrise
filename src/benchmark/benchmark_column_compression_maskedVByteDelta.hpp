@@ -57,7 +57,7 @@ void maskedVByteDelta_benchmark_decoding_points(const std::vector<ValueT>& vec, 
 
   std::vector<ValueT> points {};
   points.resize(pointIndices.size());
-  benchmark::DoNotOptimize(points);
+  benchmark::DoNotOptimize(points.data());
 
   for (auto _ : state) {
     masked_vbyte_decode_delta(compressedbuffer, data_recovered, N, 0);

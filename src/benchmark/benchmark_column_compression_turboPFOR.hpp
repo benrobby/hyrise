@@ -11,6 +11,7 @@ namespace opossum {
 void turboPFOR_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
   ValueT* inData = (ValueT*) vec.data();
+  benchmark::DoNotOptimize(outBuffer);
 
   for (auto _ : state) {
     p4nenc32(inData, vec.size(), outBuffer);
@@ -26,6 +27,7 @@ void turboPFOR_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::Sta
 
   // Decode
   ValueT* decompressedData = (ValueT*) malloc(vec.size() * sizeof(ValueT));
+  benchmark::DoNotOptimize(decompressedData);
 
   for (auto _ : state) {
     p4ndec32(outBuffer, vec.size(), decompressedData);

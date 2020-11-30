@@ -74,7 +74,7 @@ void fastPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const st
 
   std::vector<ValueT> points {};
   points.resize(pointIndices.size());
-  benchmark::DoNotOptimize(points);
+  benchmark::DoNotOptimize(points.data());
 
   for (auto _ : state) {
     codec.decodeArray(enc.data(), enc.size(), dec.data(), recoveredsize);

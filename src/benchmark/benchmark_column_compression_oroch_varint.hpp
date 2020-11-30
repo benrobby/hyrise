@@ -13,6 +13,7 @@ namespace opossum {
 void oroch_varint_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   size_t space = oroch::varint_codec<ValueT>::space(vec.begin(), vec.end());
   std::unique_ptr<uint8_t[]> enc(new uint8_t[space]);
+  benchmark::DoNotOptimize(enc.get());
 
   for (auto _ : state) {
     uint8_t* ptr = enc.get();
@@ -32,6 +33,7 @@ void oroch_varint_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::
 
   // Decode
   std::vector<ValueT> dec(vec.size());
+  benchmark::DoNotOptimize(dec.data());
 
   for (auto _ : state) {
     const uint8_t* src_ptr = enc.get();
@@ -53,7 +55,7 @@ void oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, cons
 
   std::vector<ValueT> points {};
   points.resize(pointIndices.size());
-  benchmark::DoNotOptimize(points);
+  benchmark::DoNotOptimize(points.data());
 
   for (auto _ : state) {
     const uint8_t* src_ptr = enc.get();

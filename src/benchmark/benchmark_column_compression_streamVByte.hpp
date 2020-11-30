@@ -9,7 +9,7 @@ namespace opossum {
 
 void streamVByte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
-
+  benchmark::DoNotOptimize(enc.data());
   for (auto _ : state) {
     streamvbyte_encode(vec.data(), vec.size(), enc.data());
     benchmark::ClobberMemory();
@@ -23,6 +23,7 @@ void streamVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
 
   // Decode
   std::vector<ValueT> dec = std::vector<uint32_t>(vec.size());
+  benchmark::DoNotOptimize(dec.data());
 
   for (auto _ : state) {
     streamvbyte_decode(enc.data(), dec.data(), vec.size());

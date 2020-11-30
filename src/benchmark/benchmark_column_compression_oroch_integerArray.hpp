@@ -13,6 +13,7 @@ namespace opossum {
 void oroch_integerArray_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   for (auto _ : state) {
     oroch::integer_array<ValueT> enc;
+    benchmark::DoNotOptimize(enc);
     for (size_t i = 0; i < vec.size(); i++) {
       enc.insert(i, vec[i]);
     }
@@ -31,6 +32,8 @@ void oroch_integerArray_benchmark_decoding(const std::vector<ValueT>& vec, bench
   // Decode
   std::vector<ValueT> dec(0);
   dec.resize(vec.size());
+  benchmark::DoNotOptimize(dec.data());
+
 
   for (auto _ : state) {
     for (size_t i = 0; i < vec.size(); i++) {
@@ -48,12 +51,10 @@ void oroch_integerArray_benchmark_decoding_points(const std::vector<ValueT>& vec
   }
 
   // Decode
-  std::vector<ValueT> dec(0);
-  dec.resize(vec.size());
 
   std::vector<ValueT> points {};
   points.resize(pointIndices.size());
-  benchmark::DoNotOptimize(points);
+  benchmark::DoNotOptimize(points.data());
 
   for (auto _ : state) {
     for (size_t i = 0; i < pointIndices.size(); i++) {

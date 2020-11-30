@@ -26,11 +26,13 @@ void sdsl_lite_vlc_vector_benchmark_decoding(const std::vector<ValueT>& vec, ben
 
   // Decode
   std::vector<ValueT> decoded = std::vector<ValueT>(vec.size());
+  benchmark::DoNotOptimize(decoded.data());
 
   for (auto _ : state) {
     for (size_t i = 0; i < vec.size(); i++) {
       decoded[i] = encoded[i];
     }
+    benchmark::ClobberMemory();
   }
 }
 
