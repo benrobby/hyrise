@@ -83,5 +83,4 @@ float maskedVByte_compute_bitsPerInt(std::vector<ValueT>& vec) {
 
   return 8.0 * compressedBufferSize / N;
 }
-
 }

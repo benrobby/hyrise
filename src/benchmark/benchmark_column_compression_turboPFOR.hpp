@@ -35,6 +35,26 @@ void turboPFOR_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::Sta
   }
 }
 
+void turboPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  // Encode
+  unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
+  ValueT* inData = (ValueT*) vec.data();
+  p4nenc32(inData, vec.size(), outBuffer);
+
+  // Decode
+  ValueT* decompressedData = (ValueT*) malloc(vec.size() * sizeof(ValueT));
+  std::vector<ValueT> points = std::vector<ValueT>(vec.size());
+  benchmark::DoNotOptimize(decompressedData);
+
+  for (auto _ : state) {
+    p4ndec32(outBuffer, vec.size(), decompressedData);
+    for (size_t i: pointIndices) {
+      points[i] = outBuffer[i];
+    }
+    benchmark::ClobberMemory();
+  }
+}
+
 float turboPFOR_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // Encode
   unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);

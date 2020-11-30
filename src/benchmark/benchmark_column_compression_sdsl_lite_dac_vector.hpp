@@ -52,6 +52,22 @@ float sdsl_lite_dac_vector_compute_bitsPerInt(std::vector<ValueT>& vec) {
   return sdsl::size_in_bytes(encoded) * 8.0 / vec.size();
 }
 
+void sdsl_lite_dac_vector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  // Encode
+  sdsl::dac_vector<> encoded(vec);
+
+  // Decode
+  std::vector<ValueT> decoded = std::vector<ValueT>(vec.size());
+  benchmark::DoNotOptimize(decoded.data());
+
+  for (auto _ : state) {
+    for (size_t i : pointIndices) {
+      decoded[i] = encoded[i];
+    }
+    benchmark::ClobberMemory();
+  }
+}
+
 }  // namespace opossum
 
 

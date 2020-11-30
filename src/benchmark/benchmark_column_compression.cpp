@@ -30,10 +30,14 @@
   COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_small_numbers, benchmarkName##_benchmark_decoding_points);
 
 #define COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(setupMethod, benchmarkMethodDecodePoints) \
-  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10, benchmarkMethodDecodePoints);
+  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10, benchmarkMethodDecodePoints); \
+  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_100, benchmarkMethodDecodePoints); \
+  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_1000, benchmarkMethodDecodePoints); \
+  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10000, benchmarkMethodDecodePoints); \
+
 
 #define COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, poslistMethod, benchmarkMethod)                \
-  BENCHMARK_F(BenchmarkColumnCompressionFixture, benchmarkMethod##_##setupMethod)(benchmark::State & state) { \
+  BENCHMARK_F(BenchmarkColumnCompressionFixture, benchmarkMethod##_##setupMethod##_##poslistMethod)(benchmark::State & state) { \
     auto vec = setupMethod();                                                                                 \
     auto poslist = poslistMethod();                                                                           \
     benchmarkMethod(vec, poslist, state);                                                                     \
@@ -58,11 +62,25 @@ using ValueT = uint32_t;
 
 std::vector<size_t> get_poslist_10() {
   std::vector<size_t> vec(10);
-  std::generate(vec.begin(), vec.end(), []() {
-    static size_t v = 0;
-    v = (v + 1) % 4;  // todo think about distribution
-    return v;
-  });
+  std::iota(vec.begin(), vec.end(), 0); // vec = 0,1,2, ... , 9
+  return vec;
+}
+
+std::vector<size_t> get_poslist_100() {
+  std::vector<size_t> vec(100);
+  std::iota(vec.begin(), vec.end(), 0);
+  return vec;
+}
+
+std::vector<size_t> get_poslist_1000() {
+  std::vector<size_t> vec(1000);
+  std::iota(vec.begin(), vec.end(), 0);
+  return vec;
+}
+
+std::vector<size_t> get_poslist_10000() {
+  std::vector<size_t> vec(10000);
+  std::iota(vec.begin(), vec.end(), 0);
   return vec;
 }
 
@@ -236,15 +254,15 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vbyte);
  // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple_ringbuf);
  // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_copy);
 
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(streamVByte);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(streamVByte);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_varint);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_integerArray);
 
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_vlc_vector);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_dac_vector);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_vlc_vector);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(sdsl_lite_dac_vector);
 
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
 
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)
 BENCHMARK_F(BenchmarkColumnCompressionFixture, write_BitsPerInt)(benchmark::State& state) { writeBitsPerInt(); }

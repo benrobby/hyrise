@@ -52,6 +52,22 @@ float sdsl_lite_vlc_vector_compute_bitsPerInt(std::vector<ValueT>& vec) {
   return sdsl::size_in_bytes(encoded) * 8.0 / vec.size();
 }
 
+void sdsl_lite_vlc_vector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  // Encode
+  sdsl::vlc_vector<sdsl::coder::elias_delta> encoded(vec);
+
+  // Decode
+  std::vector<ValueT> decoded = std::vector<ValueT>(vec.size());
+  benchmark::DoNotOptimize(decoded.data());
+
+  for (auto _ : state) {
+    for (size_t i : pointIndices) {
+      decoded[i] = encoded[i];
+    }
+    benchmark::ClobberMemory();
+  }
+}
+
 }  // namespace opossum
 
 

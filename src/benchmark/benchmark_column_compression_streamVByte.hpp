@@ -31,6 +31,25 @@ void streamVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
   }
 }
 
+void streamVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  // Encode
+  std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
+  streamvbyte_encode(vec.data(), vec.size(), enc.data());
+
+  // Decode
+  std::vector<ValueT> dec = std::vector<uint32_t>(vec.size());
+  std::vector<ValueT> points = std::vector<ValueT>(vec.size());
+  benchmark::DoNotOptimize(dec.data());
+
+  for (auto _ : state) {
+    streamvbyte_decode(enc.data(), dec.data(), vec.size());
+    for (size_t i : pointIndices) {
+      points[i] = dec[i];
+    }
+    benchmark::ClobberMemory();
+  }
+}
+
 float streamVByte_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // Encode
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
