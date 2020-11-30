@@ -35,7 +35,7 @@ void sdsl_lite_dac_vector_benchmark_decoding(const std::vector<ValueT>& vec, ben
 
 float sdsl_lite_dac_vector_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // Encode
-  sdsl::vlc_vector<sdsl::coder::elias_delta> encoded(vec);
+  sdsl::dac_vector<> encoded(vec);
 
   // Decode
   std::vector<ValueT> decoded = std::vector<ValueT>(vec.size());
