@@ -1,5 +1,5 @@
 #include <memory>
-#include <memory>
+#include <random>
 
 #include "benchmark/benchmark.h"
 #include "headers/codecfactory.h"
@@ -52,6 +52,8 @@
     benchmarkMethod(vec, state);                                                                              \
   }
 
+#define CHUNK_SIZE 65'000
+
 using namespace FastPForLib;
 
 namespace opossum {
@@ -60,34 +62,38 @@ using ValueT = uint32_t;
 
 // poslists
 
-std::vector<size_t> get_poslist_10() {
-  std::vector<size_t> vec(10);
-  std::iota(vec.begin(), vec.end(), 0); // vec = 0,1,2, ... , 9
+vector<size_t> getUniformPositionList(const int num_positions) {
+  random_device rd;
+  mt19937 gen(rd());
+  uniform_int_distribution<> distrib(0, CHUNK_SIZE);
+
+  vector<size_t> vec(num_positions);
+  generate(vec.begin(), vec.end(), [&]() {
+    return distrib(gen);
+  });
   return vec;
+}
+
+std::vector<size_t> get_poslist_10() {
+  return getUniformPositionList(10);
 }
 
 std::vector<size_t> get_poslist_100() {
-  std::vector<size_t> vec(100);
-  std::iota(vec.begin(), vec.end(), 0);
-  return vec;
+  return getUniformPositionList(100);
 }
 
 std::vector<size_t> get_poslist_1000() {
-  std::vector<size_t> vec(1000);
-  std::iota(vec.begin(), vec.end(), 0);
-  return vec;
+  return getUniformPositionList(1000);
 }
 
 std::vector<size_t> get_poslist_10000() {
-  std::vector<size_t> vec(10000);
-  std::iota(vec.begin(), vec.end(), 0);
-  return vec;
+  return getUniformPositionList(10000);
 }
 
 // Data
 
 std::vector<ValueT> get_with_small_numbers() {
-  std::vector<ValueT> vec(65'000);
+  std::vector<ValueT> vec(CHUNK_SIZE);
   std::generate(vec.begin(), vec.end(), []() {
     static ValueT v = 0;
     v = (v + 1) % 4;
@@ -97,7 +103,7 @@ std::vector<ValueT> get_with_small_numbers() {
 }
 
 std::vector<ValueT> get_with_sequential_numbers() {
-  std::vector<ValueT> vec(65'000);
+  std::vector<ValueT> vec(CHUNK_SIZE);
   std::generate(vec.begin(), vec.end(), []() {
     static ValueT v = 0;
     v = v + 5;
@@ -107,7 +113,7 @@ std::vector<ValueT> get_with_sequential_numbers() {
 }
 
 std::vector<ValueT> get_with_huge_numbers() {
-  std::vector<ValueT> vec(65'000);
+  std::vector<ValueT> vec(CHUNK_SIZE);
   std::generate(vec.begin(), vec.end(), []() {
     static ValueT v = 331;
     v = 1'000'000 + ((v * 7) % 1'000'000);
@@ -117,7 +123,7 @@ std::vector<ValueT> get_with_huge_numbers() {
 }
 
 std::vector<ValueT> get_with_random_walk() {
-  std::vector<ValueT> vec(65'000);
+  std::vector<ValueT> vec(CHUNK_SIZE);
   std::generate(vec.begin(), vec.end(), []() {
     static ValueT v = 945713;
     if ((v * 13 % 7) > 3) {
