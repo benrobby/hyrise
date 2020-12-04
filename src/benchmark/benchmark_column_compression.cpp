@@ -2,8 +2,6 @@
 #include <random>
 
 #include "benchmark/benchmark.h"
-#include "headers/codecfactory.h"
-#include "varintdecode.h"
 #include "varintencode.h"
 
 #include "benchmark_column_compression_fastPFOR.hpp"
@@ -14,6 +12,8 @@
 #include "benchmark_column_compression_sdsl_lite_dac_vector.hpp"
 #include "benchmark_column_compression_sdsl_lite_vlc_vector.hpp"
 #include "benchmark_column_compression_streamVByte.hpp"
+#include "benchmark_column_compression_streamVByte0124.hpp"
+#include "benchmark_column_compression_streamVByteDelta.hpp"
 #include "benchmark_column_compression_turboPFOR.hpp"
 
 #include "benchmark_column_compression_data.hpp"
@@ -103,6 +103,8 @@ void writeBitsPerInt() {
       make_pair(fastPFOR_copy_compute_bitsPerInt, "fastPFOR_copy"),
 
       make_pair(streamVByte_compute_bitsPerInt, "streamVByte"),
+      make_pair(streamVByte0124_compute_bitsPerInt, "streamVByte0124"),
+      make_pair(streamVByteDelta_compute_bitsPerInt, "streamVByteDelta"),
 
       make_pair(oroch_varint_compute_bitsPerInt, "oroch_varint"),
       make_pair(oroch_integerArray_compute_bitsPerInt, "oroch_integerArray"),
@@ -170,6 +172,8 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_copy);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(streamVByte);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(streamVByte0124);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(streamVByteDelta);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_varint);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(oroch_integerArray);

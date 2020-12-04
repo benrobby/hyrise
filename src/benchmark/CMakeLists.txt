@@ -59,6 +59,8 @@ add_executable(
     benchmark_column_compression_maskedVByte.hpp
     benchmark_column_compression_maskedVByteDelta.hpp
     benchmark_column_compression_streamVByte.hpp
+    benchmark_column_compression_streamVByte0124.hpp
+    benchmark_column_compression_streamVByteDelta.hpp
     benchmark_column_compression_oroch_varint.hpp
     benchmark_column_compression_oroch_integerArray.hpp
     benchmark_column_compression_sdsl_lite_vlc_vector.hpp    
