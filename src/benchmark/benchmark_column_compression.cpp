@@ -16,7 +16,7 @@
 #include "benchmark_column_compression_streamVByte.hpp"
 #include "benchmark_column_compression_turboPFOR.hpp"
 
-#define BENCHMARK_NAMES
+#include "benchmark_column_compression_data.hpp"
 
 #define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(benchmarkName)                                    \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, benchmarkName##_benchmark_encoding,      \
@@ -29,18 +29,18 @@
                                                  benchmarkName##_benchmark_decoding);                             \
   COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_small_numbers, benchmarkName##_benchmark_decoding_points);
 
-#define COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(setupMethod, benchmarkMethodDecodePoints) \
-  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10, benchmarkMethodDecodePoints); \
-  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_100, benchmarkMethodDecodePoints); \
+#define COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(setupMethod, benchmarkMethodDecodePoints)            \
+  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10, benchmarkMethodDecodePoints);   \
+  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_100, benchmarkMethodDecodePoints);  \
   COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_1000, benchmarkMethodDecodePoints); \
-  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10000, benchmarkMethodDecodePoints); \
+  COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10000, benchmarkMethodDecodePoints);
 
-
-#define COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, poslistMethod, benchmarkMethod)                \
-  BENCHMARK_F(BenchmarkColumnCompressionFixture, benchmarkMethod##_##setupMethod##_##poslistMethod)(benchmark::State & state) { \
-    auto vec = setupMethod();                                                                                 \
-    auto poslist = poslistMethod();                                                                           \
-    benchmarkMethod(vec, poslist, state);                                                                     \
+#define COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, poslistMethod, benchmarkMethod)      \
+  BENCHMARK_F(BenchmarkColumnCompressionFixture, benchmarkMethod##_##setupMethod##_##poslistMethod) \
+  (benchmark::State & state) {                                                                      \
+    auto vec = setupMethod();                                                                       \
+    auto poslist = poslistMethod();                                                                 \
+    benchmarkMethod(vec, poslist, state);                                                           \
   }
 
 #define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(setupMethod, benchmarkMethodEncode, benchmarkMethodDecode) \
@@ -54,162 +54,71 @@
 
 #define CHUNK_SIZE 65'000
 
-using namespace FastPForLib;
-
 namespace opossum {
 
 using ValueT = uint32_t;
-
-// poslists
-
-vector<size_t> getUniformPositionList(const int num_positions) {
-  random_device rd;
-  mt19937 gen(rd());
-  uniform_int_distribution<> distrib(0, CHUNK_SIZE);
-
-  vector<size_t> vec(num_positions);
-  generate(vec.begin(), vec.end(), [&]() {
-    return distrib(gen);
-  });
-  return vec;
-}
-
-std::vector<size_t> get_poslist_10() {
-  return getUniformPositionList(10);
-}
-
-std::vector<size_t> get_poslist_100() {
-  return getUniformPositionList(100);
-}
-
-std::vector<size_t> get_poslist_1000() {
-  return getUniformPositionList(1000);
-}
-
-std::vector<size_t> get_poslist_10000() {
-  return getUniformPositionList(10000);
-}
-
-// Data
-
-std::vector<ValueT> get_with_small_numbers() {
-  std::vector<ValueT> vec(CHUNK_SIZE);
-  std::generate(vec.begin(), vec.end(), []() {
-    static ValueT v = 0;
-    v = (v + 1) % 4;
-    return v;
-  });
-  return vec;
-}
-
-std::vector<ValueT> get_with_sequential_numbers() {
-  std::vector<ValueT> vec(CHUNK_SIZE);
-  std::generate(vec.begin(), vec.end(), []() {
-    static ValueT v = 0;
-    v = v + 5;
-    return v;
-  });
-  return vec;
-}
-
-std::vector<ValueT> get_with_huge_numbers() {
-  std::vector<ValueT> vec(CHUNK_SIZE);
-  std::generate(vec.begin(), vec.end(), []() {
-    static ValueT v = 331;
-    v = 1'000'000 + ((v * 7) % 1'000'000);
-    return v;
-  });
-  return vec;
-}
-
-std::vector<ValueT> get_with_random_walk() {
-  std::vector<ValueT> vec(CHUNK_SIZE);
-  std::generate(vec.begin(), vec.end(), []() {
-    static ValueT v = 945713;
-    if ((v * 13 % 7) > 3) {
-      v = v + 13;
-    } else {
-      v = v - 11;
-    }
-    return v;
-  });
-  return vec;
-}
 
 void writeBitsPerInt() {
   std::ofstream csvFile("bits_per_int.csv");
   csvFile << "name,dataName,bitsPerInt" << std::endl;
 
   // keep both in sync
-  std::vector<float (*)(std::vector<ValueT> & vec)> functions = {
-      maskedVByte_compute_bitsPerInt, maskedVByteDelta_compute_bitsPerInt,
+  std::vector<pair<float (*)(std::vector<ValueT> & vec), string>> functions = {
+      make_pair(maskedVByte_compute_bitsPerInt, "maskedVByte"),
+      make_pair(maskedVByteDelta_compute_bitsPerInt, "maskedVByteDelta"),
 
-      fastPFOR_fastbinarypacking8_compute_bitsPerInt, fastPFOR_fastbinarypacking16_compute_bitsPerInt,
-      fastPFOR_fastbinarypacking32_compute_bitsPerInt, fastPFOR_BP32_compute_bitsPerInt,
-      fastPFOR_vsencoding_compute_bitsPerInt, fastPFOR_fastpfor128_compute_bitsPerInt,
-      fastPFOR_fastpfor256_compute_bitsPerInt, fastPFOR_simdfastpfor128_compute_bitsPerInt,
-      fastPFOR_simdfastpfor256_compute_bitsPerInt, fastPFOR_simplepfor_compute_bitsPerInt,
-      fastPFOR_simdsimplepfor_compute_bitsPerInt, fastPFOR_pfor_compute_bitsPerInt,
-      fastPFOR_simdpfor_compute_bitsPerInt, fastPFOR_pfor2008_compute_bitsPerInt,
-      fastPFOR_simdnewpfor_compute_bitsPerInt, fastPFOR_newpfor_compute_bitsPerInt, fastPFOR_optpfor_compute_bitsPerInt,
-      fastPFOR_simdoptpfor_compute_bitsPerInt, fastPFOR_varint_compute_bitsPerInt, fastPFOR_vbyte_compute_bitsPerInt,
-      //fastPFOR_maskedvbyte_compute_bitsPerInt,
-      //fastPFOR_streamvbyte_compute_bitsPerInt,
-      //fastPFOR_varintgb_compute_bitsPerInt,
-      //fastPFOR_simple16_compute_bitsPerInt,
-      //fastPFOR_simple9_compute_bitsPerInt,
-      //fastPFOR_simple9_rle_compute_bitsPerInt,
-      // fastPFOR_simple8b_compute_bitsPerInt,
-      // fastPFOR_simple8b_rle_compute_bitsPerInt,
-      // fastPFOR_varintg8iu_compute_bitsPerInt,
-      // fastPFOR_snappy_compute_bitsPerInt, // todo compile with snappy
-      // fastPFOR_simdbinarypacking_compute_bitsPerInt,
-      // fastPFOR_simdgroupsimple_compute_bitsPerInt,
-      // fastPFOR_simdgroupsimple_ringbuf_compute_bitsPerInt,
-      // fastPFOR_copy_compute_bitsPerInt,
+      make_pair(fastPFOR_fastbinarypacking8_compute_bitsPerInt, "fastPFOR_fastbinarypacking8"),
+      make_pair(fastPFOR_fastbinarypacking16_compute_bitsPerInt, "fastPFOR_fastbinarypacking16"),
+      make_pair(fastPFOR_fastbinarypacking32_compute_bitsPerInt, "fastPFOR_fastbinarypacking32"),
+      make_pair(fastPFOR_BP32_compute_bitsPerInt, "fastPFOR_BP32"),
+      make_pair(fastPFOR_vsencoding_compute_bitsPerInt, "fastPFOR_vsencoding"),
+      make_pair(fastPFOR_fastpfor128_compute_bitsPerInt, "fastPFOR_fastpfor128"),
+      make_pair(fastPFOR_fastpfor256_compute_bitsPerInt, "fastPFOR_fastpfor256"),
+      make_pair(fastPFOR_simdfastpfor128_compute_bitsPerInt, "fastPFOR_simdfastpfor128"),
+      make_pair(fastPFOR_simdfastpfor256_compute_bitsPerInt, "fastPFOR_simdfastpfor256"),
+      make_pair(fastPFOR_simplepfor_compute_bitsPerInt, "fastPFOR_simplepfor"),
+      make_pair(fastPFOR_simdsimplepfor_compute_bitsPerInt, "fastPFOR_simdsimplepfor"),
+      make_pair(fastPFOR_pfor_compute_bitsPerInt, "fastPFOR_pfor"),
+      make_pair(fastPFOR_simdpfor_compute_bitsPerInt, "fastPFOR_simdpfor"),
+      make_pair(fastPFOR_pfor2008_compute_bitsPerInt, "fastPFOR_pfor2008"),
+      make_pair(fastPFOR_simdnewpfor_compute_bitsPerInt, "fastPFOR_simdnewpfor"),
+      make_pair(fastPFOR_newpfor_compute_bitsPerInt, "fastPFOR_newpfor"),
+      make_pair(fastPFOR_optpfor_compute_bitsPerInt, "fastPFOR_optpfor"),
+      make_pair(fastPFOR_simdoptpfor_compute_bitsPerInt, "fastPFOR_simdoptpfor"),
+      make_pair(fastPFOR_varint_compute_bitsPerInt, "fastPFOR_varint"),
+      make_pair(fastPFOR_vbyte_compute_bitsPerInt, "fastPFOR_vbyte"),
+      make_pair(fastPFOR_maskedvbyte_compute_bitsPerInt, "fastPFOR_maskedvbyte"),
+      make_pair(fastPFOR_streamvbyte_compute_bitsPerInt, "fastPFOR_streamvbyte"),
+      make_pair(fastPFOR_varintgb_compute_bitsPerInt, "fastPFOR_varintgb"),
+      make_pair(fastPFOR_simple16_compute_bitsPerInt, "fastPFOR_simple16"),
+      make_pair(fastPFOR_simple9_compute_bitsPerInt, "fastPFOR_simple9"),
+      // make_pair(fastPFOR_simple9_rle_compute_bitsPerInt, "fastPFOR_simple9_rle"), // bug
+      make_pair(fastPFOR_simple8b_compute_bitsPerInt, "fastPFOR_simple8b"),
+      // make_pair(fastPFOR_simple8b_rle_compute_bitsPerInt, "fastPFOR_simple8b_rle"), // bug
+      make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
+      // make_pair(fastPFOR_snappy_compute_bitsPerInt, "fastPFOR_snappy"),  // todo compile with snappy
+      make_pair(fastPFOR_simdbinarypacking_compute_bitsPerInt, "fastPFOR_simdbinarypacking"),
+      make_pair(fastPFOR_simdgroupsimple_compute_bitsPerInt, "fastPFOR_simdgroupsimple"),
+      make_pair(fastPFOR_simdgroupsimple_ringbuf_compute_bitsPerInt, "fastPFOR_simdgroupsimple_ringbuf"),
+      make_pair(fastPFOR_copy_compute_bitsPerInt, "fastPFOR_copy"),
 
-      streamVByte_compute_bitsPerInt,
+      make_pair(streamVByte_compute_bitsPerInt, "streamVByte"),
 
-      oroch_varint_compute_bitsPerInt, oroch_integerArray_compute_bitsPerInt,
+      make_pair(oroch_varint_compute_bitsPerInt, "oroch_varint"),
+      make_pair(oroch_integerArray_compute_bitsPerInt, "oroch_integerArray"),
 
-      sdsl_lite_vlc_vector_compute_bitsPerInt, sdsl_lite_dac_vector_compute_bitsPerInt,
+      make_pair(sdsl_lite_vlc_vector_compute_bitsPerInt, "sdsl_lite_vlc_vector"),
+      make_pair(sdsl_lite_dac_vector_compute_bitsPerInt, "sdsl_lite_dac_vector"),
 
-      turboPFOR_compute_bitsPerInt};
-  std::vector<std::string> functionNames = {
-      "maskedVByte", "maskedVByteDelta",
-
-      "fastPFOR_fastbinarypacking8", "fastPFOR_fastbinarypacking16", "fastPFOR_fastbinarypacking32", "fastPFOR_BP32",
-      "fastPFOR_vsencoding", "fastPFOR_fastpfor128", "fastPFOR_fastpfor256", "fastPFOR_simdfastpfor128",
-      "fastPFOR_simdfastpfor256", "fastPFOR_simplepfor", "fastPFOR_simdsimplepfor", "fastPFOR_pfor",
-      "fastPFOR_simdpfor", "fastPFOR_pfor2008", "fastPFOR_simdnewpfor", "fastPFOR_newpfor", "fastPFOR_optpfor",
-      "fastPFOR_simdoptpfor", "fastPFOR_varint", "fastPFOR_vbyte",
-      // "fastPFOR_maskedvbyte", // todo debug why the decoded output is different from the input
-      // "fastPFOR_streamvbyte",
-      // "fastPFOR_varintgb",
-      // "fastPFOR_simple16",
-      // "fastPFOR_simple9",
-      // "fastPFOR_simple9_rle",
-      // "fastPFOR_simple8b",
-      // "fastPFOR_simple8b_rle",
-      // "fastPFOR_varintg8iu",
-      // "fastPFOR_snappy", // todo compile with snappy
-      // "fastPFOR_simdbinarypacking",
-      // "fastPFOR_simdgroupsimple",
-      // "fastPFOR_simdgroupsimple_ringbuf",
-      // "fastPFOR_copy",
-
-      "streamVByte",
-
-      "oroch_varint", "oroch_integerArray",
-
-      "sdsl_lite_vlc_vector", "sdsl_lite_dac_vector", "turboPFOR"};
+      make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
+  };
 
   for (size_t j = 0; j < functions.size(); j++) {
     std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_numbers(),
                                                get_with_huge_numbers(), get_with_random_walk()};
     std::vector<std::string> names = {"small_numbers", "sequential_numbers", "huge_numbers", "random_walk"};
-    for (int i = 0; i < (int)inputs.size(); i++) {
-      csvFile << functionNames[j] << "," << names[i] << "," << functions[j](inputs[i]) << std::endl;
+    for (int i = 0; i < static_cast<int>(inputs.size()); i++) {
+      csvFile << functions[j].second << "," << names[i] << "," << functions[j].first(inputs[i]) << std::endl;
     }
   }
 
@@ -245,20 +154,20 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_optpfor);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdoptpfor);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varint);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vbyte);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_maskedvbyte);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_streamvbyte);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintgb);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple16);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9_rle);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b_rle);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_snappy);  // todo compile with snappy
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdbinarypacking);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple_ringbuf);
- // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_copy);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_maskedvbyte);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_streamvbyte);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintgb);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple16);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9_rle); // bug
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b_rle);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_snappy);  // todo compile with snappy
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdbinarypacking);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple_ringbuf);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_copy);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(streamVByte);
 

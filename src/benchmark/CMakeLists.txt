@@ -54,6 +54,7 @@ add_executable(
     hyriseBenchmarkColumnCompression
 
     benchmark_column_compression.cpp
+    benchmark_column_compression_data.hpp
     benchmark_column_compression_fastPFOR.hpp
     benchmark_column_compression_maskedVByte.hpp
     benchmark_column_compression_maskedVByteDelta.hpp
