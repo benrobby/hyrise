@@ -121,10 +121,10 @@ void writeBitsPerInt() {
       make_pair(fastPFOR_maskedvbyte_compute_bitsPerInt, "fastPFOR_maskedvbyte"),
       make_pair(fastPFOR_streamvbyte_compute_bitsPerInt, "fastPFOR_streamvbyte"),
       make_pair(fastPFOR_varintgb_compute_bitsPerInt, "fastPFOR_varintgb"),
-      make_pair(fastPFOR_simple16_compute_bitsPerInt, "fastPFOR_simple16"),
-      make_pair(fastPFOR_simple9_compute_bitsPerInt, "fastPFOR_simple9"),
-      make_pair(fastPFOR_simple8b_compute_bitsPerInt, "fastPFOR_simple8b"),
-      make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
+      //make_pair(fastPFOR_simple16_compute_bitsPerInt, "fastPFOR_simple16"),
+      //make_pair(fastPFOR_simple9_compute_bitsPerInt, "fastPFOR_simple9"),
+      //make_pair(fastPFOR_simple8b_compute_bitsPerInt, "fastPFOR_simple8b"),
+      //make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
       make_pair(fastPFOR_simdbinarypacking_compute_bitsPerInt, "fastPFOR_simdbinarypacking"),
       make_pair(fastPFOR_simdgroupsimple_compute_bitsPerInt, "fastPFOR_simdgroupsimple"),
       make_pair(fastPFOR_simdgroupsimple_ringbuf_compute_bitsPerInt, "fastPFOR_simdgroupsimple_ringbuf"),
@@ -189,10 +189,10 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vbyte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_maskedvbyte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_streamvbyte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintgb);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple16);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
+//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple16);
+//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9);
+//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b);
+//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdbinarypacking);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple_ringbuf);
