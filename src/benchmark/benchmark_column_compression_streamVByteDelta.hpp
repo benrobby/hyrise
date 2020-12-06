@@ -2,39 +2,40 @@
 #include <iostream>
 #include "benchmark/benchmark.h"
 #include "streamvbyte.h"
+#include "streamvbytedelta.h"
 
 using ValueT = uint32_t;
 
 namespace opossum {
 
-void streamVByte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+void streamVByteDelta_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
   benchmark::DoNotOptimize(enc.data());
   for (auto _ : state) {
-    streamvbyte_encode(vec.data(), vec.size(), enc.data());
+    streamvbyte_delta_encode(vec.data(), vec.size(), enc.data(), 0);
     benchmark::ClobberMemory();
   }
 }
 
-void streamVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+void streamVByteDelta_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   // Encode
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
-  streamvbyte_encode(vec.data(), vec.size(), enc.data());
+  streamvbyte_delta_encode(vec.data(), vec.size(), enc.data(), 0);
 
   // Decode
   std::vector<ValueT> dec = std::vector<uint32_t>(vec.size());
   benchmark::DoNotOptimize(dec.data());
 
   for (auto _ : state) {
-    streamvbyte_decode(enc.data(), dec.data(), vec.size());
+    streamvbyte_delta_decode(enc.data(), dec.data(), vec.size(), 0);
     benchmark::ClobberMemory();
   }
 }
 
-void streamVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void streamVByteDelta_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
   // Encode
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
-  streamvbyte_encode(vec.data(), vec.size(), enc.data());
+  streamvbyte_delta_encode(vec.data(), vec.size(), enc.data(), 0);
 
   // Decode
   std::vector<ValueT> dec = std::vector<uint32_t>(vec.size());
@@ -42,7 +43,7 @@ void streamVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const
   benchmark::DoNotOptimize(dec.data());
 
   for (auto _ : state) {
-    streamvbyte_decode(enc.data(), dec.data(), vec.size());
+    streamvbyte_delta_decode(enc.data(), dec.data(), vec.size(), 0);
     for (size_t i : pointIndices) {
       points[i] = dec[i];
     }
@@ -50,14 +51,14 @@ void streamVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const
   }
 }
 
-float streamVByte_compute_bitsPerInt(std::vector<ValueT>& vec) {
+float streamVByteDelta_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // Encode
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
-  size_t compsize = streamvbyte_encode(vec.data(), vec.size(), enc.data());
+  size_t compsize = streamvbyte_delta_encode(vec.data(), vec.size(), enc.data(), 0);
 
   // Decode
   std::vector<ValueT> dec = std::vector<uint32_t>(vec.size());
-  size_t compsize2 = streamvbyte_decode(enc.data(), dec.data(), vec.size());
+  size_t compsize2 = streamvbyte_delta_decode(enc.data(), dec.data(), vec.size(), 0);
 
   if (vec != dec) throw std::runtime_error("bug!");
   if (compsize != compsize2) throw std::runtime_error("bug!");

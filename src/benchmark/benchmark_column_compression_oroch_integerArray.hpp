@@ -43,7 +43,7 @@ void oroch_integerArray_benchmark_decoding(const std::vector<ValueT>& vec, bench
   }
 }
 
-void oroch_integerArray_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
+void oroch_integerArray_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
   // Encode
   oroch::integer_array<ValueT> enc;
   for (size_t i = 0; i < vec.size(); i++) {

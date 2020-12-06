@@ -16,7 +16,7 @@ namespace opossum {
   void fastPFOR_ ## codec ## _benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) { \
     fastPFOR_benchmark_decoding(vec, *CODECFactory::getFromName(#codec), state); \
   }; \
-  void fastPFOR_ ## codec ## _benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) { \
+  void fastPFOR_ ## codec ## _benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) { \
     fastPFOR_benchmark_decoding_points(vec, pointIndices, *CODECFactory::getFromName(#codec), state); \
   }; \
   float fastPFOR_ ## codec ## _compute_bitsPerInt(std::vector<ValueT>& _vec) { \
@@ -24,11 +24,11 @@ namespace opossum {
   };
 
 void fastPFOR_benchmark_encoding(const std::vector<ValueT>& vec, IntegerCODEC& codec, benchmark::State& state) {
-  std::vector<ValueT> enc = std::vector<uint32_t>(vec.size() * 2);
+  std::vector<ValueT> enc = std::vector<uint32_t>(2 * vec.size() + 1024);
 
   benchmark::DoNotOptimize(enc.data());
 
-  for (auto _ : state) {
+  for ([[maybe_unused]] auto _ : state) {
     size_t compressedsize = enc.size();
     codec.encodeArray(vec.data(), vec.size(), enc.data(), compressedsize);
     // if desired, shrink back the array:
@@ -40,7 +40,7 @@ void fastPFOR_benchmark_encoding(const std::vector<ValueT>& vec, IntegerCODEC& c
 
 void fastPFOR_benchmark_decoding(const std::vector<ValueT>& vec, IntegerCODEC& codec, benchmark::State& state) {
   // Encode
-  std::vector<ValueT> enc = std::vector<uint32_t>(vec.size() * 2);
+  std::vector<ValueT> enc = std::vector<uint32_t>(2 * vec.size() + 1024);
   size_t compressedsize = enc.size();
   codec.encodeArray(vec.data(), vec.size(), enc.data(), compressedsize);
   enc.resize(compressedsize);
@@ -59,9 +59,9 @@ void fastPFOR_benchmark_decoding(const std::vector<ValueT>& vec, IntegerCODEC& c
   }
 }
 
-void fastPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, IntegerCODEC &codec, benchmark::State& state) {
+void fastPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, IntegerCODEC &codec, benchmark::State& state) {
   // Encode
-  std::vector<ValueT> enc = std::vector<uint32_t>(vec.size() * 2);
+  std::vector<ValueT> enc = std::vector<uint32_t>(2 * vec.size() + 1024);
   size_t compressedsize = enc.size();
   codec.encodeArray(vec.data(), vec.size(), enc.data(), compressedsize);
   enc.resize(compressedsize);
@@ -89,7 +89,7 @@ void fastPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const st
 float fastPFOR_compute_bitsPerInt(std::vector<ValueT>& _vec, IntegerCODEC &codec) {
 
   // Encode
-  std::vector<ValueT> enc = std::vector<uint32_t>(_vec.size() * 2);
+  std::vector<ValueT> enc = std::vector<uint32_t>(2 * _vec.size() + 1024);
   size_t compressedsize = enc.size();
   codec.encodeArray(_vec.data(), _vec.size(), enc.data(), compressedsize);
   enc.resize(compressedsize);
@@ -103,7 +103,12 @@ float fastPFOR_compute_bitsPerInt(std::vector<ValueT>& _vec, IntegerCODEC &codec
   dec.resize(recoveredsize);
 
   if (_vec != dec) {
-    std::cerr << "bug in codec" << std::endl;
+    assert(_vec.size() == dec.size());
+    for (size_t i = 0; i < _vec.size(); i++) {
+      if (_vec[i] != dec[i]) {
+        std::cerr << "bug in codec" << std::endl;
+      }
+    }
   }
 
   // # bits (encoded) / # elements to encode

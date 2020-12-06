@@ -43,7 +43,7 @@ void maskedVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
   }
 }
 
-void maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
+void maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
   // Encode
   int N = vec.size();
   ValueT* datain = new ValueT[N];

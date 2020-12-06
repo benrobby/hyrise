@@ -81,7 +81,7 @@ void turboPFOR_block_benchmark_decoding(const std::vector<ValueT>& vec, benchmar
   }
 }
 
-void turboPFOR_block_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
+void turboPFOR_block_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
   // Encode
   TurboPFORWrapper turboPfor = TurboPFORWrapper(vec.size());
   turboPfor.enc(vec);

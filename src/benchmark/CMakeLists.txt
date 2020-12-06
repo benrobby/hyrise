@@ -54,14 +54,20 @@ add_executable(
     hyriseBenchmarkColumnCompression
 
     benchmark_column_compression.cpp
+    benchmark_column_compression_data.hpp
     benchmark_column_compression_fastPFOR.hpp
     benchmark_column_compression_maskedVByte.hpp
     benchmark_column_compression_maskedVByteDelta.hpp
     benchmark_column_compression_streamVByte.hpp
+    benchmark_column_compression_streamVByte0124.hpp
+    benchmark_column_compression_streamVByteDelta.hpp
     benchmark_column_compression_oroch_varint.hpp
     benchmark_column_compression_oroch_integerArray.hpp
     benchmark_column_compression_sdsl_lite_vlc_vector.hpp    
     benchmark_column_compression_sdsl_lite_dac_vector.hpp
+    benchmark_column_compression_turboPFOR.hpp
+    benchmark_column_compression_turboPFOR_direct.hpp
+    benchmark_column_compression_turboPFOR_block.hpp
 
 
     micro_benchmark_main.cpp
