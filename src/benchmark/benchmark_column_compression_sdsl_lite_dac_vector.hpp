@@ -52,7 +52,7 @@ float sdsl_lite_dac_vector_compute_bitsPerInt(std::vector<ValueT>& vec) {
   return sdsl::size_in_bytes(encoded) * 8.0 / vec.size();
 }
 
-void sdsl_lite_dac_vector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void sdsl_lite_dac_vector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
   // Encode
   sdsl::dac_vector<> encoded(vec);
 

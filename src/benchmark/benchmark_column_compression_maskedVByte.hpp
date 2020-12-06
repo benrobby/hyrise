@@ -16,7 +16,7 @@ void maskedVByte_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::S
   ValueT* datain = new ValueT[N];
   std::copy(vec.begin(), vec.end(), datain);
 
-  uint8_t* compressedbuffer = (uint8_t*)malloc(N * sizeof(ValueT));
+  uint8_t* compressedbuffer = (uint8_t*)malloc(2 * N * sizeof(ValueT));
   benchmark::DoNotOptimize(compressedbuffer);
 
   for (auto _ : state) {
@@ -30,7 +30,7 @@ void maskedVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
   int N = vec.size();
   ValueT* datain = new ValueT[N];
   std::copy(vec.begin(), vec.end(), datain);
-  uint8_t* compressedbuffer = (uint8_t*)malloc(N * sizeof(ValueT));
+  uint8_t* compressedbuffer = (uint8_t*)malloc(2 * N * sizeof(ValueT));
   vbyte_encode(datain, vec.size(), compressedbuffer);
 
   // Decode
@@ -43,12 +43,12 @@ void maskedVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
   }
 }
 
-void maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
   // Encode
   int N = vec.size();
   ValueT* datain = new ValueT[N];
   std::copy(vec.begin(), vec.end(), datain);
-  uint8_t* compressedbuffer = (uint8_t*)malloc(N * sizeof(ValueT));
+  uint8_t* compressedbuffer = (uint8_t*)malloc(2 * N * sizeof(ValueT));
   vbyte_encode(datain, vec.size(), compressedbuffer);
 
   // Decode
@@ -74,7 +74,7 @@ float maskedVByte_compute_bitsPerInt(std::vector<ValueT>& vec) {
   int N = vec.size();
   ValueT* datain = new ValueT[N];
   std::copy(vec.begin(), vec.end(), datain);
-  uint8_t* compressedbuffer = (uint8_t*)malloc(N * sizeof(ValueT));
+  uint8_t* compressedbuffer = (uint8_t*)malloc(2 * N * sizeof(ValueT));
   size_t compressedBufferSize = vbyte_encode(datain, vec.size(), compressedbuffer);
 
   // Decode

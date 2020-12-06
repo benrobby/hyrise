@@ -31,7 +31,7 @@ void streamVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
   }
 }
 
-void streamVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void streamVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
   // Encode
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
   streamvbyte_encode(vec.data(), vec.size(), enc.data());

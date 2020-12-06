@@ -43,7 +43,7 @@ void oroch_varint_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::
   }
 }
 
-void oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
   // Encode
   size_t space = oroch::varint_codec<ValueT>::space(vec.begin(), vec.end());
   std::unique_ptr<uint8_t[]> enc(new uint8_t[space]);
@@ -60,7 +60,6 @@ void oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, cons
   for (auto _ : state) {
     const uint8_t* src_ptr = enc.get();
     oroch::varint_codec<ValueT>::decode(dec.begin(), dec.end(), src_ptr);
-
     for (size_t i = 0; i < pointIndices.size(); i++) {
       points[i] = dec[pointIndices[i]];
     }

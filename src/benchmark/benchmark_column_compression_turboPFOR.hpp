@@ -35,7 +35,7 @@ void turboPFOR_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::Sta
   }
 }
 
-void turboPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void turboPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<ValueT>& pointIndices, benchmark::State& state) {
   // Encode
   unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
   ValueT* inData = (ValueT*) vec.data();
