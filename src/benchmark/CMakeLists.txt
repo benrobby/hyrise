@@ -68,7 +68,7 @@ add_executable(
     benchmark_column_compression_turboPFOR.hpp
     benchmark_column_compression_turboPFOR_direct.hpp
     benchmark_column_compression_turboPFOR_block.hpp
-    benchmark_column_compression_SIMDCompressionAndIntersection_s4fastpford1.hpp
+    benchmark_column_compression_SIMDCompressionAndIntersection.hpp
 
     micro_benchmark_main.cpp
     micro_benchmark_utils.cpp

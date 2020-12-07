@@ -52,13 +52,13 @@ static std::map<string, shared_ptr<IntegerCODEC>> initializefactory() {
 
   schemes["varintgb"] = std::shared_ptr<IntegerCODEC>(new VarIntGB<true>());
 
-  schemes["s4-fastpfor-d4"] = shared_ptr<IntegerCODEC>(
+  schemes["s4fastpford4"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<SIMDFastPFor<8, CoarseDelta4SIMD>, leftovercodec>());
-  schemes["s4-fastpfor-dm"] = shared_ptr<IntegerCODEC>(
+  schemes["s4fastpfordm"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<SIMDFastPFor<8, Max4DeltaSIMD>, VariableByte<true>>());
-  schemes["s4-fastpfor-d1"] = shared_ptr<IntegerCODEC>(
+  schemes["s4fastpford1"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<SIMDFastPFor<8, RegularDeltaSIMD>, leftovercodec>());
-  schemes["s4-fastpfor-d2"] = shared_ptr<IntegerCODEC>(
+  schemes["s4fastpford2"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<SIMDFastPFor<8, CoarseDelta2SIMD>, leftovercodec>());
 
   schemes["bp32"] = shared_ptr<IntegerCODEC>(
@@ -68,36 +68,36 @@ static std::map<string, shared_ptr<IntegerCODEC>> initializefactory() {
       new CompositeCodec<BinaryPacking<IntegratedBlockPacker>,
                          leftovercodec>());
 
-  schemes["s4-bp128-d1-ni"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128d1ni"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDBlockPacker<RegularDeltaSIMD, true>>,
           leftovercodec>());
-  schemes["s4-bp128-d2-ni"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128d2ni"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDBlockPacker<CoarseDelta2SIMD, true>>,
           leftovercodec>());
-  schemes["s4-bp128-d4-ni"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128d4ni"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDBlockPacker<CoarseDelta4SIMD, true>>,
           leftovercodec>());
-  schemes["s4-bp128-dm-ni"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128dmni"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDBlockPacker<Max4DeltaSIMD, true>>,
           leftovercodec>());
 
-  schemes["s4-bp128-d1"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128d1"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDIntegratedBlockPacker<RegularDeltaSIMD, true>>,
           leftovercodec>());
-  schemes["s4-bp128-d2"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128d2"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDIntegratedBlockPacker<CoarseDelta2SIMD, true>>,
           leftovercodec>());
-  schemes["s4-bp128-d4"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128d4"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDIntegratedBlockPacker<CoarseDelta4SIMD, true>>,
           leftovercodec>());
-  schemes["s4-bp128-dm"] = shared_ptr<IntegerCODEC>(
+  schemes["s4bp128dm"] = shared_ptr<IntegerCODEC>(
       new CompositeCodec<
           SIMDBinaryPacking<SIMDIntegratedBlockPacker<Max4DeltaSIMD, true>>,
           leftovercodec>());
