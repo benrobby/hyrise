@@ -62,7 +62,7 @@ std::vector<ValueT> get_with_small_numbers() {
   return vec;
 }
 
-std::vector<ValueT> get_with_sequential_numbers() {
+std::vector<ValueT> get_with_sequential_sorted_numbers() {
   std::vector<ValueT> vec(CHUNK_SIZE);
   std::generate(vec.begin(), vec.end(), []() {
     static ValueT v = 0;
@@ -88,8 +88,13 @@ std::vector<ValueT> get_with_random_walk() {
   return vec;
 }
 
-std::vector<ValueT> get_with_categorical_numbers() {
+std::vector<ValueT> get_with_month_categorical_numbers() {
   std::vector<size_t> vec = getUniformlyDistributedVector(CHUNK_SIZE, 1, 12);
+  return std::vector<ValueT>(vec.begin(), vec.end());
+}
+
+std::vector<ValueT> get_with_year_categorical_numbers() {
+  std::vector<size_t> vec = getUniformlyDistributedVector(CHUNK_SIZE, 1900, 2100);
   return std::vector<ValueT>(vec.begin(), vec.end());
 }
 

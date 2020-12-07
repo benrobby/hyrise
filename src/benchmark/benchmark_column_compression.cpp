@@ -30,15 +30,17 @@
 #define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(benchmarkName)                                    \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, benchmarkName##_benchmark_encoding,      \
                                                  benchmarkName##_benchmark_decoding);                             \
-  COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_sequential_numbers, benchmarkName##_benchmark_encoding, \
+  COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_encoding, \
                                                  benchmarkName##_benchmark_decoding);                             \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_huge_numbers, benchmarkName##_benchmark_encoding,       \
                                                  benchmarkName##_benchmark_decoding);                             \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_random_walk, benchmarkName##_benchmark_encoding,        \
                                                  benchmarkName##_benchmark_decoding);                             \
-  COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_categorical_numbers, benchmarkName##_benchmark_encoding,        \
+  COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_month_categorical_numbers, benchmarkName##_benchmark_encoding,        \
+                                                 benchmarkName##_benchmark_decoding);                             \
+  COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_year_categorical_numbers, benchmarkName##_benchmark_encoding,        \
                                                  benchmarkName##_benchmark_decoding);                            \
-  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_numbers, benchmarkName##_benchmark_decoding_points);
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points);
 
 #define COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(setupMethod, benchmarkMethodDecodePoints)            \
   COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10, benchmarkMethodDecodePoints);   \
@@ -175,8 +177,9 @@ void writeBitsPerInt() {
   };
 
   for (size_t j = 0; j < functions.size(); j++) {
-    std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_numbers(),
-                                               get_with_huge_numbers(), get_with_random_walk(), get_with_categorical_numbers()};
+    std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_sorted_numbers(),
+                                               get_with_huge_numbers(), get_with_random_walk(),
+                                               get_with_month_categorical_numbers(), get_with_year_categorical_numbers()};
     std::vector<std::string> names = {"small_numbers", "sequential_numbers", "huge_numbers", "random_walk", "categorical_numbers"};
     for (int i = 0; i < static_cast<int>(inputs.size()); i++) {
       csvFile << functions[j].second << "," << names[i] << "," << functions[j].first(inputs[i]) << std::endl;
