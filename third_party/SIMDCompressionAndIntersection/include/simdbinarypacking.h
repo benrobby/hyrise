@@ -272,7 +272,7 @@ public:
   // WARNING: THIS IMPLEMENTATION WILL ONLY PROVIDE THE CORRECT RESULT
   // WHEN USING REGULAR (D1) DIFFERENTIAL CODING.	 TODO: Generalize the
   // support. TODO: Should check the type.
-  uint32_t select(uint32_t *in, size_t index) {
+  uint32_t select(const uint32_t *in, size_t index) {
 #ifdef USE_ALIGNED
     if (needPaddingTo128Bits(in))
       throw std::runtime_error(

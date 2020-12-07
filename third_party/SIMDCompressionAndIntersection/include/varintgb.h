@@ -387,7 +387,7 @@ public:
   // Returns a decompressed value in an encoded array
   // This code has been optimized for delta-encoded arrays (TODO: optimize for
   // the regular case).
-  uint32_t select(uint32_t *in, size_t index) {
+  uint32_t select(const uint32_t *in, size_t index) {
     const uint8_t *inbyte = reinterpret_cast<const uint8_t *>(in);
     uint32_t out[4];
     out[0] = 0;

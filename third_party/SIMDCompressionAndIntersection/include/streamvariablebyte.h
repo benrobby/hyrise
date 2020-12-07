@@ -127,7 +127,7 @@ public:
     return svb_decode_avx_d1_simple(out, keyPtr, dataPtr, count);
   }
 
-  uint32_t select(const uint32_t *in, int slot) {
+  uint32_t select(const uint32_t *in, size_t slot) {
     ++in;                 // number of encoded bytes
     uint32_t count = *in; // next 4 bytes is number of ints
     assert(slot < (int)count);

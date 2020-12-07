@@ -38,7 +38,7 @@
                                                  benchmarkName##_benchmark_decoding);                             \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_categorical_numbers, benchmarkName##_benchmark_encoding,        \
                                                  benchmarkName##_benchmark_decoding);                            \
-  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_small_numbers, benchmarkName##_benchmark_decoding_points);
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_numbers, benchmarkName##_benchmark_decoding_points);
 
 #define COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(setupMethod, benchmarkMethodDecodePoints)            \
   COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10, benchmarkMethodDecodePoints);   \
@@ -81,6 +81,42 @@ void writeBitsPerInt() {
 
   // keep both in sync
   std::vector<pair<float (*)(std::vector<ValueT> & vec), string>> functions = {
+
+      make_pair(SIMDCompressionAndIntersection_fastpfor_compute_bitsPerInt, "SIMDCompressionAndIntersection_fastpfor"),
+      make_pair(SIMDCompressionAndIntersection_varint_compute_bitsPerInt, "SIMDCompressionAndIntersection_varint"),
+      make_pair(SIMDCompressionAndIntersection_vbyte_compute_bitsPerInt, "SIMDCompressionAndIntersection_vbyte"),
+      make_pair(SIMDCompressionAndIntersection_maskedvbyte_compute_bitsPerInt, "SIMDCompressionAndIntersection_maskedvbyte"),
+      make_pair(SIMDCompressionAndIntersection_streamvbyte_compute_bitsPerInt, "SIMDCompressionAndIntersection_streamvbyte"),
+      make_pair(SIMDCompressionAndIntersection_frameofreference_compute_bitsPerInt, "SIMDCompressionAndIntersection_frameofreference"),
+      make_pair(SIMDCompressionAndIntersection_simdframeofreference_compute_bitsPerInt, "SIMDCompressionAndIntersection_simdframeofreference"),
+      make_pair(SIMDCompressionAndIntersection_varintgb_compute_bitsPerInt, "SIMDCompressionAndIntersection_varintgb"),
+      make_pair(SIMDCompressionAndIntersection_s4fastpford4_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4fastpford4"),
+      make_pair(SIMDCompressionAndIntersection_s4fastpfordm_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4fastpfordm"),
+      make_pair(SIMDCompressionAndIntersection_s4fastpford1_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4fastpford1"),
+      make_pair(SIMDCompressionAndIntersection_s4fastpford2_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4fastpford2"),
+      make_pair(SIMDCompressionAndIntersection_bp32_compute_bitsPerInt, "SIMDCompressionAndIntersection_bp32"),
+      make_pair(SIMDCompressionAndIntersection_ibp32_compute_bitsPerInt, "SIMDCompressionAndIntersection_ibp32"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128d1ni_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128d1ni"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128d2ni_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128d2ni"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128d4ni_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128d4ni"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128dmni_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128dmni"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128d1_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128d1"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128d2_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128d2"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128d4_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128d4"),
+      make_pair(SIMDCompressionAndIntersection_s4bp128dm_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4bp128dm"),
+      make_pair(SIMDCompressionAndIntersection_for_compute_bitsPerInt, "SIMDCompressionAndIntersection_for"),
+
+      make_pair(SIMDCompressionAndIntersection_simdframeofreference_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_simdframeofreference_with_select"),
+      // make_pair(SIMDCompressionAndIntersection_frameofreference_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_frameofreference_with_select"), // bug
+      make_pair(SIMDCompressionAndIntersection_for_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_for_with_select"),
+      make_pair(SIMDCompressionAndIntersection_maskedvbyte_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_maskedvbyte_with_select"),
+      make_pair(SIMDCompressionAndIntersection_streamvbyte_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_streamvbyte_with_select"),
+      make_pair(SIMDCompressionAndIntersection_varint_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_varint_with_select"),
+      make_pair(SIMDCompressionAndIntersection_vbyte_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_vbyte_with_select"),
+      make_pair(SIMDCompressionAndIntersection_varintgb_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_varintgb_with_select"),
+
+
+
       make_pair(maskedVByte_compute_bitsPerInt, "maskedVByte"),
       make_pair(maskedVByteDelta_compute_bitsPerInt, "maskedVByteDelta"),
 
@@ -136,7 +172,6 @@ void writeBitsPerInt() {
       // make_pair(fastPFOR_simple8b_rle_compute_bitsPerInt, "fastPFOR_simple8b_rle"), // bug
       // make_pair(fastPFOR_snappy_compute_bitsPerInt, "fastPFOR_snappy"),  // todo compile with snappy
 
-      make_pair(SIMDCompressionAndIntersection_s4fastpford1_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4fastpford1"),
   };
 
   for (size_t j = 0; j < functions.size(); j++) {
@@ -145,6 +180,7 @@ void writeBitsPerInt() {
     std::vector<std::string> names = {"small_numbers", "sequential_numbers", "huge_numbers", "random_walk", "categorical_numbers"};
     for (int i = 0; i < static_cast<int>(inputs.size()); i++) {
       csvFile << functions[j].second << "," << names[i] << "," << functions[j].first(inputs[i]) << std::endl;
+      cout << functions[j].second << "," << names[i] << "," << functions[j].first(inputs[i]) << std::endl;
     }
   }
 
@@ -231,8 +267,18 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndInters
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_s4bp128dm);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_for);
 
+// for the ones that support point access, also benchmark this
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_simdframeofreference_with_select);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_frameofreference_with_select); // bug
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_for_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_maskedvbyte_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_streamvbyte_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_varint_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_vbyte_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_varintgb_with_select);
+
 
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)
-BENCHMARK_F(BenchmarkColumnCompressionFixture, write_BitsPerInt)(benchmark::State& state) { writeBitsPerInt(); }
+BENCHMARK_F(BenchmarkColumnCompressionFixture, writeBitsPerInt)(benchmark::State& state) { writeBitsPerInt(); }
 
 }  // namespace opossum

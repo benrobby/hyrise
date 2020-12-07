@@ -150,7 +150,7 @@ public:
 
   // Returns a decompressed value in a delta-encoded array
   // only supported for delta encoded data (TODO)
-  uint32_t select(uint32_t *in, size_t index) {
+  uint32_t select(const uint32_t *in, size_t index) {
     assert(delta == true);
     uint32_t num_ints = *in;
     in++;

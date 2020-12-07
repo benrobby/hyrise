@@ -569,7 +569,7 @@ public:
   // Returns a decompressed value in an encoded array
   // could be greatly optimized in the non-differential coding case: currently
   // just for delta coding
-  uint32_t select(uint32_t *in, size_t index) {
+  virtual uint32_t select(const uint32_t *in, size_t index) {
     assert(delta);
     uint32_t prev = 0;
     size_t i = 0;
@@ -1229,7 +1229,7 @@ public:
   // Returns a decompressed value in an encoded array
   // could be greatly optimized in the non-differential coding case: currently
   // just for delta coding
-  uint32_t select(uint32_t *in, size_t index) {
+  uint32_t select(const uint32_t *in, size_t index) {
     assert(delta);
     uint32_t prev = 0;
     size_t i = 0;

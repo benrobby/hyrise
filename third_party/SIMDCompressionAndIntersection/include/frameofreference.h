@@ -79,6 +79,9 @@ private:
  */
 class SIMDFrameOfReference : public IntegerCODEC {
 public:
+  ~SIMDFrameOfReference() {}
+  SIMDFrameOfReference() {}
+
   void encodeArray(uint32_t *in, const size_t length, uint32_t *out,
                    size_t &nvalue) {
     *out = static_cast<uint32_t>(

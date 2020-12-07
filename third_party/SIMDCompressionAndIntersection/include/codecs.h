@@ -98,6 +98,10 @@ public:
     return data;
   }
 
+  virtual uint32_t select(const uint32_t *in, size_t index) {
+      throw std::runtime_error("not implemented");
+  };
+
   virtual string name() const = 0;
 };
 
