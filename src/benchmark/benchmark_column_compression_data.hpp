@@ -40,6 +40,16 @@ std::vector<size_t> get_poslist_10000() {
   return getUniformlyDistributedVector(10000,0,CHUNK_SIZE);
 }
 
+std::vector<size_t> get_poslist_65000() {
+  return getUniformlyDistributedVector(65000,0,CHUNK_SIZE);
+}
+
+std::vector<size_t> get_poslist_10000_sorted() {
+  auto poslist = getUniformlyDistributedVector(10000,0,CHUNK_SIZE);
+  std::sort(poslist.begin(), poslist.end());
+  return poslist;
+}
+
 // Data
 
 std::vector<ValueT> get_with_small_numbers() {
