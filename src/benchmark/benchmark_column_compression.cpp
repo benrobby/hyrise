@@ -10,6 +10,7 @@
 #include "benchmark/benchmark.h"
 #include "varintencode.h"
 
+#include "benchmark_column_compression_SIMDCompressionAndIntersection_s4fastpford1.hpp"
 #include "benchmark_column_compression_fastPFOR.hpp"
 #include "benchmark_column_compression_maskedVByte.hpp"
 #include "benchmark_column_compression_maskedVByteDelta.hpp"
@@ -23,7 +24,6 @@
 #include "benchmark_column_compression_turboPFOR.hpp"
 #include "benchmark_column_compression_turboPFOR_block.hpp"
 #include "benchmark_column_compression_turboPFOR_direct.hpp"
-
 
 #include "benchmark_column_compression_data.hpp"
 
@@ -126,15 +126,17 @@ void writeBitsPerInt() {
       //make_pair(fastPFOR_simple16_compute_bitsPerInt, "fastPFOR_simple16"),
       //make_pair(fastPFOR_simple9_compute_bitsPerInt, "fastPFOR_simple9"),
       make_pair(fastPFOR_simple8b_compute_bitsPerInt, "fastPFOR_simple8b"),
-      make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
+      // make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
       make_pair(fastPFOR_simdbinarypacking_compute_bitsPerInt, "fastPFOR_simdbinarypacking"),
       make_pair(fastPFOR_simdgroupsimple_compute_bitsPerInt, "fastPFOR_simdgroupsimple"),
       make_pair(fastPFOR_simdgroupsimple_ringbuf_compute_bitsPerInt, "fastPFOR_simdgroupsimple_ringbuf"),
-      make_pair(fastPFOR_copy_compute_bitsPerInt, "fastPFOR_copy")
+      make_pair(fastPFOR_copy_compute_bitsPerInt, "fastPFOR_copy"),
 
       // make_pair(fastPFOR_simple9_rle_compute_bitsPerInt, "fastPFOR_simple9_rle"), // bug
       // make_pair(fastPFOR_simple8b_rle_compute_bitsPerInt, "fastPFOR_simple8b_rle"), // bug
       // make_pair(fastPFOR_snappy_compute_bitsPerInt, "fastPFOR_snappy"),  // todo compile with snappy
+
+      make_pair(SIMDCompressionAndIntersection_s4fastpford1_compute_bitsPerInt, "SIMDCompressionAndIntersection_s4fastpford1"),
   };
 
   for (size_t j = 0; j < functions.size(); j++) {
@@ -194,7 +196,7 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintgb);
 //COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple16);
 //COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdbinarypacking);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple_ringbuf);
@@ -205,6 +207,7 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_copy);
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b_rle);
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9_rle); // bug
 
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_s4fastpford1);
 
 
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)

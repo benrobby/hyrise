@@ -68,7 +68,7 @@ add_executable(
     benchmark_column_compression_turboPFOR.hpp
     benchmark_column_compression_turboPFOR_direct.hpp
     benchmark_column_compression_turboPFOR_block.hpp
-
+    benchmark_column_compression_SIMDCompressionAndIntersection_s4fastpford1.hpp
 
     micro_benchmark_main.cpp
     micro_benchmark_utils.cpp
@@ -85,8 +85,14 @@ target_include_directories(
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/
 )
 
+target_include_directories(
+        hyriseBenchmarkColumnCompression
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/
+)
+
 find_library(TURBOPFOR_PATH ic ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/ REQUIRED)
 find_library(SDSL_PATH sdsl PATH /usr/local/)
+find_library(SIMD_PATH SIMDCompressionAndIntersection PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/)
 
 target_link_libraries(
     hyriseBenchmarkColumnCompression
@@ -96,6 +102,7 @@ target_link_libraries(
     benchmark
     ${SDSL_PATH}
     ${TURBOPFOR_PATH}
+    ${SIMD_PATH}
 )
 
 # General purpose benchmark runner

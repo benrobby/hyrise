@@ -2,22 +2,23 @@
  * This code is released under the
  * Apache License Version 2.0 http://www.apache.org/licenses/.
  */
-
 #ifndef __SSSE3__
 #pragma message                                                                \
     "Disabling varintg8iu due to lack of SSSE3 support, try adding -mssse3 or the equivalent on your compiler"
 #else
 #ifndef VARINTG8IU_H__
-#define VARINTG8IU_H__
+  #define VARINTG8IU_H__
+#endif
 #include <emmintrin.h>
 #include "codecs.h"
+#include "delta.h"
 #ifdef __GNUC__
 #define PREDICT_FALSE(x) (__builtin_expect(x, 0))
 #else
 #define PREDICT_FALSE(x) x
 #endif
 
-namespace FastPForLib {
+namespace SIMDCompressionLib {
 /**
  *
  * Implementation of varint-G8IU taken from
@@ -32,8 +33,11 @@ namespace FastPForLib {
  * This code was originally written by M. Caron and then
  * optimized by D. Lemire.
  *
+ *
+ *
  */
-class VarIntG8IU : public IntegerCODEC {
+
+template <int delta> class VarIntG8IU : public IntegerCODEC {
 
 public:
   // For all possible values of the
@@ -42,6 +46,7 @@ public:
   VarIntG8IU() {
     char mask[256][32];
     for (int desc = 0; desc <= 255; desc++) {
+      memset(mask[desc], -1, 32);
       int bitmask = 0x00000001;
       int bitindex = 0;
       // count number of 0 in the char
@@ -81,25 +86,25 @@ public:
     }
   }
 
-  void encodeArray(const uint32_t *in, const size_t length, uint32_t *out,
+  void encodeArray(uint32_t *in, const size_t length, uint32_t *out,
                    size_t &nvalue) {
+    uint32_t prev = 0; // for deltas
     const uint32_t *src = in;
-    size_t srclength = length * 4;
+    size_t srclength = length * 4; // number of input bytes
 
     unsigned char *dst = reinterpret_cast<unsigned char *>(out);
-    nvalue = nvalue * 4;
+    nvalue = nvalue * 4; // output bytes
 
     size_t compressed_size = 0;
     while (srclength > 0 && nvalue >= 9) {
-      compressed_size += encodeBlock(src, srclength, dst, nvalue);
+      compressed_size += encodeBlock(src, srclength, dst, nvalue, prev);
     }
     // Ouput might not be a multiple of 4 so we make it so
     nvalue = ((compressed_size + 3) / 4);
   }
-
   const uint32_t *decodeArray(const uint32_t *in, const size_t length,
                               uint32_t *out, size_t &nvalue) {
-
+    __m128i mprev = _mm_setzero_si128(); // for deltas
     const unsigned char *src = reinterpret_cast<const unsigned char *>(in);
     const uint32_t *const initdst = out;
 
@@ -112,15 +117,21 @@ public:
       const __m128i data =
           _mm_lddqu_si128(reinterpret_cast<__m128i const *>(src));
       const __m128i result = _mm_shuffle_epi8(data, vecmask[desc][0]);
-      _mm_storeu_si128(reinterpret_cast<__m128i *>(dst), result);
+      if (delta) {
+        mprev = RegularDeltaSIMD::PrefixSum(result, mprev);
+        _mm_storeu_si128(reinterpret_cast<__m128i *>(dst), mprev);
+      } else {
+        _mm_storeu_si128(reinterpret_cast<__m128i *>(dst), result);
+      }
       int readSize = maskOutputSize[desc];
-
       if (readSize > 4) {
-        const __m128i result2 = _mm_shuffle_epi8(
-            data, vecmask[desc][1]); //__builtin_ia32_pshufb128(data, shf2);
-        _mm_storeu_si128(
-            reinterpret_cast<__m128i *>(dst + 4),
-            result2); //__builtin_ia32_storedqu(dst + (16), result2);
+        const __m128i result2 = _mm_shuffle_epi8(data, vecmask[desc][1]);
+        if (delta) {
+          mprev = RegularDeltaSIMD::PrefixSum(result2, mprev);
+          _mm_storeu_si128(reinterpret_cast<__m128i *>(dst + 4), mprev);
+        } else {
+          _mm_storeu_si128(reinterpret_cast<__m128i *>(dst + 4), result2);
+        }
       }
       dst += readSize;
     }
@@ -133,11 +144,21 @@ public:
       const __m128i data =
           _mm_lddqu_si128(reinterpret_cast<__m128i const *>(buff));
       const __m128i result = _mm_shuffle_epi8(data, vecmask[desc][0]);
-      _mm_storeu_si128(reinterpret_cast<__m128i *>(buff), result);
+      if (delta) {
+        mprev = RegularDeltaSIMD::PrefixSum(result, mprev);
+        _mm_storeu_si128(reinterpret_cast<__m128i *>(buff), mprev);
+      } else {
+        _mm_storeu_si128(reinterpret_cast<__m128i *>(buff), result);
+      }
       int readSize = maskOutputSize[desc];
       if (readSize > 4) {
         const __m128i result2 = _mm_shuffle_epi8(data, vecmask[desc][1]);
-        _mm_storeu_si128(reinterpret_cast<__m128i *>(buff + 16), result2);
+        if (delta) {
+          mprev = RegularDeltaSIMD::PrefixSum(result2, mprev);
+          _mm_storeu_si128(reinterpret_cast<__m128i *>(buff + 16), mprev);
+        } else {
+          _mm_storeu_si128(reinterpret_cast<__m128i *>(buff + 16), result2);
+        }
       }
       memcpy(dst, buff, 4 * readSize);
       dst += readSize;
@@ -150,10 +171,13 @@ public:
                                         ~3);
   }
 
-  virtual std::string name() const { return std::string("VarIntG8IU"); }
+  virtual std::string name() const {
+    return std::string("VarIntG8IU") +
+           ((delta == 1) ? "scalardelta" : ((delta == 2) ? "delta" : ""));
+  }
 
   int encodeBlock(const uint32_t *&src, size_t &srclength, unsigned char *&dest,
-                  size_t &dstlength) {
+                  size_t &dstlength, uint32_t &prev) {
     unsigned char desc = 0xFF;
     unsigned char bitmask = 0x01;
     uint32_t buffer[8];
@@ -163,7 +187,9 @@ public:
 
     while (srclength > 0) {
       const uint32_t *temp = src;
-      int byteNeeded = getNumByteNeeded(*temp);
+
+      int byteNeeded =
+          delta ? getNumByteNeeded(*temp - prev) : getNumByteNeeded(*temp);
 
       if (PREDICT_FALSE(length + byteNeeded > 8)) {
         break;
@@ -176,7 +202,9 @@ public:
 
       ithSize[numInt] = byteNeeded;
       length += byteNeeded;
-      buffer[numInt] = *temp;
+      buffer[numInt] = delta ? *temp - prev : *temp;
+      if (delta)
+        prev = *temp;
       src = src + 1;
       srclength -= 4;
       numInt++;
@@ -205,8 +233,5 @@ private:
     return ((__builtin_clz(val | 255) ^ 31) >> 3) + 1;
   }
 };
-
-} // namespace FastPFor
-
+}
 #endif // VARINTG8IU_H__
-#endif // __SSSE3__
