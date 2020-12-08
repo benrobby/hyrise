@@ -24,6 +24,7 @@
 #include "benchmark_column_compression_turboPFOR.hpp"
 #include "benchmark_column_compression_turboPFOR_block.hpp"
 #include "benchmark_column_compression_turboPFOR_direct.hpp"
+#include "benchmark_column_compression_dictionary.hpp"
 
 #include "benchmark_column_compression_data.hpp"
 
@@ -83,6 +84,7 @@ void writeBitsPerInt() {
 
   // keep both in sync
   std::vector<pair<float (*)(std::vector<ValueT> & vec), string>> functions = {
+      make_pair(dictionary_compute_bitsPerInt, "dictionary"),
 
       make_pair(SIMDCompressionAndIntersection_fastpfor_compute_bitsPerInt, "SIMDCompressionAndIntersection_fastpfor"),
       make_pair(SIMDCompressionAndIntersection_varint_compute_bitsPerInt, "SIMDCompressionAndIntersection_varint"),
@@ -109,15 +111,12 @@ void writeBitsPerInt() {
       make_pair(SIMDCompressionAndIntersection_for_compute_bitsPerInt, "SIMDCompressionAndIntersection_for"),
 
       make_pair(SIMDCompressionAndIntersection_simdframeofreference_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_simdframeofreference_with_select"),
-      // make_pair(SIMDCompressionAndIntersection_frameofreference_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_frameofreference_with_select"), // bug
       make_pair(SIMDCompressionAndIntersection_for_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_for_with_select"),
       make_pair(SIMDCompressionAndIntersection_maskedvbyte_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_maskedvbyte_with_select"),
       make_pair(SIMDCompressionAndIntersection_streamvbyte_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_streamvbyte_with_select"),
       make_pair(SIMDCompressionAndIntersection_varint_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_varint_with_select"),
       make_pair(SIMDCompressionAndIntersection_vbyte_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_vbyte_with_select"),
       make_pair(SIMDCompressionAndIntersection_varintgb_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_varintgb_with_select"),
-
-
 
       make_pair(maskedVByte_compute_bitsPerInt, "maskedVByte"),
       make_pair(maskedVByteDelta_compute_bitsPerInt, "maskedVByteDelta"),
@@ -161,18 +160,21 @@ void writeBitsPerInt() {
       make_pair(fastPFOR_maskedvbyte_compute_bitsPerInt, "fastPFOR_maskedvbyte"),
       make_pair(fastPFOR_streamvbyte_compute_bitsPerInt, "fastPFOR_streamvbyte"),
       make_pair(fastPFOR_varintgb_compute_bitsPerInt, "fastPFOR_varintgb"),
-      //make_pair(fastPFOR_simple16_compute_bitsPerInt, "fastPFOR_simple16"),
-      //make_pair(fastPFOR_simple9_compute_bitsPerInt, "fastPFOR_simple9"),
+
       make_pair(fastPFOR_simple8b_compute_bitsPerInt, "fastPFOR_simple8b"),
-      // make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
       make_pair(fastPFOR_simdbinarypacking_compute_bitsPerInt, "fastPFOR_simdbinarypacking"),
       make_pair(fastPFOR_simdgroupsimple_compute_bitsPerInt, "fastPFOR_simdgroupsimple"),
       make_pair(fastPFOR_simdgroupsimple_ringbuf_compute_bitsPerInt, "fastPFOR_simdgroupsimple_ringbuf"),
       make_pair(fastPFOR_copy_compute_bitsPerInt, "fastPFOR_copy"),
 
+      // Broken
+      // make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
+      //make_pair(fastPFOR_simple16_compute_bitsPerInt, "fastPFOR_simple16"),
+      //make_pair(fastPFOR_simple9_compute_bitsPerInt, "fastPFOR_simple9"),
       // make_pair(fastPFOR_simple9_rle_compute_bitsPerInt, "fastPFOR_simple9_rle"), // bug
       // make_pair(fastPFOR_simple8b_rle_compute_bitsPerInt, "fastPFOR_simple8b_rle"), // bug
       // make_pair(fastPFOR_snappy_compute_bitsPerInt, "fastPFOR_snappy"),  // todo compile with snappy
+      // make_pair(SIMDCompressionAndIntersection_frameofreference_with_select_compute_bitsPerInt, "SIMDCompressionAndIntersection_frameofreference_with_select"), // bug
 
   };
 
@@ -180,7 +182,7 @@ void writeBitsPerInt() {
     std::vector<std::vector<ValueT>> inputs = {get_with_small_numbers(), get_with_sequential_sorted_numbers(),
                                                get_with_huge_numbers(), get_with_random_walk(),
                                                get_with_month_categorical_numbers(), get_with_year_categorical_numbers()};
-    std::vector<std::string> names = {"small_numbers", "sequential_numbers", "huge_numbers", "random_walk", "categorical_numbers"};
+    std::vector<std::string> names = {"small_numbers", "sequential_numbers", "huge_numbers", "random_walk", "categorical_numbers", "year_numbers"};
     for (int i = 0; i < static_cast<int>(inputs.size()); i++) {
       csvFile << functions[j].second << "," << names[i] << "," << functions[j].first(inputs[i]) << std::endl;
       cout << functions[j].second << "," << names[i] << "," << functions[j].first(inputs[i]) << std::endl;
@@ -196,6 +198,7 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
  protected:
 };
 
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(dictionary);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_block);
@@ -232,19 +235,12 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_vbyte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_maskedvbyte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_streamvbyte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintgb);
-//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple16);
-//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9);
+
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdbinarypacking);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simdgroupsimple_ringbuf);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_copy);
-
-
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_snappy);  // todo compile with snappy
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b_rle);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9_rle); // bug
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_fastpfor);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_varint);
@@ -272,7 +268,6 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndInters
 
 // for the ones that support point access, also benchmark this
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_simdframeofreference_with_select);
-// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_frameofreference_with_select); // bug
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_for_with_select);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_maskedvbyte_with_select);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_streamvbyte_with_select);
@@ -280,6 +275,14 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndInters
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_vbyte_with_select);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_varintgb_with_select);
 
+// Broken
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_frameofreference_with_select); // bug
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_varintg8iu);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple16);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_snappy);  // todo compile with snappy
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple8b_rle);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(fastPFOR_simple9_rle); // bug
 
 // comment in to run all encodings, ensure that they are correct and write out their compression ratio (bits per integer)
 BENCHMARK_F(BenchmarkColumnCompressionFixture, writeBitsPerInt)(benchmark::State& state) { writeBitsPerInt(); }
