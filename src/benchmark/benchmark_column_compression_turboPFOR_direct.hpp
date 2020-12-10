@@ -35,11 +35,11 @@ void turboPFOR_direct_benchmark_decoding(const std::vector<ValueT>& vec, benchma
 
 
   for (auto _ : state) {
-    // This function calls the p4getx32 function for each i. The p4getx32 function is bascially the only resource to learn about how
+    // The p4decx32 function calls the p4getx32 function for each i. The p4getx32 function is bascially the only resource to learn about how
     // to use direct access. And it is impressively fast - in my tests it only took double the amount of time
     // to decrompress the buffer compared to the p4dec function. This is still faster than a lot of the other algorithms
     // that operate on whole blocks.
-    p4decx32(outBuffer, size, decompressedData);
+    p4dec32(outBuffer, size, decompressedData);
     benchmark::ClobberMemory();
   }
 }
@@ -90,7 +90,7 @@ float turboPFOR_direct_compute_bitsPerInt(std::vector<ValueT>& vec) {
 
   // Decode whole buffer
   ValueT* decompressedData = (ValueT*) malloc(vec.size() * sizeof(ValueT));
-  p4decx32(outBuffer, n, decompressedData);
+  p4dec32(outBuffer, n, decompressedData);
 
 
   for (size_t i = 0; i < vec.size(); i++) {
