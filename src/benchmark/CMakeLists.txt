@@ -92,7 +92,7 @@ target_include_directories(
 )
 
 find_library(TURBOPFOR_PATH ic ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/ REQUIRED)
-find_library(SDSL_PATH sdsl PATH /usr/local/)
+find_library(SDSL_PATH sdsl PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/sdsl-lite/lib)
 find_library(SIMD_PATH SIMDCompressionAndIntersection PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/ REQUIRED)
 
 target_link_libraries(
