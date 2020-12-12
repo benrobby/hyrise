@@ -85,7 +85,10 @@ target_include_directories(
         hyriseBenchmarkColumnCompression
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/
 )
-
+target_include_directories(
+        hyriseBenchmarkColumnCompression
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/FastPFor/
+)
 target_include_directories(
         hyriseBenchmarkColumnCompression
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/
@@ -104,6 +107,11 @@ target_link_libraries(
     ${SDSL_PATH}
     ${TURBOPFOR_PATH}
     ${SIMD_PATH}
+)
+
+target_include_directories(
+        hyriseBenchmarkColumnCompression
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/sdsl-lite/include
 )
 
 # General purpose benchmark runner
