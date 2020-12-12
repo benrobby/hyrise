@@ -74,6 +74,19 @@ class DictionaryEncoder {
     return dictionary.size() * sizeof(ValueT) + sizeOfAttributeVector;
   }
 
+  std::vector<ValueT> get_dictionary() {
+    return dictionary;
+  }
+  std::vector<uint8_t> get_attribute_vec_uint8() {
+    return attribute_vec_uint8;
+  }
+  std::vector<uint16_t> get_attribute_vec_uint16() {
+    return attribute_vec_uint16;
+  }
+  std::vector<uint32_t> get_attribute_vec_uint32() {
+    return attribute_vec_uint32;
+  }
+
  private:
   std::vector<ValueT> dictionary;
 
@@ -121,8 +134,13 @@ class DictionaryEncoder {
 
 void dictionary_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   DictionaryEncoder encoder = DictionaryEncoder();
+  benchmark::DoNotOptimize(encoder.get_dictionary().data());
+  benchmark::DoNotOptimize(encoder.get_attribute_vec_uint8().data());
+  benchmark::DoNotOptimize(encoder.get_attribute_vec_uint16().data());
+  benchmark::DoNotOptimize(encoder.get_attribute_vec_uint32().data());
   for (auto _ : state) {
     encoder.encode(vec);
+    benchmark::ClobberMemory();
   }
 }
 
@@ -131,21 +149,47 @@ void dictionary_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::St
   encoder.encode(vec);
   std::vector<ValueT> result = std::vector<ValueT>(vec.size());
 
+  benchmark::DoNotOptimize(result.data());
+
   for (auto _ : state) {
     encoder.getAll(result);
+    benchmark::ClobberMemory();
   }
 }
 
-void dictionary_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void _dictionary_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   DictionaryEncoder encoder = DictionaryEncoder();
   encoder.encode(vec);
   std::vector<ValueT> result = std::vector<ValueT>(vec.size());
 
+  std::vector<ValueT> points {};
+  points.resize(pointIndices.size());
+  benchmark::DoNotOptimize(points.data());
+
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
   for (auto _ : state) {
-    for (size_t point : pointIndices) {
-      encoder.get(point);
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += encoder.get(pointIndices[i]);
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        points[i] = encoder.get(pointIndices[i]);
+      }
     }
+
+    benchmark::ClobberMemory();
+    sum = 0;
   }
+}
+
+void dictionary_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _dictionary_benchmark_decoding_points(vec, pointIndices, state, false);
+}
+void dictionary_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _dictionary_benchmark_decoding_points(vec, pointIndices, state, true);
 }
 
 float dictionary_compute_bitsPerInt(std::vector<ValueT>& vec) {
@@ -160,7 +204,7 @@ float dictionary_compute_bitsPerInt(std::vector<ValueT>& vec) {
     }
   }
 
-  return encoder.size_in_bytes() * 8 / vec.size();
+  return encoder.size_in_bytes() * 8.0 / vec.size();
 }
 
 }  // namespace opossum

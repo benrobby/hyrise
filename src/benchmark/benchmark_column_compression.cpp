@@ -41,7 +41,8 @@
                                                  benchmarkName##_benchmark_decoding);                             \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_year_categorical_numbers, benchmarkName##_benchmark_encoding,        \
                                                  benchmarkName##_benchmark_decoding);                            \
-  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points);
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points); \
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points_nocopy);
 
 #define COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(setupMethod, benchmarkMethodDecodePoints)            \
   COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10, benchmarkMethodDecodePoints);   \

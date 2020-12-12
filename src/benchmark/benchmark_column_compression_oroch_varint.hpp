@@ -43,7 +43,7 @@ void oroch_varint_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::
   }
 }
 
-void oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void _oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   // Encode
   size_t space = oroch::varint_codec<ValueT>::space(vec.begin(), vec.end());
   std::unique_ptr<uint8_t[]> enc(new uint8_t[space]);
@@ -57,15 +57,33 @@ void oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, cons
   points.resize(pointIndices.size());
   benchmark::DoNotOptimize(points.data());
 
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
   for (auto _ : state) {
     const uint8_t* src_ptr = enc.get();
     oroch::varint_codec<ValueT>::decode(dec.begin(), dec.end(), src_ptr);
-    for (size_t i = 0; i < pointIndices.size(); i++) {
-      points[i] = dec[pointIndices[i]];
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += dec[pointIndices[i]];
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        points[i] = dec[pointIndices[i]];
+      }
     }
 
     benchmark::ClobberMemory();
+    sum = 0;
   }
+}
+
+void oroch_varint_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _oroch_varint_benchmark_decoding_points(vec, pointIndices, state, false);
+}
+
+void oroch_varint_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _oroch_varint_benchmark_decoding_points(vec, pointIndices, state, true);
 }
 
 float oroch_varint_compute_bitsPerInt(std::vector<ValueT>& vec) {

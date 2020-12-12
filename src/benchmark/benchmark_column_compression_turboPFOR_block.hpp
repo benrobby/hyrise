@@ -81,7 +81,7 @@ void turboPFOR_block_benchmark_decoding(const std::vector<ValueT>& vec, benchmar
   }
 }
 
-void turboPFOR_block_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void _turboPFOR_block_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   // Encode
   TurboPFORWrapper turboPfor = TurboPFORWrapper(vec.size());
   turboPfor.enc(vec);
@@ -90,12 +90,31 @@ void turboPFOR_block_benchmark_decoding_points(const std::vector<ValueT>& vec, c
   std::vector<ValueT> points = std::vector<ValueT>(vec.size());
   benchmark::DoNotOptimize(points);
 
+
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
+
   for (auto _ : state) {
-    for (size_t i: pointIndices) {
-      points[i] = turboPfor.get(i);
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += turboPfor.get(pointIndices[i]);
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        points[i] = turboPfor.get(pointIndices[i]);
+      }
     }
     benchmark::ClobberMemory();
+    sum = 0;
   }
+}
+
+void turboPFOR_block_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _turboPFOR_block_benchmark_decoding_points(vec, pointIndices, state, false);
+}
+void turboPFOR_block_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _turboPFOR_block_benchmark_decoding_points(vec, pointIndices, state, true);
 }
 
 float turboPFOR_block_compute_bitsPerInt(std::vector<ValueT>& vec) {

@@ -17,7 +17,10 @@ namespace opossum {
     fastPFOR_benchmark_decoding(vec, *CODECFactory::getFromName(#codec), state); \
   }; \
   void fastPFOR_ ## codec ## _benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) { \
-    fastPFOR_benchmark_decoding_points(vec, pointIndices, *CODECFactory::getFromName(#codec), state); \
+    _fastPFOR_benchmark_decoding_points(vec, pointIndices, *CODECFactory::getFromName(#codec), state, false); \
+  };                                      \
+  void fastPFOR_ ## codec ## _benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) { \
+    _fastPFOR_benchmark_decoding_points(vec, pointIndices, *CODECFactory::getFromName(#codec), state, true); \
   }; \
   float fastPFOR_ ## codec ## _compute_bitsPerInt(std::vector<ValueT>& _vec) { \
      return fastPFOR_compute_bitsPerInt(_vec, *CODECFactory::getFromName(#codec)); \
@@ -59,7 +62,7 @@ void fastPFOR_benchmark_decoding(const std::vector<ValueT>& vec, IntegerCODEC& c
   }
 }
 
-void fastPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, IntegerCODEC &codec, benchmark::State& state) {
+void _fastPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, IntegerCODEC &codec, benchmark::State& state, bool nocopy) {
   // Encode
   std::vector<ValueT> enc = std::vector<uint32_t>(2 * vec.size() + 1024);
   size_t compressedsize = enc.size();
@@ -76,13 +79,23 @@ void fastPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const st
   points.resize(pointIndices.size());
   benchmark::DoNotOptimize(points.data());
 
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
   for (auto _ : state) {
     codec.decodeArray(enc.data(), enc.size(), dec.data(), recoveredsize);
-    for (size_t i = 0; i < pointIndices.size(); i++) {
-      points[i] = dec[pointIndices[i]];
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += dec[pointIndices[i]];
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        points[i] = dec[pointIndices[i]];
+      }
     }
 
     benchmark::ClobberMemory();
+    sum = 0;
   }
 }
 

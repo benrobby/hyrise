@@ -31,7 +31,7 @@ void streamVByte0124_benchmark_decoding(const std::vector<ValueT>& vec, benchmar
   }
 }
 
-void streamVByte0124_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void _streamVByte0124_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   // Encode
   std::vector<uint8_t> enc = std::vector<uint8_t>(streamvbyte_max_compressedbytes(vec.size()));
   streamvbyte_encode_0124(vec.data(), vec.size(), enc.data());
@@ -41,13 +41,32 @@ void streamVByte0124_benchmark_decoding_points(const std::vector<ValueT>& vec, c
   std::vector<ValueT> points = std::vector<ValueT>(vec.size());
   benchmark::DoNotOptimize(dec.data());
 
+
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
   for (auto _ : state) {
     streamvbyte_decode_0124(enc.data(), dec.data(), vec.size());
-    for (size_t i : pointIndices) {
-      points[i] = dec[i];
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += dec[pointIndices[i]];
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        points[i] = dec[pointIndices[i]];
+      }
     }
     benchmark::ClobberMemory();
+    sum = 0;
   }
+}
+
+void streamVByte0124_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _streamVByte0124_benchmark_decoding_points(vec, pointIndices, state, false);
+}
+
+void streamVByte0124_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _streamVByte0124_benchmark_decoding_points(vec, pointIndices, state, true);
 }
 
 float streamVByte0124_compute_bitsPerInt(std::vector<ValueT>& vec) {

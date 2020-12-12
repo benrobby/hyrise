@@ -52,7 +52,7 @@ float sdsl_lite_vlc_vector_compute_bitsPerInt(std::vector<ValueT>& vec) {
   return sdsl::size_in_bytes(encoded) * 8.0 / vec.size();
 }
 
-void sdsl_lite_vlc_vector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void _sdsl_lite_vlc_vector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   // Encode
   sdsl::vlc_vector<sdsl::coder::elias_delta> encoded(vec);
 
@@ -60,12 +60,30 @@ void sdsl_lite_vlc_vector_benchmark_decoding_points(const std::vector<ValueT>& v
   std::vector<ValueT> decoded = std::vector<ValueT>(vec.size());
   benchmark::DoNotOptimize(decoded.data());
 
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
   for (auto _ : state) {
-    for (size_t i : pointIndices) {
-      decoded[i] = encoded[i];
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += encoded[pointIndices[i]];
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        decoded[i] = encoded[pointIndices[i]];
+      }
     }
     benchmark::ClobberMemory();
+    sum = 0;
   }
+}
+
+void sdsl_lite_vlc_vector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _sdsl_lite_vlc_vector_benchmark_decoding_points(vec, pointIndices, state, false);
+}
+
+void sdsl_lite_vlc_vector_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _sdsl_lite_vlc_vector_benchmark_decoding_points(vec, pointIndices, state, true);
 }
 
 }  // namespace opossum

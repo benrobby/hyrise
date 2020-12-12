@@ -43,7 +43,7 @@ void maskedVByte_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::S
   }
 }
 
-void maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void _maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   // Encode
   int N = vec.size();
   ValueT* datain = new ValueT[N];
@@ -59,14 +59,32 @@ void maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const
   points.resize(pointIndices.size());
   benchmark::DoNotOptimize(points.data());
 
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
   for (auto _ : state) {
     masked_vbyte_decode(compressedbuffer, data_recovered, N);
-    for (size_t i = 0; i < pointIndices.size(); i++) {
-      points[i] = data_recovered[pointIndices[i]];
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += data_recovered[pointIndices[i]];
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        points[i] = data_recovered[pointIndices[i]];
+      }
     }
 
     benchmark::ClobberMemory();
+    sum = 0;
   }
+}
+
+void maskedVByte_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  _maskedVByte_benchmark_decoding_points(vec, pointIndices, state, false);
+}
+
+void maskedVByte_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  _maskedVByte_benchmark_decoding_points(vec, pointIndices, state, true);
 }
 
 float maskedVByte_compute_bitsPerInt(std::vector<ValueT>& vec) {

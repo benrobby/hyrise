@@ -44,7 +44,7 @@ void turboPFOR_direct_benchmark_decoding(const std::vector<ValueT>& vec, benchma
   }
 }
 
-void turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+void _turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   // Encode
   unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
   ValueT* inData = (ValueT*) vec.data();
@@ -55,6 +55,11 @@ void turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec, 
   std::vector<ValueT> points = std::vector<ValueT>(n);
   benchmark::DoNotOptimize(points);
 
+
+  ValueT sum = 0;
+  benchmark::DoNotOptimize(sum);
+
+
   for (auto _ : state) {
     // But you pay the price with an ugly C interface. I hate, hate, hate this pattern that
     // you create new uninitialized variables and pass them to the function by reference, where
@@ -64,11 +69,25 @@ void turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec, 
     unsigned b;
     unsigned char* pointerCopy = outBuffer;
     p4ini(&p4, &pointerCopy, n, &b);
-    for (size_t i : pointIndices) {
-      points[i] = p4getx32(&p4, pointerCopy, i, b);
+    if (nocopy) {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        sum += p4getx32(&p4, pointerCopy, pointIndices[i], b);
+      }
+    } else {
+      for (size_t i = 0; i < pointIndices.size(); i++) {
+        points[i] = p4getx32(&p4, pointerCopy, pointIndices[i], b);
+      }
     }
     benchmark::ClobberMemory();
+    sum = 0;
   }
+}
+
+void turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _turboPFOR_direct_benchmark_decoding_points(vec, pointIndices, state, false);
+}
+void turboPFOR_direct_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _turboPFOR_direct_benchmark_decoding_points(vec, pointIndices, state, true);
 }
 
 float turboPFOR_direct_compute_bitsPerInt(std::vector<ValueT>& vec) {
