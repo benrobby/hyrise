@@ -25,6 +25,7 @@
 #include "benchmark_column_compression_turboPFOR_block.hpp"
 #include "benchmark_column_compression_turboPFOR_direct.hpp"
 #include "benchmark_column_compression_dictionary.hpp"
+#include "benchmark_column_compression_unencoded.hpp"
 
 #include "benchmark_column_compression_data.hpp"
 
@@ -198,6 +199,8 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
  public:
  protected:
 };
+
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(unencoded);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(dictionary);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct);
