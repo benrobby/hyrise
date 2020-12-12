@@ -16,7 +16,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-size_t masked_vbyte_read_loop_fromcompressedsize(const uint8_t *in,
+size_t masked_vbyte_read_loop1_fromcompressedsize(const uint8_t *in,
                                                  uint32_t *out,
                                                  size_t inputsize);
 #ifdef __cplusplus
@@ -87,7 +87,7 @@ public:
   const uint32_t *decodeArray(const uint32_t *in, const size_t length,
                               uint32_t *out, size_t &nvalue) {
     const uint8_t *inbyte = reinterpret_cast<const uint8_t *>(in);
-    nvalue = masked_vbyte_read_loop_fromcompressedsize(inbyte, out, length * 4);
+    nvalue = masked_vbyte_read_loop1_fromcompressedsize(inbyte, out, length * 4);
     return reinterpret_cast<const uint32_t *>(inbyte);
     return in + length;
   }

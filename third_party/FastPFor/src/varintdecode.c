@@ -982,7 +982,7 @@ static int read_int(const uint8_t *in, uint32_t *out) {
 }
 
 #ifdef __AVX2__
-size_t read_intsAVX2(const uint8_t *in, uint32_t *out, int length) {
+size_t read_ints1AVX2(const uint8_t *in, uint32_t *out, int length) {
   size_t consumed = 0;
   int count;
   for (count = 0; count + 15 < length;) {
@@ -997,7 +997,7 @@ size_t read_intsAVX2(const uint8_t *in, uint32_t *out, int length) {
 }
 #endif
 
-size_t read_ints(const uint8_t *in, uint32_t *out, int length) {
+size_t read_ints1(const uint8_t *in, uint32_t *out, int length) {
   size_t consumed = 0;
   int count;
   for (count = 0; count + 15 < length;) {
@@ -1011,7 +1011,7 @@ size_t read_ints(const uint8_t *in, uint32_t *out, int length) {
   return consumed;
 }
 
-size_t read_ints_single(const uint8_t *in, uint32_t *out, int length) {
+size_t read_ints1_single(const uint8_t *in, uint32_t *out, int length) {
   size_t consumed = 0;
   for (int count = 0; count < length; count++) {
     consumed += read_int(in + consumed, out + count);
@@ -1128,7 +1128,7 @@ void print_binary(uint64_t num, uint64_t remaining) {
 #endif
 
 // len_signed : number of ints we want to decode
-size_t masked_vbyte_read_loop(const uint8_t *in, uint32_t *out,
+size_t masked_vbyte_read_loop1(const uint8_t *in, uint32_t *out,
                               int len_signed) {
   uint64_t length = (uint64_t)len_signed; // number of ints we want to decode
   size_t consumed = 0;                    // number of bytes read
@@ -1247,7 +1247,7 @@ size_t masked_vbyte_read_loop(const uint8_t *in, uint32_t *out,
 }
 
 // len_signed : number of ints we want to decode
-size_t altmasked_vbyte_read_loop(const uint8_t *in, uint32_t *out,
+size_t altmasked_vbyte_read_loop1(const uint8_t *in, uint32_t *out,
                                  int len_signed) {
   uint64_t length = (uint64_t)len_signed; // number of ints we want to decode
   size_t consumed = 0;                    // number of bytes read
@@ -1366,7 +1366,7 @@ size_t altmasked_vbyte_read_loop(const uint8_t *in, uint32_t *out,
 
 // inputsize : number of input bytes we want to decode
 // returns the number of written ints
-size_t masked_vbyte_read_loop_fromcompressedsize(const uint8_t *in,
+size_t masked_vbyte_read_loop1_fromcompressedsize(const uint8_t *in,
                                                  uint32_t *out,
                                                  size_t inputsize) {
   size_t consumed = 0; // number of bytes read
@@ -1494,7 +1494,7 @@ size_t masked_vbyte_read_loop_fromcompressedsize(const uint8_t *in,
 
 // inputsize : number of input bytes we want to decode
 // returns the number of written ints
-size_t altmasked_vbyte_read_loop_fromcompressedsize(const uint8_t *in,
+size_t altmasked_vbyte_read_loop1_fromcompressedsize(const uint8_t *in,
                                                     uint32_t *out,
                                                     size_t inputsize) {
   size_t consumed = 0; // number of bytes read
