@@ -96,7 +96,7 @@ add_subdirectory(libpqxx)
 add_subdirectory(tpch-dbgen)
 add_subdirectory(nlohmann_json)
 add_subdirectory(robin-map)
-add_subdirectory(FastPFOR)
+add_subdirectory(FastPFor)
 add_subdirectory(streamvbyte)
 
 ## Build lz4
