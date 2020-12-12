@@ -93,7 +93,8 @@ target_include_directories(
         hyriseBenchmarkColumnCompression
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/
 )
-
+target_compile_options(hyriseBenchmarkColumnCompression BEFORE PUBLIC -lpthread)
+target_link_options(hyriseBenchmarkColumnCompression PUBLIC -pthread)
 find_library(TURBOPFOR_PATH ic ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/ REQUIRED)
 find_library(SDSL_PATH sdsl PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/sdsl-lite/lib)
 find_library(SIMD_PATH SIMDCompressionAndIntersection PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/ REQUIRED)
