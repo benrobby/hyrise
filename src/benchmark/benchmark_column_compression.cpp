@@ -133,9 +133,9 @@ void writeBitsPerInt() {
       make_pair(sdsl_lite_vlc_vector_compute_bitsPerInt, "sdsl_lite_vlc_vector"),
       make_pair(sdsl_lite_dac_vector_compute_bitsPerInt, "sdsl_lite_dac_vector"),
 
-      make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
-      make_pair(turboPFOR_block_compute_bitsPerInt, "turboPFOR_block"),
-      make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
+      // make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
+      // make_pair(turboPFOR_block_compute_bitsPerInt, "turboPFOR_block"),
+      // make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
 
       make_pair(fastPFOR_fastpfor256_compute_bitsPerInt, "fastPFOR_fastpfor256"),
 
@@ -203,9 +203,9 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(unencoded);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(dictionary);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_block);
+//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct);
+//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
+//COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_block);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(maskedVByte);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(maskedVByteDelta);
