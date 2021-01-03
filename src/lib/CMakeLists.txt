@@ -440,8 +440,8 @@ set(
     storage/encoding_type.hpp
     storage/fastPFOR_segment.cpp
     storage/fastPFOR_segment.hpp
-    storage/FastPFOR_segment/FastPFOR_encoder.hpp
-    storage/FastPFOR_segment/FastPFOR_segment_iterable.hpp
+    storage/fastPFOR_segment/fastPFOR_encoder.hpp
+    storage/fastPFOR_segment/fastPFOR_segment_iterable.hpp
     storage/fixed_string_dictionary_segment.cpp
     storage/fixed_string_dictionary_segment.hpp
     storage/fixed_string_dictionary_segment/fixed_string.cpp

@@ -47,6 +47,20 @@ auto create_iterable_from_segment(const RunLengthSegment<T>& segment) {
 }
 
 template <typename T, bool EraseSegmentType>
+auto create_iterable_from_segment(const FastPFORSegment<T>& segment) {
+#ifdef HYRISE_ERASE_FASTPFOR
+  PerformanceWarning("FastPFORSegmentIterable erased by compile-time setting");
+return AnySegmentIterable<T>(FastPFORSegmentIterable<T>(segment));
+#else
+  if constexpr (EraseSegmentType) {
+    return create_any_segment_iterable<T>(segment);
+  } else {
+    return FastPFORSegmentIterable<T>{segment}; // todo iterable
+  }
+#endif
+}
+
+template <typename T, bool EraseSegmentType>
 auto create_iterable_from_segment(const FixedStringDictionarySegment<T>& segment) {
 #ifdef HYRISE_ERASE_FIXEDSTRINGDICTIONARY
   PerformanceWarning("FixedStringDictionarySegmentIterable erased by compile-time setting");
