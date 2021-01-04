@@ -4,6 +4,7 @@
 #include "storage/frame_of_reference_segment/frame_of_reference_segment_iterable.hpp"
 #include "storage/lz4_segment/lz4_segment_iterable.hpp"
 #include "storage/run_length_segment/run_length_segment_iterable.hpp"
+#include "storage/fastPFOR_segment/fastPFOR_segment_iterable.hpp"
 #include "storage/segment_iterables/any_segment_iterable.hpp"
 #include "storage/value_segment/value_segment_iterable.hpp"
 
@@ -55,7 +56,7 @@ return AnySegmentIterable<T>(FastPFORSegmentIterable<T>(segment));
   if constexpr (EraseSegmentType) {
     return create_any_segment_iterable<T>(segment);
   } else {
-    return FastPFORSegmentIterable<T>{segment}; // todo iterable
+    return FastPFORSegmentIterable<T>{segment};
   }
 #endif
 }
