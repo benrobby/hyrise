@@ -650,7 +650,7 @@ set(
 set(
     LIBRARIES
     FastPFOR
-    SIMDCompressionAndIntersection
+    custom_SIMDCompressionAndIntersection
     lz4
     sqlparser
     uninitialized_vector
