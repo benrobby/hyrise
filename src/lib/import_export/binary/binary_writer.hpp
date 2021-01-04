@@ -163,8 +163,9 @@ class BinaryWriter {
    * --------------------------------------------------------------------------------------------------------
    * Encoding Type               | EncodingType                        | 1
    * Run count                   | uint32_t                            | 4
-   * Values                      | T (int, float, double, long)        | Run count * sizeof(T)
+   * Encoded Values              | uint32_t                            | Run count * sizeof(uint32_t)
    * NULL values                 | vector<bool> (BoolAsByteType)       | Run count * 1
+   * codec id                    | uint8_t                             | 1
    *
    * Please note that the number of rows are written in the header of the chunk.
    * The type of the column can be found in the global header of the file.

@@ -221,10 +221,11 @@ template <typename T>
 std::shared_ptr<FastPFORSegment<T>> BinaryParser::_import_fastPFOR_segment(std::ifstream& file,
     ChunkOffset row_count) {
   const auto size = _read_value<uint32_t>(file);
-  const auto values = std::make_shared<pmr_vector<T>>(_read_values<T>(file, size));
+  const auto encoded_values = std::make_shared<pmr_vector<uint32_t>>(_read_values<uint32_t>(file, size));
   const auto null_values = std::make_shared<pmr_vector<bool>>(_read_values<bool>(file, size));
+  const auto codec_id = _read_value<uint8_t>(file);
 
-  return std::make_shared<FastPFORSegment<T>>(values, null_values);
+  return std::make_shared<FastPFORSegment<T>>(encoded_values, null_values, codec_id);
 }
 
 template <typename T>

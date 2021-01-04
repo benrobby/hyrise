@@ -22,7 +22,7 @@ class FrameOfReferenceSegment;
 template <typename T>
 class LZ4Segment;
 
-template <typename T>
+template <typename T, typename>
 class FastPFORSegment;
 
 class ReferenceSegment;

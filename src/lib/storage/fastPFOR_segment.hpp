@@ -1,6 +1,13 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
+
+#include <boost/hana/contains.hpp>
+#include <boost/hana/tuple.hpp>
+#include <boost/hana/type.hpp>
+
+#include "headers/codecfactory.h"
 
 #include "abstract_encoded_segment.hpp"
 #include "types.hpp"
@@ -9,14 +16,31 @@ namespace opossum {
 
 class BaseCompressedVector;
 
-template <typename T>
+/**
+ * @brief Segment for encodings from the FastPFOR lib.
+ *
+ * todo: docs
+ *
+ * std::enable_if_t must be used here and cannot be replaced by a
+ * static_assert in order to prevent instantiation of
+ * FrameOfReferenceSegment<T> with T other than int32_t. Otherwise,
+ * the compiler might instantiate FrameOfReferenceSegment with other
+ * types even if they are never actually needed.
+ * "If the function selected by overload resolution can be determined
+ * without instantiating a class template definition, it is unspecified
+ * whether that instantiation actually takes place." Draft Std. N4800 12.8.1.8
+ */
+template <typename T, typename = std::enable_if_t<encoding_supports_data_type(
+                        enum_c<EncodingType, EncodingType::FastPFOR>, hana::type_c<T>)>>
 class FastPFORSegment : public AbstractEncodedSegment {
  public:
-  explicit FastPFORSegment(const std::shared_ptr<const pmr_vector<T>>& values,
-                           const std::shared_ptr<const pmr_vector<bool>>& null_values);
+  explicit FastPFORSegment(const std::shared_ptr<const pmr_vector<uint32_t>>& encoded_values,
+                           const std::shared_ptr<const pmr_vector<bool>>& null_values,
+                           const uint8_t codec_id);
 
-  std::shared_ptr<const pmr_vector<T>> values() const;
+  std::shared_ptr<const pmr_vector<uint32_t>> encoded_values() const;
   std::shared_ptr<const pmr_vector<bool>> null_values() const;
+  const uint8_t codec_id() const;
 
   /**
    * @defgroup AbstractSegment interface
@@ -28,7 +52,17 @@ class FastPFORSegment : public AbstractEncodedSegment {
   std::optional<T> get_typed_value(const ChunkOffset chunk_offset) const {
     // performance critical - not in cpp to help with inlining
 
-    return 0;
+    if (_null_values && (*_null_values)[chunk_offset]) {
+      return std::nullopt;
+    }
+
+    auto decoded_values = std::vector<uint32_t>(_null_values->size());
+    size_t recovered_size = decoded_values.size();
+
+    auto codec = *FastPForLib::CODECFactory::getFromName("simdbinarypacking");
+    codec.decodeArray(_encoded_values->data(), _encoded_values->size(), decoded_values.data(), recovered_size);
+
+    return static_cast<T>(decoded_values[chunk_offset]);
   }
 
   ChunkOffset size() const final;
@@ -50,8 +84,9 @@ class FastPFORSegment : public AbstractEncodedSegment {
   /**@}*/
 
  protected:
-  const std::shared_ptr<const pmr_vector<T>> _values;
+  const std::shared_ptr<const pmr_vector<uint32_t>> _encoded_values;
   const std::shared_ptr<const pmr_vector<bool>> _null_values;
+  const uint8_t _codec_id;
 };
 
 }  // namespace opossum
