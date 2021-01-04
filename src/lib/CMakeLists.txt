@@ -649,7 +649,7 @@ set(
 
 set(
     LIBRARIES
-    FastPFor
+    FastPFOR
     lz4
     sqlparser
     uninitialized_vector
