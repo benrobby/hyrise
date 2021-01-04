@@ -47,8 +47,8 @@ auto create_iterable_from_segment(const RunLengthSegment<T>& segment) {
 #endif
 }
 
-template <typename T, bool EraseSegmentType>
-auto create_iterable_from_segment(const FastPFORSegment<T>& segment) {
+template <typename T, typename Enabled, bool EraseSegmentType>
+auto create_iterable_from_segment(const FastPFORSegment<T, Enabled>& segment) {
 #ifdef HYRISE_ERASE_FASTPFOR
   PerformanceWarning("FastPFORSegmentIterable erased by compile-time setting");
 return AnySegmentIterable<T>(FastPFORSegmentIterable<T>(segment));
