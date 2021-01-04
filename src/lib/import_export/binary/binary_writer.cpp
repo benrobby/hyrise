@@ -253,7 +253,7 @@ void BinaryWriter::_write_segment(const FastPFORSegment<T>& fastPFOR_segment, bo
   export_value(ofstream, EncodingType::FastPFOR);
 
   // Write size and values
-  export_value(ofstream, static_cast<uint32_t>(fastPFOR_segment.values()->size()));
+  export_value(ofstream, static_cast<uint32_t>(fastPFOR_segment.null_values()->size()));
   export_values(ofstream, *fastPFOR_segment.encoded_values());
 
   // Write NULL values

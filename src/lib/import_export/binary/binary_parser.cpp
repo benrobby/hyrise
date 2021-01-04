@@ -162,7 +162,12 @@ std::shared_ptr<AbstractSegment> BinaryParser::_import_segment(std::ifstream& fi
     case EncodingType::LZ4:
       return _import_lz4_segment<ColumnDataType>(file, row_count);
     case EncodingType::FastPFOR:
-      return _import_fastPFOR_segment<ColumnDataType>(file, row_count);
+      if constexpr (encoding_supports_data_type(enum_c<EncodingType, EncodingType::FastPFOR>,
+                                                hana::type_c<ColumnDataType>)) {
+        return _import_fastPFOR_segment<ColumnDataType>(file, row_count);
+      } else {
+        Fail("Unsupported data type for FOR encoding");
+      }
   }
 
   Fail("Invalid EncodingType");
