@@ -20,6 +20,7 @@ class BaseCompressedVector;
  * @brief Segment for encodings from the FastPFOR lib.
  *
  * todo: docs
+ * todo: optional null values
  *
  * std::enable_if_t must be used here and cannot be replaced by a
  * static_assert in order to prevent instantiation of

@@ -22,7 +22,9 @@ class FastPFOREncoder : public SegmentEncoder<FastPFOREncoder> {
     auto values = pmr_vector<uint32_t>(allocator); // destroy it when out of scope, only used to get values in continuous mem
     auto null_values = std::make_shared<pmr_vector<bool>>(allocator);
 
-    // todo: can we get a pointer so we don't have to copy everything?
+    // we can't get a pointer so we don't have to copy everything? -> no, no guarantees for iterator.
+    // also, encoding perf is not so important
+
     segment_iterable.with_iterators([&](auto it, auto end) {
       for (; it != end; ++it) {
         values.push_back(it->is_null() ? 0u : static_cast<uint32_t>(it->value())); // todo: zig zag encode int to uint?
@@ -34,7 +36,7 @@ class FastPFOREncoder : public SegmentEncoder<FastPFOREncoder> {
     values.shrink_to_fit();
     null_values->shrink_to_fit();
 
-    auto codec = *FastPForLib::CODECFactory::getFromName("simdbinarypacking");
+    FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdbinarypacking");
 
     auto encodedValues = std::make_shared<pmr_vector<uint32_t>>(allocator);
     encodedValues->resize(2 * values.size() + 1024);
