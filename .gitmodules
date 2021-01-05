@@ -56,3 +56,6 @@
 [submodule "third_party/FastPFor"]
 	path = third_party/FastPFor
 	url = git@github.com:benrobby/FastPFor.git
+[submodule "third_party/SIMDCompressionAndIntersection"]
+	path = third_party/SIMDCompressionAndIntersection
+	url = git@github.com:benrobby/SIMDCompressionAndIntersection.git
