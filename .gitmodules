@@ -53,6 +53,9 @@
 [submodule "third_party/jcch-dbgen"]
 	path = third_party/jcch-dbgen
 	url = https://github.com/mrks/dbgen.JCC-H.git
+[submodule "third_party/FastPFRr"]
+	path = third_party/FastPFRr
+	url = git@github.com:mcmayer/FastPFor.git
 [submodule "third_party/FastPFor"]
 	path = third_party/FastPFor
-	url = git@github.com:benrobby/FastPFor.git
+	url = git@github.com:mcmayer/FastPFor.git
