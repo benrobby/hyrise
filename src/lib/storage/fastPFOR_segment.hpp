@@ -20,7 +20,6 @@ class BaseCompressedVector;
  * @brief Segment for encodings from the FastPFOR lib.
  *
  * todo: docs
- * todo: optional null values
  *
  * std::enable_if_t must be used here and cannot be replaced by a
  * static_assert in order to prevent instantiation of
@@ -36,11 +35,11 @@ template <typename T, typename = std::enable_if_t<encoding_supports_data_type(
 class FastPFORSegment : public AbstractEncodedSegment {
  public:
   explicit FastPFORSegment(const std::shared_ptr<const pmr_vector<uint32_t>>& encoded_values,
-                           const std::shared_ptr<const pmr_vector<bool>>& null_values,
+                           std::optional<const pmr_vector<bool>> null_values,
                            const uint8_t codec_id);
 
-  std::shared_ptr<const pmr_vector<uint32_t>> encoded_values() const;
-  std::shared_ptr<const pmr_vector<bool>> null_values() const;
+  const std::shared_ptr<const pmr_vector<uint32_t>> encoded_values() const;
+  const std::optional<const pmr_vector<bool>>& null_values() const;
   const uint8_t codec_id() const;
 
   /**
@@ -86,7 +85,7 @@ class FastPFORSegment : public AbstractEncodedSegment {
 
  protected:
   const std::shared_ptr<const pmr_vector<uint32_t>> _encoded_values;
-  const std::shared_ptr<const pmr_vector<bool>> _null_values;
+  const std::optional<const pmr_vector<bool>> _null_values;
   const uint8_t _codec_id;
 };
 

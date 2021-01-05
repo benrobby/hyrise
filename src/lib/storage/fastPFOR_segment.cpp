@@ -3,7 +3,6 @@
 #include <algorithm>
 
 #include "resolve_type.hpp"
-#include "utils/assert.hpp"
 #include "utils/performance_warning.hpp"
 #include "utils/size_estimation_utils.hpp"
 
@@ -11,7 +10,7 @@ namespace opossum {
 
 template <typename T, typename U>
 FastPFORSegment<T, U>::FastPFORSegment(const std::shared_ptr<const pmr_vector<uint32_t>>& encoded_values,
-                                      const std::shared_ptr<const pmr_vector<bool>>& null_values,
+                                       std::optional<const pmr_vector<bool>> null_values,
                                       const uint8_t codec_id)
     : AbstractEncodedSegment(data_type_from_type<T>()),
       _encoded_values{encoded_values},
@@ -19,12 +18,12 @@ FastPFORSegment<T, U>::FastPFORSegment(const std::shared_ptr<const pmr_vector<ui
       _codec_id{codec_id} {}
 
 template <typename T, typename U>
-std::shared_ptr<const pmr_vector<uint32_t>> FastPFORSegment<T, U>::encoded_values() const {
+const std::shared_ptr<const pmr_vector<uint32_t>> FastPFORSegment<T, U>::encoded_values() const {
   return _encoded_values;
 }
 
 template <typename T, typename U>
-std::shared_ptr<const pmr_vector<bool>> FastPFORSegment<T, U>::null_values() const {
+const std::optional<const pmr_vector<bool>>& FastPFORSegment<T, U>::null_values() const {
   return _null_values;
 }
 
@@ -47,9 +46,12 @@ template <typename T, typename U>
 std::shared_ptr<AbstractSegment> FastPFORSegment<T,U>::copy_using_allocator(
     const PolymorphicAllocator<size_t>& alloc) const {
   auto new_encoded_values = std::make_shared<pmr_vector<uint32_t>>(*_encoded_values, alloc);
-  auto new_null_values = std::make_shared<pmr_vector<bool>>(*_null_values, alloc);
 
-  auto copy = std::make_shared<FastPFORSegment<T,U>>(new_encoded_values, new_null_values, _codec_id);
+  std::optional<pmr_vector<bool>> new_null_values;
+  if (_null_values) {
+    new_null_values = pmr_vector<bool>(*_null_values, alloc);
+  }
+  auto copy = std::make_shared<FastPFORSegment<T,U>>(new_encoded_values, std::move(new_null_values), _codec_id);
 
   copy->access_counter = access_counter;
 
@@ -58,11 +60,12 @@ std::shared_ptr<AbstractSegment> FastPFORSegment<T,U>::copy_using_allocator(
 
 template <typename T, typename U>
 size_t FastPFORSegment<T,U>::memory_usage([[maybe_unused]] const MemoryUsageCalculationMode mode) const {
-  return
-          sizeof(*this) +
-          _null_values->capacity() / CHAR_BIT +
-          _encoded_values->capacity() * sizeof(uint32_t) +
-          1;
+  size_t segment_size = sizeof(*this);
+  if (_null_values) {
+    segment_size += _null_values->capacity() / CHAR_BIT;
+  }
+  segment_size += _encoded_values->capacity() * sizeof(uint32_t) + 1;
+  return segment_size;
 }
 
 template <typename T, typename U>

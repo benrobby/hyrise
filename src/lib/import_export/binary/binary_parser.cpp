@@ -225,9 +225,16 @@ std::shared_ptr<RunLengthSegment<T>> BinaryParser::_import_run_length_segment(st
 template <typename T>
 std::shared_ptr<FastPFORSegment<T>> BinaryParser::_import_fastPFOR_segment(std::ifstream& file,
     ChunkOffset row_count) {
+
   const auto size = _read_value<uint32_t>(file);
   const auto encoded_values = std::make_shared<pmr_vector<uint32_t>>(_read_values<uint32_t>(file, size));
-  const auto null_values = std::make_shared<pmr_vector<bool>>(_read_values<bool>(file, size));
+
+  const auto null_values_stored = _read_value<BoolAsByteType>(file);
+  std::optional<pmr_vector<bool>> null_values;
+  if (null_values_stored) {
+    null_values = pmr_vector<bool>(_read_values<bool>(file, row_count));
+  }
+
   const auto codec_id = _read_value<uint8_t>(file);
 
   return std::make_shared<FastPFORSegment<T>>(encoded_values, null_values, codec_id);

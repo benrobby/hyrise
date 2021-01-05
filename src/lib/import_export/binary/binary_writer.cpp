@@ -253,13 +253,17 @@ void BinaryWriter::_write_segment(const FastPFORSegment<T>& fastPFOR_segment, bo
   export_value(ofstream, EncodingType::FastPFOR);
 
   // Write size and values
-  export_value(ofstream, static_cast<uint32_t>(fastPFOR_segment.null_values()->size()));
+  export_value(ofstream, static_cast<uint32_t>(fastPFOR_segment.encoded_values()->size()));
   export_values(ofstream, *fastPFOR_segment.encoded_values());
 
-  // Write NULL values
-  export_values(ofstream, *fastPFOR_segment.null_values());
+  // Write flag if optional NULL value vector is written
+  export_value(ofstream, static_cast<BoolAsByteType>(fastPFOR_segment.null_values().has_value()));
+  if (fastPFOR_segment.null_values()) {
+    // Write NULL values
+    export_values(ofstream, *fastPFOR_segment.null_values());
+  }
 
-  // Codec id (to be mapped to actual codec name)
+  // Write Codec id (to be mapped to actual codec name)
   export_value(ofstream, fastPFOR_segment.codec_id());
 }
 

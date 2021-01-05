@@ -57,7 +57,7 @@ private:
 
     public:
         explicit Iterator(const std::shared_ptr<const pmr_vector<uint32_t>>& encoded_values,
-                          const std::shared_ptr<const pmr_vector<bool>>& null_values,
+                          const std::optional<const pmr_vector<bool>>& null_values,
                           const uint8_t &codec_id,
                           ChunkOffset chunk_offset)
             : _encoded_values{encoded_values},
@@ -104,7 +104,7 @@ private:
 
     private:
         std::shared_ptr<const pmr_vector<uint32_t>> _encoded_values;
-        std::shared_ptr<const pmr_vector<bool>> _null_values;
+        const std::optional<const pmr_vector<bool>> _null_values;
         const uint8_t _codec_id;
         std::vector<uint32_t> _decoded_values;
 
