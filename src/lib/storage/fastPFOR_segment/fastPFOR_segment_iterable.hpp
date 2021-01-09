@@ -23,8 +23,8 @@ public:
     template <typename Functor>
     void _on_with_iterators(const Functor& functor) const {
       _segment.access_counter[SegmentAccessCounter::AccessType::Sequential] += _segment.size();
-      auto begin = Iterator{_segment.encoded_values(), _segment.null_values(), 0, ChunkOffset{0}};
-      auto end = Iterator{_segment.encoded_values(), _segment.null_values(), 0, static_cast<ChunkOffset>(_segment.size())};
+      auto begin = Iterator{_segment.encoded_values(), &_segment.null_values(), _segment.codec_id(), _segment.size(), ChunkOffset{0}};
+      auto end = Iterator{_segment.encoded_values(), &_segment.null_values(), _segment.codec_id(), _segment.size(), static_cast<ChunkOffset>(_segment.size())};
 
       functor(begin, end);
     }
@@ -35,11 +35,9 @@ public:
 
       using PosListIteratorType = decltype(position_filter->cbegin());
       auto begin =
-              PointAccessIterator<PosListIteratorType>{_segment.encoded_values(), _segment.null_values(), 0, 
-                                                       position_filter->cbegin(), position_filter->cbegin()};
+              PointAccessIterator<PosListIteratorType>{_segment.encoded_values(), &_segment.null_values(), _segment.codec_id(), _segment.size(), position_filter->cbegin(), position_filter->cbegin()};
       auto end =
-              PointAccessIterator<PosListIteratorType>{_segment.encoded_values(), _segment.null_values(), 0,
-                                                       position_filter->cbegin(), position_filter->cend()};
+              PointAccessIterator<PosListIteratorType>{_segment.encoded_values(), &_segment.null_values(), _segment.codec_id(), _segment.size(), position_filter->cbegin(), position_filter->cend()};
       functor(begin, end);
     }
 
@@ -57,17 +55,18 @@ private:
 
     public:
         explicit Iterator(const std::shared_ptr<const pmr_vector<uint32_t>>& encoded_values,
-                          const std::optional<const pmr_vector<bool>>& null_values,
-                          const uint8_t &codec_id,
+                          const std::optional<const pmr_vector<bool>>* null_values,
+                          uint8_t codec_id,
+                          ChunkOffset size,
                           ChunkOffset chunk_offset)
             : _encoded_values{encoded_values},
               _null_values{null_values},
               _chunk_offset{chunk_offset},
               _codec_id{codec_id} {
           
-          _decoded_values = std::vector<uint32_t>(_null_values->size());
+          _decoded_values = std::vector<uint32_t>(size);
           size_t recovered_size = _decoded_values.size();
-          FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdbinarypacking");
+          FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdfastpfor128");
           codec.decodeArray(_encoded_values->data(), _encoded_values->size(), _decoded_values.data(), recovered_size);
         }
 
@@ -97,15 +96,15 @@ private:
         }
 
         SegmentPosition<T> dereference() const {
-          const auto is_null = (*_null_values)[_chunk_offset];
+          const auto is_null = *_null_values ? (**_null_values)[_chunk_offset] : false;
           const auto value = static_cast<T>(_decoded_values[_chunk_offset]);
           return SegmentPosition<T>{value, is_null, _chunk_offset};
         }
 
     private:
         std::shared_ptr<const pmr_vector<uint32_t>> _encoded_values;
-        const std::optional<const pmr_vector<bool>> _null_values;
-        const uint8_t _codec_id;
+        const std::optional<const pmr_vector<bool>>* _null_values;
+        uint8_t _codec_id;
         std::vector<uint32_t> _decoded_values;
 
         ChunkOffset _chunk_offset;
@@ -120,10 +119,11 @@ private:
         using IterableType = FastPFORSegmentIterable<T>;
 
         explicit PointAccessIterator(const std::shared_ptr<const pmr_vector<uint32_t>>& encoded_values,
-                          const std::shared_ptr<const pmr_vector<bool>>& null_values,
-                          const uint8_t &codec_id,
-                          const PosListIteratorType position_filter_begin,
-                          PosListIteratorType&& position_filter_it)
+                                  const std::optional<const pmr_vector<bool>>* null_values,
+                                  uint8_t codec_id,
+                                  ChunkOffset size,
+                                  const PosListIteratorType position_filter_begin,
+                                  PosListIteratorType&& position_filter_it)
                 : AbstractPointAccessSegmentIterator<PointAccessIterator, SegmentPosition<T>,
                                              PosListIteratorType>{std::move(position_filter_begin),
                                                                   std::move(position_filter_it)},
@@ -131,9 +131,9 @@ private:
                   _null_values{null_values},
                   _codec_id{codec_id} {
 
-          _decoded_values = std::vector<uint32_t>(_null_values->size());
+          _decoded_values = std::vector<uint32_t>(size);
           size_t recovered_size = _decoded_values.size();
-          FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdbinarypacking");
+          FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdfastpfor128");
           codec.decodeArray(_encoded_values->data(), _encoded_values->size(), _decoded_values.data(), recovered_size);
         }
 
@@ -144,15 +144,15 @@ private:
           const auto& chunk_offsets = this->chunk_offsets();
           const auto current_offset = chunk_offsets.offset_in_referenced_chunk;
 
-          const auto is_null = (*_null_values)[current_offset];
+          const auto is_null = *_null_values ? (**_null_values)[current_offset] : false;
           const auto value = static_cast<T>(_decoded_values[current_offset]);
           return SegmentPosition<T>{value, is_null, chunk_offsets.offset_in_poslist};
         }
 
     private:
         std::shared_ptr<const pmr_vector<uint32_t>> _encoded_values;
-        std::shared_ptr<const pmr_vector<bool>> _null_values;
-        const uint8_t _codec_id;
+        const std::optional<const pmr_vector<bool>>* _null_values;
+        uint8_t _codec_id;
         std::vector<uint32_t> _decoded_values;
     };
 };

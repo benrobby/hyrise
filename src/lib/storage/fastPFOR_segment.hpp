@@ -36,11 +36,12 @@ class FastPFORSegment : public AbstractEncodedSegment {
  public:
   explicit FastPFORSegment(const std::shared_ptr<const pmr_vector<uint32_t>>& encoded_values,
                            std::optional<const pmr_vector<bool>> null_values,
-                           const uint8_t codec_id);
+                           const uint8_t codec_id,
+                           ChunkOffset size);
 
   const std::shared_ptr<const pmr_vector<uint32_t>> encoded_values() const;
   const std::optional<const pmr_vector<bool>>& null_values() const;
-  const uint8_t codec_id() const;
+  uint8_t codec_id() const;
 
   /**
    * @defgroup AbstractSegment interface
@@ -50,19 +51,15 @@ class FastPFORSegment : public AbstractEncodedSegment {
   AllTypeVariant operator[](const ChunkOffset chunk_offset) const final;
 
   std::optional<T> get_typed_value(const ChunkOffset chunk_offset) const {
-    // performance critical - not in cpp to help with inlining
-
     if (_null_values && (*_null_values)[chunk_offset]) {
-      return std::nullopt;
-    }
+       return std::nullopt;
+     }
 
-    auto decoded_values = std::vector<uint32_t>(_null_values->size());
-    size_t recovered_size = decoded_values.size();
-
-    FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdbinarypacking");
-    codec.decodeArray(_encoded_values->data(), _encoded_values->size(), decoded_values.data(), recovered_size);
-
-    return static_cast<T>(decoded_values[chunk_offset]);
+     auto decoded_values = std::vector<uint32_t>(_size);
+     size_t recovered_size;
+     FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdfastpfor128");
+     codec.decodeArray(_encoded_values->data(), _encoded_values->size(), decoded_values.data(), recovered_size);
+     return decoded_values[chunk_offset];
   }
 
   ChunkOffset size() const final;
@@ -87,6 +84,7 @@ class FastPFORSegment : public AbstractEncodedSegment {
   const std::shared_ptr<const pmr_vector<uint32_t>> _encoded_values;
   const std::optional<const pmr_vector<bool>> _null_values;
   const uint8_t _codec_id;
+  ChunkOffset _size;
 };
 
 }  // namespace opossum

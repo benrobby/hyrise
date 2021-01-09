@@ -22,7 +22,7 @@
 #include "storage/dictionary_segment.hpp"
 #include "storage/segment_encoding_utils.hpp"
 #include "storage/table.hpp"
-#include "testing_assert.hpp"
+#include "testing_assert.hpp" 
 #include "types.hpp"
 #include "utils/load_table.hpp"
 
@@ -100,6 +100,7 @@ const SegmentEncodingSpec all_segment_encoding_specs[]{
     SegmentEncodingSpec{EncodingType::FixedStringDictionary, VectorCompressionType::FixedSizeByteAligned},
     SegmentEncodingSpec{EncodingType::FixedStringDictionary, VectorCompressionType::SimdBp128},
     SegmentEncodingSpec{EncodingType::FrameOfReference},
+    SegmentEncodingSpec{EncodingType::FastPFOR},
     SegmentEncodingSpec{EncodingType::LZ4},
     SegmentEncodingSpec{EncodingType::RunLength}};
 }  // namespace opossum

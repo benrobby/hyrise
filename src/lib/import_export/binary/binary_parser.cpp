@@ -237,7 +237,7 @@ std::shared_ptr<FastPFORSegment<T>> BinaryParser::_import_fastPFOR_segment(std::
 
   const auto codec_id = _read_value<uint8_t>(file);
 
-  return std::make_shared<FastPFORSegment<T>>(encoded_values, null_values, codec_id);
+  return std::make_shared<FastPFORSegment<T>>(encoded_values, null_values, codec_id, row_count);
 }
 
 template <typename T>
