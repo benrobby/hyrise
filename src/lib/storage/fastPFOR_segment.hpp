@@ -57,7 +57,7 @@ class FastPFORSegment : public AbstractEncodedSegment {
 
      auto decoded_values = std::vector<uint32_t>(_size);
      size_t recovered_size;
-     FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdfastpfor128");
+     FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdpfor");
      codec.decodeArray(_encoded_values->data(), _encoded_values->size(), decoded_values.data(), recovered_size);
      return decoded_values[chunk_offset];
   }

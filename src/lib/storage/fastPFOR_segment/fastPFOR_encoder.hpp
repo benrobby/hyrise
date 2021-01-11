@@ -40,7 +40,7 @@ class FastPFOREncoder : public SegmentEncoder<FastPFOREncoder> {
     values.shrink_to_fit();
     null_values.shrink_to_fit();
 
-    FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdfastpfor128");
+    FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdpfor");
 
     auto encodedValues = std::make_shared<pmr_vector<uint32_t>>(allocator);
     encodedValues->resize(2 * values.size() + 1024);
