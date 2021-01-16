@@ -2,7 +2,6 @@
 #include <iostream>
 #include "benchmark/benchmark.h"
 
-
 #include "vp4.h"
 
 

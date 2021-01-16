@@ -1,7 +1,5 @@
-
 #include <iostream>
 #include "benchmark/benchmark.h"
-#include "streamvbyte.h"
 #include "vp4.h"
 
 using ValueT = uint32_t;

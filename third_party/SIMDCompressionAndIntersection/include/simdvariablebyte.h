@@ -30,11 +30,11 @@ size_t masked_vbyte_read_loop_fromcompressedsize_delta(const uint8_t *in,
                                                        size_t inputsize,
                                                        uint32_t prev);
 // size_t read_ints(const uint8_t* in, uint32_t* out, int length) ;
-// size_t read_ints_delta_1(const uint8_t* in, uint32_t* out, int length, uint32_t
+// size_t read_ints_delta(const uint8_t* in, uint32_t* out, int length, uint32_t
 // prev) ;
-uint32_t masked_vbyte_select_delta_1(const uint8_t *in, uint64_t length,
+uint32_t masked_vbyte_select_delta(const uint8_t *in, uint64_t length,
                                    uint32_t prev, size_t slot);
-int masked_vbyte_search_delta_1(const uint8_t *in, uint64_t length, uint32_t prev,
+int masked_vbyte_search_delta(const uint8_t *in, uint64_t length, uint32_t prev,
                               uint32_t key, uint32_t *presult);
 }
 
@@ -150,11 +150,11 @@ public:
 
   // Returns a decompressed value in a delta-encoded array
   // only supported for delta encoded data (TODO)
-  uint32_t select(const uint32_t *in, size_t index) {
+  uint32_t select(uint32_t *in, size_t index) {
     assert(delta == true);
     uint32_t num_ints = *in;
     in++;
-    return (masked_vbyte_select_delta_1((uint8_t *)in, num_ints, 0, index));
+    return (masked_vbyte_select_delta((uint8_t *)in, num_ints, 0, index));
   }
 
   // Performs a lower bound find in the delta-encoded array.
@@ -167,7 +167,7 @@ public:
     uint32_t num_ints = *in;
     in++;
     return (
-        masked_vbyte_search_delta_1((uint8_t *)in, num_ints, 0, key, presult));
+        masked_vbyte_search_delta((uint8_t *)in, num_ints, 0, key, presult));
   }
   // insert the key in sorted order. We assume that there is enough room
   // and that delta encoding was used.

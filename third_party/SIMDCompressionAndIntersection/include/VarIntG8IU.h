@@ -7,8 +7,7 @@
     "Disabling varintg8iu due to lack of SSSE3 support, try adding -mssse3 or the equivalent on your compiler"
 #else
 #ifndef VARINTG8IU_H__
-  #define VARINTG8IU_H__
-#endif
+#define VARINTG8IU_H__
 #include <emmintrin.h>
 #include "codecs.h"
 #include "delta.h"
@@ -235,3 +234,4 @@ private:
 };
 }
 #endif // VARINTG8IU_H__
+#endif //__SSE3__

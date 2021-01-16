@@ -55,20 +55,10 @@ add_executable(
 
     benchmark_column_compression.cpp
     benchmark_column_compression_data.hpp
-    benchmark_column_compression_fastPFOR.hpp
-    benchmark_column_compression_maskedVByte.hpp
-    benchmark_column_compression_maskedVByteDelta.hpp
-    benchmark_column_compression_streamVByte.hpp
-    benchmark_column_compression_streamVByte0124.hpp
-    benchmark_column_compression_streamVByteDelta.hpp
-    benchmark_column_compression_oroch_varint.hpp
-    benchmark_column_compression_oroch_integerArray.hpp
-    benchmark_column_compression_sdsl_lite_vlc_vector.hpp    
-    benchmark_column_compression_sdsl_lite_dac_vector.hpp
     benchmark_column_compression_turboPFOR.hpp
     benchmark_column_compression_turboPFOR_direct.hpp
     benchmark_column_compression_turboPFOR_block.hpp
-    benchmark_column_compression_SIMDCompressionAndIntersection.hpp
+    # benchmark_column_compression_SIMDCompressionAndIntersection.hpp
     benchmark_column_compression_unencoded.hpp
 
     micro_benchmark_main.cpp
@@ -93,21 +83,13 @@ target_include_directories(
         hyriseBenchmarkColumnCompression
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/
 )
-target_compile_options(hyriseBenchmarkColumnCompression BEFORE PUBLIC -lpthread)
 target_link_options(hyriseBenchmarkColumnCompression PUBLIC -pthread)
 find_library(TURBOPFOR_PATH ic ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/TurboPFor/ REQUIRED)
-find_library(SDSL_PATH sdsl PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/sdsl-lite/lib)
-find_library(SIMD_PATH SIMDCompressionAndIntersection PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/SIMDCompressionAndIntersection/ REQUIRED)
 
 target_link_libraries(
     hyriseBenchmarkColumnCompression
-    FastPFOR
-    maskedvbyte
-    streamvbyte
     benchmark
-    ${SDSL_PATH}
     ${TURBOPFOR_PATH}
-    ${SIMD_PATH}
 )
 
 target_include_directories(

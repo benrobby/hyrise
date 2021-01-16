@@ -17,11 +17,11 @@ endif # debug
 else #intel
     CXX ?= g++-4.7
 ifeq ($(DEBUG),1)
-    CXXFLAGS = -fpic -mavx -std=c++11  -Weffc++ -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall  -Wextra -Wextra -Wsign-compare  -Wwrite-strings -Wpointer-arith -Winit-self  -Wno-sign-conversion
-    CCFLAGS = -fpic -mavx -std=c99  -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall  -Wextra -Wsign-compare -Wwrite-strings -Wpointer-arith -Winit-self  -Wno-sign-conversion
+    CXXFLAGS = -fpic -march=native -std=c++11  -Weffc++ -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall  -Wextra -Wextra -Wsign-compare  -Wwrite-strings -Wpointer-arith -Winit-self  -Wno-sign-conversion
+    CCFLAGS = -fpic -march=native -std=c99  -pedantic -ggdb -DDEBUG=1 -D_GLIBCXX_DEBUG -Wall  -Wextra -Wsign-compare -Wwrite-strings -Wpointer-arith -Winit-self  -Wno-sign-conversion
 else
-    CXXFLAGS = -fpic -mavx -std=c++11  -Weffc++ -pedantic -O3 -Wall  -Wextra -Wsign-compare  -Wwrite-strings -Wpointer-arith -Winit-self  -Wno-sign-conversion
-    CCFLAGS = -fpic -mavx -std=c99 -pedantic -O3 -Wall -Wextra -Wsign-compare -Wwrite-strings -Wpointer-arith -Winit-self -Wno-sign-conversion
+    CXXFLAGS = -fpic -march=native -std=c++11  -Weffc++ -pedantic -O3 -Wall  -Wextra -Wsign-compare  -Wwrite-strings -Wpointer-arith -Winit-self  -Wno-sign-conversion
+    CCFLAGS = -fpic -march=native -std=c99 -pedantic -O3 -Wall -Wextra -Wsign-compare -Wwrite-strings -Wpointer-arith -Winit-self -Wno-sign-conversion
 endif #debug
 endif #intel
 
@@ -36,6 +36,9 @@ all: unit  testcodecs  testintegration  advancedbenchmarking benchintersection b
 
 
 advancedbenchmarking: simplesynth compress uncompress budgetedtest entropy compflatstat
+
+codecfactory.o: include/codecfactory.h src/codecfactory.cpp
+	$(CXX) $(CXXFLAGS) -c src/codecfactory.cpp -Iinclude
 
 bitpacking.o: include/bitpacking.h src/bitpacking.cpp
 	$(CXX) $(CXXFLAGS) -c src/bitpacking.cpp -Iinclude
@@ -88,7 +91,7 @@ simdintegratedbitpacking.o: include/simdintegratedbitpacking.h include/delta.h s
 UNAME := $(shell uname)
 
 
-OBJECTS= bitpacking.o integratedbitpacking.o simdbitpacking.o usimdbitpacking.o    simdintegratedbitpacking.o   intersection.o  varintdecode.o streamvbyte.o simdpackedsearch.o simdpackedselect.o frameofreference.o for.o
+OBJECTS= codecfactory.o bitpacking.o integratedbitpacking.o simdbitpacking.o usimdbitpacking.o    simdintegratedbitpacking.o   intersection.o  varintdecode.o streamvbyte.o simdpackedsearch.o simdpackedselect.o frameofreference.o for.o
 
 benchsearch: $(HEADERS) src/benchsearch.cpp  $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o benchsearch src/benchsearch.cpp  $(OBJECTS) -Iinclude

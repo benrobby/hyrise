@@ -16,7 +16,6 @@
 #include "simdbitpackinghelpers.h"
 #include "delta.h"
 #include "util.h"
-#include "synthetic.h"
 #include "binarypacking.h"
 #include "simdbinarypacking.h"
 #include "simdvariablebyte.h"
@@ -25,6 +24,7 @@
 #include "variablebyte.h"
 #include "varintgb.h"
 #include "streamvariablebyte.h"
+#include "VarIntG8IU.h" // warning: patented scheme
 #include "frameofreference.h"
 #include "forcodec.h"
 
@@ -34,76 +34,6 @@ using namespace std;
 
 typedef VariableByte<true> leftovercodec;
 
-static std::map<string, shared_ptr<IntegerCODEC>> initializefactory() {
-  std::map<string, shared_ptr<IntegerCODEC>> schemes;
-  schemes["fastpfor"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<FastPFor<8, true>, leftovercodec>());
-
-  schemes["copy"] = shared_ptr<IntegerCODEC>(new JustCopy());
-  schemes["varint"] = shared_ptr<IntegerCODEC>(new VariableByte<true>());
-  schemes["vbyte"] = shared_ptr<IntegerCODEC>(new VByte<true>());
-  schemes["maskedvbyte"] = shared_ptr<IntegerCODEC>(new MaskedVByte<true>());
-  schemes["streamvbyte"] = shared_ptr<IntegerCODEC>(new StreamVByteD1());
-  schemes["frameofreference"] =
-      shared_ptr<IntegerCODEC>(new FrameOfReference());
-
-  schemes["simdframeofreference"] =
-      shared_ptr<IntegerCODEC>(new SIMDFrameOfReference());
-
-  schemes["varintgb"] = std::shared_ptr<IntegerCODEC>(new VarIntGB<true>());
-
-  schemes["s4fastpford4"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<SIMDFastPFor<8, CoarseDelta4SIMD>, leftovercodec>());
-  schemes["s4fastpfordm"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<SIMDFastPFor<8, Max4DeltaSIMD>, VariableByte<true>>());
-  schemes["s4fastpford1"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<SIMDFastPFor<8, RegularDeltaSIMD>, leftovercodec>());
-  schemes["s4fastpford2"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<SIMDFastPFor<8, CoarseDelta2SIMD>, leftovercodec>());
-
-  schemes["bp32"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<BinaryPacking<BasicBlockPacker>,
-                         VariableByte<true>>());
-  schemes["ibp32"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<BinaryPacking<IntegratedBlockPacker>,
-                         leftovercodec>());
-
-  schemes["s4bp128d1ni"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDBlockPacker<RegularDeltaSIMD, true>>,
-          leftovercodec>());
-  schemes["s4bp128d2ni"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDBlockPacker<CoarseDelta2SIMD, true>>,
-          leftovercodec>());
-  schemes["s4bp128d4ni"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDBlockPacker<CoarseDelta4SIMD, true>>,
-          leftovercodec>());
-  schemes["s4bp128dmni"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDBlockPacker<Max4DeltaSIMD, true>>,
-          leftovercodec>());
-
-  schemes["s4bp128d1"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDIntegratedBlockPacker<RegularDeltaSIMD, true>>,
-          leftovercodec>());
-  schemes["s4bp128d2"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDIntegratedBlockPacker<CoarseDelta2SIMD, true>>,
-          leftovercodec>());
-  schemes["s4bp128d4"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDIntegratedBlockPacker<CoarseDelta4SIMD, true>>,
-          leftovercodec>());
-  schemes["s4bp128dm"] = shared_ptr<IntegerCODEC>(
-      new CompositeCodec<
-          SIMDBinaryPacking<SIMDIntegratedBlockPacker<Max4DeltaSIMD, true>>,
-          leftovercodec>());
-  schemes["for"] = shared_ptr<IntegerCODEC>(new ForCODEC());
-  return schemes;
-}
 
 class CODECFactory {
 public:
@@ -171,11 +101,7 @@ public:
   }
 };
 
-map<string, shared_ptr<IntegerCODEC>> CODECFactory::scodecmap =
-    initializefactory();
 
-shared_ptr<IntegerCODEC> CODECFactory::defaultptr =
-    shared_ptr<IntegerCODEC>(nullptr);
 } // namespace SIMDCompressionLib
 
 #endif /* SIMDCompressionAndIntersection_CODECFACTORY_H_ */

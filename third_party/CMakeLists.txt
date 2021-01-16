@@ -76,28 +76,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(sqlparser PRIVATE -Wno-unneeded-internal-declaration -Wno-format)
 endif()
 
-## Build MaskVbyte
-
-add_library(
-    maskedvbyte 
-    MaskedVByte/src/varintdecode.c
-    MaskedVByte/src/varintencode.c
-)
-
-target_include_directories(
-    maskedvbyte
-    PUBLIC
-      MaskedVByte/include
-)
-
 # Add Libraries with their own build setup
 add_subdirectory(googletest)
 add_subdirectory(libpqxx)
 add_subdirectory(tpch-dbgen)
 add_subdirectory(nlohmann_json)
 add_subdirectory(robin-map)
-add_subdirectory(FastPFor)
-add_subdirectory(streamvbyte)
 
 ## Build lz4
 set(LZ4_LIBRARY_DIR lz4/lib)

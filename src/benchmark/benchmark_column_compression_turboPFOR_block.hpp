@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include "benchmark/benchmark.h"
-#include "streamvbyte.h"
 #include "vp4.h"
 
 #define BLOCK_SIZE 128

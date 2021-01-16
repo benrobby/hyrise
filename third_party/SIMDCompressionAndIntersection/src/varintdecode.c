@@ -1580,7 +1580,7 @@ size_t masked_vbyte_read_loop_delta(const uint8_t *in, uint32_t *out,
   return consumed;
 }
 
-size_t read_ints_delta_1(const uint8_t *in, uint32_t *out, int length,
+size_t read_ints_delta(const uint8_t *in, uint32_t *out, int length,
                        uint32_t prev) {
   __m128i mprev = _mm_set1_epi32(prev);
   size_t consumed = 0;
@@ -1882,7 +1882,7 @@ static int masked_vbyte_search_group_delta(const uint8_t *in, uint8_t *p,
 }
 
 // returns the index of the matching key
-int masked_vbyte_search_delta_1(const uint8_t *in, uint64_t length, uint32_t prev,
+int masked_vbyte_search_delta(const uint8_t *in, uint64_t length, uint32_t prev,
                               uint32_t key, uint32_t *presult) {
   size_t consumed = 0; // number of bytes read
   __m128i mprev = _mm_set1_epi32(prev);
@@ -2118,7 +2118,7 @@ static int masked_vbyte_select_group_delta(const uint8_t *in, uint8_t *p,
   return (0);
 }
 
-uint32_t masked_vbyte_select_delta_1(const uint8_t *in, uint64_t length,
+uint32_t masked_vbyte_select_delta(const uint8_t *in, uint64_t length,
                                    uint32_t prev, size_t slot) {
   size_t consumed = 0; // number of bytes read
   __m128i mprev = _mm_set1_epi32(prev);
