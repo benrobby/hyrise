@@ -24,6 +24,7 @@
 #include "benchmark_column_compression_turboPFOR.hpp"
 #include "benchmark_column_compression_turboPFOR_block.hpp"
 #include "benchmark_column_compression_turboPFOR_direct.hpp"
+#include "benchmark_column_compression_turboPFOR_direct_chunking.hpp"
 #include "benchmark_column_compression_dictionary.hpp"
 #include "benchmark_column_compression_unencoded.hpp"
 
@@ -136,6 +137,7 @@ void writeBitsPerInt() {
       make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
       make_pair(turboPFOR_block_compute_bitsPerInt, "turboPFOR_block"),
       make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
+      make_pair(turboPFOR_direct_chunking_compute_bitsPerInt, "turboPFOR_direct_chunking"),
 
       make_pair(fastPFOR_fastpfor256_compute_bitsPerInt, "fastPFOR_fastpfor256"),
 
@@ -204,6 +206,7 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(unencoded);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(dictionary);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct_chunking);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_block);
 

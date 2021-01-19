@@ -59,6 +59,16 @@ void _turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec,
   ValueT sum = 0;
   benchmark::DoNotOptimize(sum);
 
+  // p4 p41;
+  // unsigned b1;
+  // unsigned char* pointerCopy1 = outBuffer;
+  // p4ini(&p41, &pointerCopy1, n, &b1);
+  // for (size_t i = 0; i < vec.size(); i++) {
+  //   if (p4getx32(&p41, pointerCopy1, i, b1) != vec[i]) {
+  //     std::cout << "not equal" << std::endl;
+  //   }
+  // }
+
 
   for (auto _ : state) {
     // But you pay the price with an ugly C interface. I hate, hate, hate this pattern that
