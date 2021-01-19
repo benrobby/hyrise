@@ -6,9 +6,15 @@ using ValueT = uint32_t;
 
 namespace opossum {
 
+#define P4NENC_BOUND(n) ((n + 127) / 128 + (n + 32) * sizeof(uint32_t))
+#define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
+
 void turboPFOR_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
-  unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
-  ValueT* inData = (ValueT*) vec.data();
+  unsigned char* outBuffer = (unsigned char*) malloc(P4NENC_BOUND(vec.size()));
+  std::vector<ValueT> vecCopy(vec);
+  vecCopy.reserve(ROUND_UP(vec.size(), 32));
+
+  ValueT* inData = (ValueT*) vecCopy.data();
   benchmark::DoNotOptimize(outBuffer);
 
   for (auto _ : state) {
@@ -19,12 +25,14 @@ void turboPFOR_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::Sta
 
 void turboPFOR_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   // Encode
-  unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
-  ValueT* inData = (ValueT*) vec.data();
+  unsigned char* outBuffer = (unsigned char*) malloc(P4NENC_BOUND(vec.size()));
+  std::vector<ValueT> vecCopy(vec);
+  vecCopy.reserve(ROUND_UP(vec.size(), 32));
+  ValueT* inData = (ValueT*) vecCopy.data();
   p4nenc32(inData, vec.size(), outBuffer);
 
   // Decode
-  ValueT* decompressedData = (ValueT*) malloc(vec.size() * sizeof(ValueT));
+  ValueT* decompressedData = (ValueT*) malloc(ROUND_UP(vec.size(),32) * sizeof(ValueT));
   benchmark::DoNotOptimize(decompressedData);
 
   for (auto _ : state) {

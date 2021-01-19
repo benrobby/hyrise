@@ -9,54 +9,85 @@ using ValueT = uint32_t;
 
 namespace opossum {
 
+#define P4NENC_BOUND(n) ((n + 127) / 128 + (n + 32) * sizeof(uint32_t))
+#define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
+
+ValueT getValue(unsigned char* in, uint32_t b, p4 p4, uint32_t index) {
+  ValueT value;
+  if(unlikely(p4.isx)) {
+    value = p4getx32(&p4, in, index, b);
+  } else {
+    value = bitgetx32(in, index, b);
+  }
+  return value;
+}
+
+bool isCorrect(std::vector<ValueT> original, std::vector<ValueT> decompressed) {
+  for (int i = 0; i < original.size(); i++) {
+    if (original[i] != decompressed[i]) {
+      return false;
+    }
+  }
+  return true;
+}
 
 void turboPFOR_direct_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
-  unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
-  ValueT* inData = (ValueT*) vec.data();
+  unsigned char* outBuffer = (unsigned char*) malloc(P4NENC_BOUND(vec.size()));
+  std::vector<ValueT> vecCopy(vec);
+  vecCopy.reserve(ROUND_UP(vec.size(), 32));
+
+  ValueT* inData = (ValueT*) vecCopy.data();
   benchmark::DoNotOptimize(outBuffer);
 
   for (auto _ : state) {
-    p4encx32(inData, vec.size(), outBuffer);
+    p4nenc32(inData, vec.size(), outBuffer);
     benchmark::ClobberMemory();
   }
 }
 
 void turboPFOR_direct_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   // Encode
-  unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*8);
-  ValueT* inData = (ValueT*) vec.data();
-  p4encx32(inData, vec.size(), outBuffer);
-
-  // Decode
-  unsigned int size = vec.size();
-  ValueT* decompressedData = (ValueT*) malloc(vec.size() * sizeof(ValueT));
-  benchmark::DoNotOptimize(decompressedData);
-
-
-  for (auto _ : state) {
-    // The p4decx32 function calls the p4getx32 function for each i. The p4getx32 function is bascially the only resource to learn about how
-    // to use direct access. And it is impressively fast - in my tests it only took double the amount of time
-    // to decrompress the buffer compared to the p4dec function. This is still faster than a lot of the other algorithms
-    // that operate on whole blocks.
-    p4dec32(outBuffer, size, decompressedData);
-    benchmark::ClobberMemory();
-  }
-}
-
-void _turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
-  // Encode
-  unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
-  ValueT* inData = (ValueT*) vec.data();
+  unsigned char* outBuffer = (unsigned char*) malloc(P4NENC_BOUND(vec.size()));
+  std::vector<ValueT> vecCopy(vec);
+  vecCopy.reserve(ROUND_UP(vec.size(), 32));
+  ValueT* inData = (ValueT*) vecCopy.data();
   p4nenc32(inData, vec.size(), outBuffer);
 
   // Decode
+  std::vector<ValueT> decompressedData(vec.size());
+  decompressedData.reserve(ROUND_UP(vec.size(),32));
+  benchmark::DoNotOptimize(decompressedData);
+
+  for (auto _ : state) {
+    p4ndec32(outBuffer, vec.size(), decompressedData.data());
+    benchmark::ClobberMemory();
+  }
+  assert(isCorrect(vec, decompressedData));
+}
+
+void _turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   unsigned int n = vec.size();
+  std::vector<ValueT> originalValues;
+  for (auto i : pointIndices) {
+    originalValues.push_back(vec[i]);
+  }
+
+  // Encode
+  unsigned char* outBuffer = (unsigned char*) malloc(P4NENC_BOUND(vec.size()));
+  std::vector<ValueT> vecCopy(vec);
+  vecCopy.resize(ROUND_UP(vec.size(), 32));
+  ValueT* inData = (ValueT*) vecCopy.data();
+  p4encx32(inData, n, outBuffer);
+
+  // Decode
   std::vector<ValueT> points = std::vector<ValueT>(n);
   benchmark::DoNotOptimize(points);
 
-
   ValueT sum = 0;
-  benchmark::DoNotOptimize(sum);
+  p4 p4;
+  unsigned b;
+  unsigned char* pointerCopy = outBuffer;
+  p4ini(&p4, &pointerCopy, n, &b);
 
 
   for (auto _ : state) {
@@ -64,18 +95,16 @@ void _turboPFOR_direct_benchmark_decoding_points(const std::vector<ValueT>& vec,
     // you create new uninitialized variables and pass them to the function by reference, where
     // it mutates them. This is especially annoying for the "in" parameter. If we don't copy the outBuffer pointer,
     // it gets mutated, which just screams "annoying, hard to debug problem in the future".
-    p4 p4;
-    unsigned b;
-    unsigned char* pointerCopy = outBuffer;
-    p4ini(&p4, &pointerCopy, n, &b);
+
     if (nocopy) {
       for (size_t i = 0; i < pointIndices.size(); i++) {
-        sum += p4getx32(&p4, pointerCopy, pointIndices[i], b);
+        sum += getValue(pointerCopy, b, p4, pointIndices[i]);
       }
     } else {
       for (size_t i = 0; i < pointIndices.size(); i++) {
-        points[i] = p4getx32(&p4, pointerCopy, pointIndices[i], b);
+        points[i] = getValue(pointerCopy, b, p4, pointIndices[i]);
       }
+      assert(isCorrect(originalValues, points));
     }
     benchmark::ClobberMemory();
     sum = 0;
