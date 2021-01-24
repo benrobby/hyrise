@@ -66,6 +66,7 @@ add_executable(
     benchmark_column_compression_sdsl_lite_vlc_vector.hpp    
     benchmark_column_compression_sdsl_lite_dac_vector.hpp
     benchmark_column_compression_turboPFOR.hpp
+    benchmark_column_compression_turboPFOR_bitcompression.hpp
     benchmark_column_compression_turboPFOR_direct.hpp
     benchmark_column_compression_turboPFOR_direct_chunking.hpp
     benchmark_column_compression_turboPFOR_block.hpp
