@@ -33,38 +33,6 @@ typedef struct PointBasedCache {
     std::vector<unsigned char*> ins;
 } PointBasedCache;
 
-inline EncodedTurboPForVector p4EncodeVector(const std::vector<uint32_t>& vec) {
-  size_t numElements = vec.size();
-  size_t numElementsAligned = numElements + P4_BLOCK_SIZE; // todo better bounds
-
-  std::vector<uint32_t> v1(vec);
-  v1.resize(numElements + P4_BLOCK_SIZE + 32); 
-  // lib apparently has some out of bounds accesses that we want to catch with this. 
-  // also ensure that we have a multiple of P4_BLOCK_SIZE values in here so we can compress full blocks only.
-
-  uint32_t* inData = (uint32_t*) v1.data();
-  std::vector<unsigned char> compressedBufferVec(4*P4NENC_BOUND(v1.size(), sizeof(uint32_t)));
-  uint8_t *out_ptr, *compressedBufferVecPtr;
-  out_ptr = (uint8_t*) compressedBufferVec.data();
-  compressedBufferVecPtr = out_ptr;
-
-  std::vector<uint32_t> offsets;
-  offsets.push_back(0);
-  for(size_t i = 0; i < (numElementsAligned&~(P4_BLOCK_SIZE - 1)); i += P4_BLOCK_SIZE) { 
-      uint8_t* next_ptr = p4encx32(inData + i, P4_BLOCK_SIZE, out_ptr);
-      offsets.push_back(next_ptr - compressedBufferVecPtr);
-      out_ptr = next_ptr;
-      // todo: increment out_ptr?
-  }
-
-  compressedBufferVec.resize(out_ptr-compressedBufferVecPtr+P4_BLOCK_SIZE);
-  EncodedTurboPForVector e;
-  e.compressedBuffer = compressedBufferVec;
-  e.offsets = offsets;
-  e.size = numElements;
-
-  return e;
-}
 
 inline PointBasedCache calculateP4Ini(const EncodedTurboPForVector& e) {
   unsigned char* inPointer = const_cast<unsigned char*>(e.compressedBuffer.data());
@@ -87,7 +55,7 @@ inline std::vector<uint32_t> p4DecodeVectorSequential(const EncodedTurboPForVect
     return std::vector<uint32_t>(0);
   }
 
-  auto decodedVector = std::vector<uint32_t>(4*P4NDEC_BOUND(numElements, 1));
+  auto decodedVector = std::vector<uint32_t>(P4NDEC_BOUND(numElements, 1) + P4_BLOCK_SIZE);
   uint32_t *decoded_ptr = decodedVector.data();
 
   std::vector<uint32_t> offsets = e.offsets;
@@ -133,6 +101,60 @@ inline uint32_t p4GetValueNoInit(const EncodedTurboPForVector& e, const PointBas
   uint32_t result = p4getx32(&p4, p, idx - offset_to_block, b);
   return result;
 }
+
+inline EncodedTurboPForVector p4EncodeVector(const std::vector<uint32_t>& vec) {
+  size_t numElements = vec.size();
+  size_t numElementsAligned = numElements + P4_BLOCK_SIZE; // todo better bounds
+
+  std::vector<uint32_t> v1(vec);
+  v1.resize(numElements + P4_BLOCK_SIZE); 
+  // lib apparently has some out of bounds accesses that we want to catch with this. 
+  // also ensure that we have a multiple of P4_BLOCK_SIZE values in here so we can compress full blocks only.
+
+  uint32_t* inData = (uint32_t*) v1.data();
+  std::vector<unsigned char> compressedBufferVec(P4NENC_BOUND(v1.size(), sizeof(uint32_t)));
+  uint8_t *out_ptr, *compressedBufferVecPtr;
+  out_ptr = (uint8_t*) compressedBufferVec.data();
+  compressedBufferVecPtr = out_ptr;
+
+  std::vector<uint32_t> offsets;
+  offsets.push_back(0);
+  for(size_t i = 0; i < (numElementsAligned&~(P4_BLOCK_SIZE - 1)); i += P4_BLOCK_SIZE) { 
+      uint8_t* next_ptr = p4encx32(inData + i, P4_BLOCK_SIZE, out_ptr);
+      offsets.push_back(next_ptr - compressedBufferVecPtr);
+      out_ptr = next_ptr;
+      // todo: increment out_ptr?
+  }
+
+  compressedBufferVec.resize(out_ptr-compressedBufferVecPtr+P4_BLOCK_SIZE);
+  EncodedTurboPForVector e;
+  e.compressedBuffer = compressedBufferVec;
+  e.offsets = offsets;
+  e.size = numElements;
+
+  auto dec = p4DecodeVectorSequential(e);
+  for (int i = 0; i < vec.size(); i++) {
+    auto d = dec[i];
+    auto v = vec[i];
+    if (d != v) {
+      std::cout << "error" << std::endl;
+      auto f = p4DecodeVectorSequential(e);
+    }
+  }
+
+  for (int i = 0; i < vec.size(); i++) {
+    auto d = p4GetValue(e, i);
+    auto v = vec[i];
+    if (d != v) {
+      std::cout << "error" << std::endl;
+      auto f = p4GetValue(e, i);
+    }
+  }
+
+  return e;
+}
+
+
 }
 }
 

@@ -45,7 +45,7 @@ class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
     values.shrink_to_fit();
     null_values.shrink_to_fit();
 
-    turboPFOR::EncodedTurboPForVector e = turboPFOR::p4EncodeVector(values);
+    turboPFOR::EncodedTurboPForVector e = turboPFOR::p4EncodeVector(values); // WRONG, use allocator
     auto as_pointer = std::make_shared<turboPFOR::EncodedTurboPForVector>(e);
  
     if (segment_contains_null_values) {
