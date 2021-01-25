@@ -130,8 +130,8 @@ void BenchmarkRunner::run() {
   }
 
   const auto table = SQLPipelineBuilder{"SELECT * FROM meta_segments_accurate"}
-                         .create_pipeline()
-                         .get_result_table().second;
+     .create_pipeline()
+     .get_result_table().second;
       
   Print::print(table);
 
