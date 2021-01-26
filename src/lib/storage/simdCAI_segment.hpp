@@ -64,7 +64,6 @@ class SIMDCAISegment : public AbstractEncodedSegment {
     // size_t recovered_size = decoded_values.size();
 
     // SIMDCompressionLib::FrameOfReference codec;
-    SIMDCompressionLib::IntegerCODEC &codec = *SIMDCompressionLib::CODECFactory::getFromName("simdframeofreference");
 
     // codec.decodeArray(_encoded_values->data(), _encoded_values->size(), decoded_values.data(), recovered_size);
 
@@ -72,7 +71,7 @@ class SIMDCAISegment : public AbstractEncodedSegment {
     // todo: select with codec and add conditional breakpoint for when they don't equal, then run tests
 
     //auto v1 = static_cast<T>(decoded_values[chunk_offset]);
-    auto v2 = static_cast<T>(codec.select(_encoded_values->data(), chunk_offset));
+    auto v2 = static_cast<T>(_codec->select(_encoded_values->data(), chunk_offset));
 
     // if (v1 != v2) {
     //     auto v3 = static_cast<T>(codec.select(_encoded_values->data(), chunk_offset));
@@ -103,6 +102,7 @@ class SIMDCAISegment : public AbstractEncodedSegment {
   const std::optional<pmr_vector<bool>> _null_values;
   uint8_t _codec_id;
   ChunkOffset _size;
+  SIMDCompressionLib::IntegerCODEC *_codec;
 };
 
 }  // namespace opossum

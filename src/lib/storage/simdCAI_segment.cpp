@@ -17,7 +17,11 @@ SIMDCAISegment<T, U>::SIMDCAISegment(const std::shared_ptr<const pmr_vector<uint
       _encoded_values{encoded_values},
       _null_values{null_values},
       _codec_id{codec_id},
-      _size{size} {}
+      _size{size} {
+          SIMDCompressionLib::IntegerCODEC &codec = *SIMDCompressionLib::CODECFactory::getFromName("simdframeofreference");
+
+          _codec = &codec;
+      }
 
 template <typename T, typename U>
 const std::shared_ptr<const pmr_vector<uint32_t>> SIMDCAISegment<T, U>::encoded_values() const {
