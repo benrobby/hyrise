@@ -30,14 +30,12 @@ enum class CompressedVectorType : uint8_t {
   FixedSize4ByteAligned,  // uncompressed
   FixedSize2ByteAligned,
   FixedSize1ByteAligned,
-  SimdBp128,
-  TurboPForBitpacking
+  SimdBp128
 };
 
 template <typename T>
 class FixedSizeByteAlignedVector;
 class SimdBp128Vector;
-class TurboPForBitpackingVector;
 
 /**
  * Mapping of compressed vector types to compressed vectors
@@ -51,9 +49,7 @@ constexpr auto compressed_vector_for_type = hana::make_map(
                     hana::type_c<FixedSizeByteAlignedVector<uint16_t>>),
     hana::make_pair(enum_c<CompressedVectorType, CompressedVectorType::FixedSize1ByteAligned>,
                     hana::type_c<FixedSizeByteAlignedVector<uint8_t>>),
-    hana::make_pair(enum_c<CompressedVectorType, CompressedVectorType::SimdBp128>, hana::type_c<SimdBp128Vector>),
-    hana::make_pair(enum_c<CompressedVectorType, CompressedVectorType::TurboPForBitpacking>, hana::type_c<TurboPForBitpackingVector>)  
-  );
+    hana::make_pair(enum_c<CompressedVectorType, CompressedVectorType::SimdBp128>, hana::type_c<SimdBp128Vector>));
 
 /**
  * @brief Returns the CompressedVectorType of a given compressed vector
