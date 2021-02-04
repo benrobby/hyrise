@@ -52,17 +52,27 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
 
   benchmark::DoNotOptimize(dec.data());
 
+  unsigned int n = vec.size();
+  std::vector<ValueT> points = std::vector<ValueT>(n);
+  benchmark::DoNotOptimize(points);
+
+  // auto sum = 0;
+  // benchmark::DoNotOptimize(sum);
+
   for (auto _ : state) {
 
     bitunpack32(compressedBufVec.data(), in.size(), dec.data(), b);
 
-    // for (int i = 0; i < in.size(); i++) {
-    //   if (dec[i] != in[i]) {
-    //     std::cout << "not equal" << dec[i] << "    " << in[i] << std::endl;
-    //   }
-    // }
+    for (int i = 0; i < in.size(); i++) {
+      points[i] = dec[i];
+      // if (dec[i] != in[i]) {
+      //   std::cout << "not equal" << dec[i] << "    " << in[i] << std::endl;
+      // }
+    }
 
     benchmark::ClobberMemory();
+    std::fill(points.begin(), points.end(), 0);
+    //sum = 0;
   }
 }
 

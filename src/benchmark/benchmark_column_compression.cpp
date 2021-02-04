@@ -53,7 +53,8 @@
   COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_1000, benchmarkMethodDecodePoints); \
   COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10000, benchmarkMethodDecodePoints); \
 COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_65000, benchmarkMethodDecodePoints); \
-COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10000_sorted, benchmarkMethodDecodePoints);
+COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_10000_sorted, benchmarkMethodDecodePoints) \
+COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_65000_sorted, benchmarkMethodDecodePoints);
 
 #define COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, poslistMethod, benchmarkMethod)      \
   BENCHMARK_F(BenchmarkColumnCompressionFixture, benchmarkMethod##_##setupMethod##_##poslistMethod) \

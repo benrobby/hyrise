@@ -50,6 +50,15 @@ std::vector<size_t> get_poslist_10000_sorted() {
   return poslist;
 }
 
+std::vector<size_t> get_poslist_65000_sorted() {
+  vector<size_t> vec(65000);
+  int i = 0;
+  generate(vec.begin(), vec.end(), [&]() {
+    return i++;
+  });
+  return vec;
+}
+
 // Data
 
 std::vector<ValueT> get_with_small_numbers() {
