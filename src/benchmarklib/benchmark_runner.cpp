@@ -7,6 +7,7 @@
 #include <boost/range/adaptors.hpp>
 #include "cxxopts.hpp"
 
+#include "operators/print.hpp"
 #include "benchmark_config.hpp"
 #include "constant_mappings.hpp"
 #include "hyrise.hpp"
