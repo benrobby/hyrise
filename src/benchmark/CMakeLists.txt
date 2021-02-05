@@ -65,6 +65,7 @@ add_executable(
     benchmark_column_compression_oroch_integerArray.hpp
     benchmark_column_compression_sdsl_lite_vlc_vector.hpp    
     benchmark_column_compression_sdsl_lite_dac_vector.hpp
+    benchmark_column_compression_compactVector.hpp
     benchmark_column_compression_turboPFOR.hpp
     benchmark_column_compression_turboPFOR_bitcompression.hpp
     benchmark_column_compression_turboPFOR_direct.hpp

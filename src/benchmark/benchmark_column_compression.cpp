@@ -21,6 +21,7 @@
 #include "benchmark_column_compression_streamVByte.hpp"
 #include "benchmark_column_compression_streamVByte0124.hpp"
 #include "benchmark_column_compression_streamVByteDelta.hpp"
+#include "benchmark_column_compression_compactVector.hpp"
 #include "benchmark_column_compression_turboPFOR.hpp"
 #include "benchmark_column_compression_turboPFOR_block.hpp"
 #include "benchmark_column_compression_turboPFOR_direct.hpp"
@@ -136,6 +137,8 @@ void writeBitsPerInt() {
       make_pair(sdsl_lite_vlc_vector_compute_bitsPerInt, "sdsl_lite_vlc_vector"),
       make_pair(sdsl_lite_dac_vector_compute_bitsPerInt, "sdsl_lite_dac_vector"),
 
+      make_pair(compactVector_compute_bitsPerInt, "compactVector"),
+
       make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
       make_pair(turboPFOR_block_compute_bitsPerInt, "turboPFOR_block"),
       make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
@@ -208,6 +211,9 @@ class BenchmarkColumnCompressionFixture : public benchmark::Fixture {
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(unencoded);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(dictionary);
+
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(compactVector);
+
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct_chunking);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_bitcompression);

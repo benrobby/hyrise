@@ -65,9 +65,9 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
 
     for (int i = 0; i < in.size(); i++) {
       points[i] = dec[i];
-      // if (dec[i] != in[i]) {
-      //   std::cout << "not equal" << dec[i] << "    " << in[i] << std::endl;
-      // }
+      if (dec[i] != in[i]) {
+        std::cout << "not equal" << dec[i] << "    " << in[i] << std::endl;
+      }
     }
 
     benchmark::ClobberMemory();
