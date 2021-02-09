@@ -551,8 +551,6 @@ set(
     storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_compressor.cpp
     storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_compressor.hpp
     storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_decompressor.hpp
-    storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_decompressor.cpp
-    storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_iterator.cpp
     storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_iterator.hpp
     storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_vector.hpp
     storage/vector_compression/turboPFor_bitpacking/turboPFor_bitpacking_vector.cpp
