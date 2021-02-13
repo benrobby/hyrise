@@ -60,7 +60,7 @@ class TurboPForBitpackingIterator : public BaseCompressedVectorIterator<TurboPFo
  private:
   const pmr_vector<uint8_t>& _data;
   size_t _absolute_index;
-  uint8_t _b;
+  const uint8_t _b;
 };
 
 }  // namespace opossum

@@ -8,10 +8,10 @@ size_t TurboPForBitpackingVector::on_size() const { return _size; }
 size_t TurboPForBitpackingVector::on_data_size() const { return sizeof(uint8_t) * _data.size(); }
 
 std::unique_ptr<BaseVectorDecompressor> TurboPForBitpackingVector::on_create_base_decompressor() const {
-  return std::make_unique<TurboPForBitpackingDecompressor>(_data, _b);
+  return std::make_unique<TurboPForBitpackingDecompressor>(_data, _b, _size);
 }
 
-TurboPForBitpackingDecompressor TurboPForBitpackingVector::on_create_decompressor() const { return TurboPForBitpackingDecompressor(_data, _b); }
+TurboPForBitpackingDecompressor TurboPForBitpackingVector::on_create_decompressor() const { return TurboPForBitpackingDecompressor(_data, _b, _size); }
 
 TurboPForBitpackingIterator TurboPForBitpackingVector::on_begin() const { return TurboPForBitpackingIterator{_data, _b, 0u}; }
 

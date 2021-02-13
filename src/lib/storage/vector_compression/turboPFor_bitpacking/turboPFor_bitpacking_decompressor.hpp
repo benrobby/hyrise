@@ -13,7 +13,7 @@ class TurboPForBitpackingVector;
 
 class TurboPForBitpackingDecompressor : public BaseVectorDecompressor {
  public:
-  explicit TurboPForBitpackingDecompressor(const pmr_vector<uint8_t>& data, uint8_t b) : _data{data}, _b{b} {}
+  explicit TurboPForBitpackingDecompressor(const pmr_vector<uint8_t>& data, uint8_t b, size_t size) : _data{data}, _b{b}, _size{size} {}
   TurboPForBitpackingDecompressor(const TurboPForBitpackingDecompressor& other) = default;
   TurboPForBitpackingDecompressor(TurboPForBitpackingDecompressor&& other) = default;
 
@@ -37,8 +37,8 @@ class TurboPForBitpackingDecompressor : public BaseVectorDecompressor {
 
  private:
   const pmr_vector<uint8_t>& _data;
-  size_t _size;
-  uint8_t _b;
+  const size_t _size;
+  const uint8_t _b;
 };
 
 }  // namespace opossum
