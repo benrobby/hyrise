@@ -24,6 +24,10 @@ vector<size_t> getUniformlyDistributedVector(const int size, size_t start, size_
   return vec;
 }
 
+std::vector<size_t> get_poslist_1() {
+  return getUniformlyDistributedVector(10,0,CHUNK_SIZE);
+}
+
 std::vector<size_t> get_poslist_10() {
   return getUniformlyDistributedVector(10,0,CHUNK_SIZE);
 }
