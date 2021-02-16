@@ -107,4 +107,9 @@ std::vector<ValueT> get_with_year_categorical_numbers() {
   return std::vector<ValueT>(vec.begin(), vec.end());
 }
 
+std::vector<ValueT> get_with_av_numbers() {
+  std::vector<size_t> vec = getUniformlyDistributedVector(CHUNK_SIZE, 0, CHUNK_SIZE);
+  return std::vector<ValueT>(vec.begin(), vec.end());
+}
+
 }
