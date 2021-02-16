@@ -133,7 +133,12 @@ void compactVector_benchmark_decoding_points_nocopy(const std::vector<ValueT>& v
 }
 
 float compactVector_compute_bitsPerInt(std::vector<ValueT>& vec) {
-  return 0.0;
+  uint32_t max = 0;
+  for (const auto v : vec) {
+    max |= v;
+  }
+  uint32_t b = compact::vector<int, 32>::required_bits(max);
+  return (float) b;
 }
 
 }  // namespace opossum
