@@ -4,6 +4,7 @@
 
 #include "bitpack.h"
 #include "conf.h"
+#include "math.h"
 
 using ValueT = uint32_t;
 
@@ -23,7 +24,7 @@ void turboPFOR_bitcompression_benchmark_encoding(const std::vector<ValueT>& vec,
     max |= v;
   }
 
-  uint32_t b = bsr32(max);
+  uint32_t b = log2(max +1) + 1;
   benchmark::DoNotOptimize(compressedBufVec.data());
 
   for (auto _ : state) {
@@ -44,7 +45,7 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
     max |= v;
   }
 
-  uint32_t b = bsr32(max);
+  uint32_t b = log2(max +1) + 1;
 
   bitpack32(in.data(), in.size(), compressedBufVec.data(), b);
 
@@ -63,15 +64,15 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
 
     bitunpack32(compressedBufVec.data(), in.size(), dec.data(), b);
 
-    for (int i = 0; i < in.size(); i++) {
-      points[i] = dec[i];
-      if (dec[i] != in[i]) {
-        std::cout << "not equal" << dec[i] << "    " << in[i] << std::endl;
-      }
-    }
+    // for (int i = 0; i < in.size(); i++) {
+    //   points[i] = dec[i];
+    //   if (dec[i] != in[i]) {
+    //     std::cout << "not equal" << dec[i] << "    " << in[i] << std::endl;
+    //   }
+    // }
 
     benchmark::ClobberMemory();
-    std::fill(points.begin(), points.end(), 0);
+    // std::fill(points.begin(), points.end(), 0);
     //sum = 0;
   }
 }
@@ -86,7 +87,7 @@ void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<Value
     max |= v;
   }
 
-  uint32_t b = bsr32(max);
+  uint32_t b = log2(max +1) + 1;
 
   bitpack32(in.data(), in.size(), compressedBufVec.data(), b);
 
@@ -135,7 +136,24 @@ void turboPFOR_bitcompression_benchmark_decoding_points_nocopy(const std::vector
 }
 
 float turboPFOR_bitcompression_compute_bitsPerInt(std::vector<ValueT>& vec) {
-  return 0.0;
+  std::vector<uint32_t> in(vec);
+  std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 1024);
+  uint32_t max = 0;
+
+  for (const auto v : in) {
+    max |= v;
+  }
+
+  uint32_t b = log2(max +1) + 1;
+  benchmark::DoNotOptimize(compressedBufVec.data());
+
+  unsigned char * end = bitpack32(in.data(), in.size(), compressedBufVec.data(), b);
+
+  auto length_bytes = end - ((unsigned char *) compressedBufVec.data());
+
+  std::cout << "BITCOMPRESSION: " << b << " " << length_bytes << " " << vec.size() << std::endl;
+
+  return (length_bytes * 8.0) / vec.size();
 }
 
 }  // namespace opossum

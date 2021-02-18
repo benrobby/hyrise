@@ -71,7 +71,7 @@ void compactVector_benchmark_decoding(const std::vector<ValueT>& vec, benchmark:
     }
 
     benchmark::ClobberMemory();
-    std::fill(points.begin(), points.end(), 0);
+    // std::fill(points.begin(), points.end(), 0);
     //sum = 0;
 
   }

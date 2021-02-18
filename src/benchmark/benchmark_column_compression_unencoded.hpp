@@ -28,7 +28,9 @@ class UnencodedEncoder {
   }
 
   void getAll(std::vector<ValueT>& valueAllocated) {
-    std::copy(vec.begin(), vec.end(), std::back_inserter(valueAllocated));
+    for (size_t i = 0; i < vec.size(); i++) {
+      valueAllocated[i] = vec[i];
+    }
   }
 
   int size_in_bytes() {

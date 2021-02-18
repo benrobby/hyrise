@@ -137,8 +137,7 @@ void _SIMDCompressionAndIntersection_benchmark_decoding_points_select(const std:
 
   for (auto _ : state) {
     size_t size = recoveredsize;
-    codec.decodeArray(compressed_output.data(), compressedsize,
-                      dec.data(), size);
+    // codec.decodeArray(compressed_output.data(), compressedsize, dec.data(), size);
     if (nocopy) {
       for (size_t i = 0; i < pointIndices.size(); i++) {
         sum += codec.select(compressed_output.data(), pointIndices[i]);

@@ -47,8 +47,13 @@
                                                  benchmarkName##_benchmark_decoding);                            \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_av_numbers, benchmarkName##_benchmark_encoding,        \
   benchmarkName##_benchmark_decoding);                            \
-  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points); \
-  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points_nocopy);
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points_nocopy); \
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_month_categorical_numbers, benchmarkName##_benchmark_decoding_points_nocopy); \
+
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points);
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points_nocopy);
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points); 
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_month_categorical_numbers, benchmarkName##_benchmark_decoding_points); 
 
 #define COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(setupMethod, benchmarkMethodDecodePoints)            \
   COLUMN_COMPRESSION_BENCHMARK_WITH_POSLIST(setupMethod, get_poslist_1, benchmarkMethodDecodePoints);   \
@@ -93,7 +98,18 @@ void writeBitsPerInt() {
 
   // keep both in sync
   std::vector<pair<float (*)(std::vector<ValueT> & vec), string>> functions = {
+
+      make_pair(unencoded_compute_bitsPerInt, "unencoded"),
+
       make_pair(dictionary_compute_bitsPerInt, "dictionary"),
+
+      make_pair(compactVector_compute_bitsPerInt, "compactVector"),
+
+      make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
+      make_pair(turboPFOR_block_compute_bitsPerInt, "turboPFOR_block"),
+      make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
+      make_pair(turboPFOR_direct_chunking_compute_bitsPerInt, "turboPFOR_direct_chunking"),
+      make_pair(turboPFOR_bitcompression_compute_bitsPerInt, "turboPFOR_bitcompression"),
 
       make_pair(SIMDCompressionAndIntersection_fastpfor_compute_bitsPerInt, "SIMDCompressionAndIntersection_fastpfor"),
       make_pair(SIMDCompressionAndIntersection_varint_compute_bitsPerInt, "SIMDCompressionAndIntersection_varint"),
@@ -140,13 +156,7 @@ void writeBitsPerInt() {
       make_pair(sdsl_lite_vlc_vector_compute_bitsPerInt, "sdsl_lite_vlc_vector"),
       make_pair(sdsl_lite_dac_vector_compute_bitsPerInt, "sdsl_lite_dac_vector"),
 
-      make_pair(compactVector_compute_bitsPerInt, "compactVector"),
-
-      make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
-      make_pair(turboPFOR_block_compute_bitsPerInt, "turboPFOR_block"),
-      make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
-      make_pair(turboPFOR_direct_chunking_compute_bitsPerInt, "turboPFOR_direct_chunking"),
-      make_pair(turboPFOR_bitcompression_compute_bitsPerInt, "turboPFOR_bitcompression"),
+     
 
       make_pair(fastPFOR_fastpfor256_compute_bitsPerInt, "fastPFOR_fastpfor256"),
 
@@ -179,6 +189,7 @@ void writeBitsPerInt() {
       make_pair(fastPFOR_simdgroupsimple_compute_bitsPerInt, "fastPFOR_simdgroupsimple"),
       make_pair(fastPFOR_simdgroupsimple_ringbuf_compute_bitsPerInt, "fastPFOR_simdgroupsimple_ringbuf"),
       make_pair(fastPFOR_copy_compute_bitsPerInt, "fastPFOR_copy"),
+
 
       // Broken
       // make_pair(fastPFOR_varintg8iu_compute_bitsPerInt, "fastPFOR_varintg8iu"),
