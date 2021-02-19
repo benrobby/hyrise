@@ -181,7 +181,9 @@ void _dictionary_benchmark_decoding_points(const std::vector<ValueT>& vec, const
     }
 
     benchmark::ClobberMemory();
-    sum = 0;
+	}
+	if (sum) {
+    std::cout << "";
   }
 }
 

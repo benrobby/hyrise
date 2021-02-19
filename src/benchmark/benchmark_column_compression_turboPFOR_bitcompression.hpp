@@ -123,7 +123,9 @@ void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<Value
       }
     }
     benchmark::ClobberMemory();
-    sum = 0;
+	}
+	if (sum) {
+    std::cout << "";
   }
  
 }

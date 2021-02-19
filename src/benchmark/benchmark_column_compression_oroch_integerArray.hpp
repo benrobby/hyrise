@@ -71,7 +71,9 @@ void _oroch_integerArray_benchmark_decoding_points(const std::vector<ValueT>& ve
     }
 
     benchmark::ClobberMemory();
-    sum = 0;
+	}
+	if (sum) {
+    std::cout << "";
   }
 }
 

@@ -108,7 +108,9 @@ void _SIMDCompressionAndIntersection_benchmark_decoding_points(const std::vector
     }
 
     benchmark::ClobberMemory();
-    sum = 0;
+	}
+	if (sum) {
+    std::cout << "";
   }
 }
 
@@ -148,7 +150,9 @@ void _SIMDCompressionAndIntersection_benchmark_decoding_points_select(const std:
       }
     }
     benchmark::ClobberMemory();
-    sum = 0;
+	}
+	if (sum) {
+    std::cout << "";
   }
 }
 

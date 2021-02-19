@@ -193,7 +193,9 @@ void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<Valu
       }
     }
     benchmark::ClobberMemory();
-    sum = 0;
+	}
+	if (sum) {
+    std::cout << "";
   }
 }
 

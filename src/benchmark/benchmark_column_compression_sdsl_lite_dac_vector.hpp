@@ -77,7 +77,9 @@ void _sdsl_lite_dac_vector_benchmark_decoding_points(const std::vector<ValueT>& 
     }
 
     benchmark::ClobberMemory();
-    sum = 0;
+	}
+	if (sum) {
+    std::cout << "";
   }
 }
 
