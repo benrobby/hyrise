@@ -26,8 +26,8 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
   template <typename Functor>
   void _on_with_iterators(const Functor& functor) const {
     _segment.access_counter[SegmentAccessCounter::AccessType::Sequential] += _segment.size();
-    auto begin = Iterator{_segment.encoded_values(), &_segment.null_values(), _segment.size(), ChunkOffset{0}};
-    auto end = Iterator{_segment.encoded_values(), &_segment.null_values(), _segment.size(), static_cast<ChunkOffset>(_segment.size())};
+    auto begin = Iterator{_segment.data(), _segment.b(), &_segment.null_values(), _segment.size(), ChunkOffset{0}};
+    auto end = Iterator{_segment.data(), _segment.b(), &_segment.null_values(), _segment.size(), static_cast<ChunkOffset>(_segment.size())};
 
     functor(begin, end);
   }
@@ -38,10 +38,10 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
 
     using PosListIteratorType = decltype(position_filter->cbegin());
     auto begin =
-        PointAccessIterator<PosListIteratorType>{_segment.encoded_values(), &_segment.null_values(), _segment.size(),
+        PointAccessIterator<PosListIteratorType>{_segment.data(), _segment.b(), &_segment.null_values(), _segment.size(),
                                                  position_filter->cbegin(), position_filter->cbegin()};
     auto end =
-        PointAccessIterator<PosListIteratorType>{_segment.encoded_values(), &_segment.null_values(), _segment.size(),
+        PointAccessIterator<PosListIteratorType>{_segment.data(), _segment.b(), &_segment.null_values(), _segment.size(),
                                                  position_filter->cbegin(), position_filter->cend()};
     functor(begin, end);
   }
@@ -59,17 +59,18 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
       using EndPositionIterator = typename pmr_vector<ChunkOffset>::const_iterator;
 
     public:
-      explicit Iterator(const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values,
+      explicit Iterator(const std::shared_ptr<pmr_vector<uint8_t>> encoded_values,
+                        uint8_t b,
                         const std::optional<pmr_vector<bool>>* null_values,
                         ChunkOffset size,
                         ChunkOffset chunk_offset)
-          : _encoded_values{encoded_values},
-            _null_values{null_values},
+          : _null_values{null_values},
             _chunk_offset{chunk_offset} {
-              _decoded_values = std::vector<uint32_t>(size);
-              // Using the p4DecodeVectorSequential function still leads to a Segmentation Fault
-              // in the benchmark.
-              _decoded_values = p4DecodeVectorSequential(*_encoded_values);
+              _decoded_values = std::vector<uint32_t>(size + 1024);
+              if (size > 0) {
+                bitunpack32(encoded_values->data(), size, _decoded_values.data(), b);
+              }
+              _decoded_values.resize(size);
       }
 
     private:
@@ -104,8 +105,6 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
       }
 
       private:
-      std::shared_ptr<turboPFOR::EncodedTurboPForVector> _encoded_values;
-      turboPFOR::PointBasedCache p4_cache;
       const std::optional<pmr_vector<bool>>* _null_values;
       std::vector<uint32_t> _decoded_values;
 
@@ -120,7 +119,8 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
     using ValueType = T;
     using IterableType = TurboPFORSegmentIterable<T>;
 
-    explicit PointAccessIterator(const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values,
+    explicit PointAccessIterator(const std::shared_ptr<pmr_vector<uint8_t>> encoded_values,
+                                 uint8_t b,
                                  const std::optional<pmr_vector<bool>>* null_values,
                                  ChunkOffset size,
                                  const PosListIteratorType position_filter_begin,
@@ -128,9 +128,9 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
            AbstractPointAccessSegmentIterator<PointAccessIterator, SegmentPosition<T>, PosListIteratorType>
                {std::move(position_filter_begin),std::move(position_filter_it)},
         _encoded_values{encoded_values},
+        _b{b},
         _null_values{null_values} 
         {
-           p4_cache = turboPFOR::calculateP4Ini(*_encoded_values);
         }
 
     private:
@@ -141,13 +141,13 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
       const auto current_offset = chunk_offsets.offset_in_referenced_chunk;
 
       const auto is_null = *_null_values ? (**_null_values)[current_offset] : false;
-      const auto value = turboPFOR::p4GetValueNoInit(*_encoded_values, p4_cache, current_offset);
+      const auto value = bitgetx32(_encoded_values->data(), current_offset, _b);
       return SegmentPosition<T>{value, is_null, chunk_offsets.offset_in_poslist};
     }
 
     private:
-    std::shared_ptr<turboPFOR::EncodedTurboPForVector> _encoded_values;
-    turboPFOR::PointBasedCache p4_cache;
+    std::shared_ptr<pmr_vector<uint8_t>> _encoded_values;
+    uint8_t _b;
     const std::optional<pmr_vector<bool>>* _null_values;
   };
 };

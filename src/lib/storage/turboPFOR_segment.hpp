@@ -15,8 +15,6 @@
 #include "bitpack.h"
 #include "vp4.h"
 
-#include "turboPFOR_segment/turboPFOR_wrapper.hpp"
-
 
 namespace opossum {
 
@@ -40,13 +38,14 @@ template <typename T, typename = std::enable_if_t<encoding_supports_data_type(
     enum_c<EncodingType, EncodingType::TurboPFOR>, hana::type_c<T>)>>
 class TurboPFORSegment : public AbstractEncodedSegment {
  public:
-  explicit TurboPFORSegment(const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values,
+  explicit TurboPFORSegment(std::shared_ptr<pmr_vector<uint8_t>> data, size_t sz, uint8_t b,
                            std::optional<pmr_vector<bool>> null_values,
                            ChunkOffset size);
 
-  const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values() const;
   const std::optional<pmr_vector<bool>>& null_values() const;
   ChunkOffset size() const final;
+  std::shared_ptr<pmr_vector<uint8_t>> data() const;
+  uint8_t b() const;
 
   /**
    * @defgroup AbstractSegment interface
@@ -61,9 +60,7 @@ class TurboPFORSegment : public AbstractEncodedSegment {
     if (_null_values && (*_null_values)[chunk_offset]) {
       return std::nullopt;
     }
-
-    const auto value = turboPFOR::p4GetValue(*_encoded_values, chunk_offset);
-    return value;
+    return bitgetx32(_data->data(), chunk_offset, _b); 
   }
 
   std::shared_ptr<AbstractSegment> copy_using_allocator(const PolymorphicAllocator<size_t>& alloc) const final;
@@ -83,7 +80,9 @@ class TurboPFORSegment : public AbstractEncodedSegment {
   /**@}*/
 
  protected:
-  std::shared_ptr<turboPFOR::EncodedTurboPForVector> _encoded_values;
+  std::shared_ptr<pmr_vector<uint8_t>> _data;
+  size_t _sz;
+  uint8_t _b;
   const std::optional<pmr_vector<bool>> _null_values;
   ChunkOffset _size;
 };

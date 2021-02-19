@@ -12,21 +12,29 @@ namespace opossum {
 #define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
 
 template <typename T, typename U>
-TurboPFORSegment<T, U>::TurboPFORSegment(const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values, std::optional<pmr_vector<bool>> null_values, ChunkOffset size)
+TurboPFORSegment<T, U>::TurboPFORSegment(std::shared_ptr<pmr_vector<uint8_t>> data, size_t sz, uint8_t b, std::optional<pmr_vector<bool>> null_values, ChunkOffset size)
     : AbstractEncodedSegment(data_type_from_type<T>()),
-      _encoded_values{encoded_values},
+      _data{data},
+      _sz{sz},
+      _b{b},
       _null_values{null_values},
       _size{size} { }
-
-template <typename T, typename U>
-const std::shared_ptr<turboPFOR::EncodedTurboPForVector> TurboPFORSegment<T, U>::encoded_values() const {
-  return _encoded_values;
-}
 
 template <typename T, typename U>
 const std::optional<pmr_vector<bool>>& TurboPFORSegment<T, U>::null_values() const {
   return _null_values;
 }
+
+template <typename T, typename U>
+std::shared_ptr<pmr_vector<uint8_t>> TurboPFORSegment<T,U>::data() const {
+  return _data;
+}
+
+template <typename T, typename U>
+uint8_t TurboPFORSegment<T,U>::b() const {
+  return _b;
+}
+
 
 template <typename T, typename U>
 AllTypeVariant TurboPFORSegment<T,U>::operator[](const ChunkOffset chunk_offset) const {
@@ -46,13 +54,14 @@ ChunkOffset TurboPFORSegment<T,U>::size() const {
 template <typename T, typename U>
 std::shared_ptr<AbstractSegment> TurboPFORSegment<T,U>::copy_using_allocator(
     const PolymorphicAllocator<size_t>& alloc) const {
-  auto new_encoded_values = std::make_shared<turboPFOR::EncodedTurboPForVector>(*_encoded_values);
+
+  auto new_data = std::make_shared<pmr_vector<uint8_t>>(*_data, alloc);
 
   std::optional<pmr_vector<bool>> new_null_values;
   if (_null_values) {
     new_null_values = pmr_vector<bool>(*_null_values, alloc);
   }
-  auto copy = std::make_shared<TurboPFORSegment<T,U>>(new_encoded_values, std::move(new_null_values), _size);
+  auto copy = std::make_shared<TurboPFORSegment<T,U>>(new_data, _sz, _b, std::move(new_null_values), _size);
 
   copy->access_counter = access_counter;
 
@@ -65,10 +74,10 @@ size_t TurboPFORSegment<T,U>::memory_usage([[maybe_unused]] const MemoryUsageCal
   if (_null_values) {
     segment_size += _null_values->capacity() / CHAR_BIT;
   }
-  segment_size += _encoded_values->size_in_bytes();
-  segment_size += 4; // size
-  segment_size += 4; // b
-  segment_size += 58; //vp4
+  segment_size += _data->size() * sizeof(uint8_t);
+  segment_size += sizeof(uint8_t); // b
+  segment_size += sizeof(size_t);
+  segment_size += sizeof(size_t);
 
   return segment_size;
 }

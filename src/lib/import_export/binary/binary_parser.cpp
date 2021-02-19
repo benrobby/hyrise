@@ -229,7 +229,7 @@ std::shared_ptr<TurboPFORSegment<T>> BinaryParser::_import_TurboPFOR_segment(std
                                                                            ChunkOffset row_count) {
 
   const auto size = _read_value<uint32_t>(file);
-  auto encoded_values = std::make_shared<turboPFOR::EncodedTurboPForVector>(); // WRONG
+  auto encoded_values = std::make_shared<pmr_vector<uint8_t>>(); // WRONG
 
   const auto null_values_stored = _read_value<BoolAsByteType>(file);
   std::optional<pmr_vector<bool>> null_values;
@@ -237,7 +237,7 @@ std::shared_ptr<TurboPFORSegment<T>> BinaryParser::_import_TurboPFOR_segment(std
     null_values = pmr_vector<bool>(_read_values<bool>(file, row_count));
   }
 
-  return std::make_shared<TurboPFORSegment<T>>(encoded_values, null_values, row_count);
+  return std::make_shared<TurboPFORSegment<T>>(encoded_values, row_count, 0, null_values, row_count);
 }
 
 template <typename T>
