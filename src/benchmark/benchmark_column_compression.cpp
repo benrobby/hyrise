@@ -106,9 +106,9 @@ void writeBitsPerInt() {
 
       make_pair(compactVector_compute_bitsPerInt, "compactVector"),
 
-      make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
+      // make_pair(turboPFOR_compute_bitsPerInt, "turboPFOR"),
       make_pair(turboPFOR_block_compute_bitsPerInt, "turboPFOR_block"),
-      make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
+      // make_pair(turboPFOR_direct_compute_bitsPerInt, "turboPFOR_direct"),
       make_pair(turboPFOR_direct_chunking_compute_bitsPerInt, "turboPFOR_direct_chunking"),
       make_pair(turboPFOR_bitcompression_compute_bitsPerInt, "turboPFOR_bitcompression"),
 
@@ -166,7 +166,7 @@ void writeBitsPerInt() {
       make_pair(fastPFOR_fastbinarypacking16_compute_bitsPerInt, "fastPFOR_fastbinarypacking16"),
       make_pair(fastPFOR_fastbinarypacking32_compute_bitsPerInt, "fastPFOR_fastbinarypacking32"),
       make_pair(fastPFOR_BP32_compute_bitsPerInt, "fastPFOR_BP32"),
-      make_pair(fastPFOR_vsencoding_compute_bitsPerInt, "fastPFOR_vsencoding"),
+      // make_pair(fastPFOR_vsencoding_compute_bitsPerInt, "fastPFOR_vsencoding"),
       make_pair(fastPFOR_fastpfor128_compute_bitsPerInt, "fastPFOR_fastpfor128"),
       make_pair(fastPFOR_simdfastpfor128_compute_bitsPerInt, "fastPFOR_simdfastpfor128"),
       make_pair(fastPFOR_simdfastpfor256_compute_bitsPerInt, "fastPFOR_simdfastpfor256"),
@@ -229,10 +229,10 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(dictionary);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(compactVector);
 
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct); // fixed with chunking
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct_chunking);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_bitcompression);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR);
+// COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR); // 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_block);
 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(maskedVByte);

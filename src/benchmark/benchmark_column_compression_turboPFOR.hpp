@@ -9,12 +9,14 @@ using ValueT = uint32_t;
 namespace opossum {
 
 void turboPFOR_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
+  std::vector<ValueT> in(vec);
+  in.resize(vec.size() + 4096);
+
   unsigned char* outBuffer = (unsigned char*) malloc(vec.size()*4);
-  ValueT* inData = (ValueT*) vec.data();
   benchmark::DoNotOptimize(outBuffer);
 
   for (auto _ : state) {
-    p4nenc32(inData, vec.size(), outBuffer);
+    p4nenc32(in.data(), vec.size(), outBuffer);
     benchmark::ClobberMemory();
   }
 }

@@ -16,8 +16,10 @@ namespace opossum {
 
 void turboPFOR_bitcompression_benchmark_encoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   
+  
   std::vector<uint32_t> in(vec);
-  std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 1024);
+  in.resize(in.size() + 4096);
+  std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 4096);
   uint32_t max = 0;
 
   for (const auto v : in) {
@@ -28,17 +30,17 @@ void turboPFOR_bitcompression_benchmark_encoding(const std::vector<ValueT>& vec,
   benchmark::DoNotOptimize(compressedBufVec.data());
 
   for (auto _ : state) {
-
-    bitpack32(in.data(), in.size(), compressedBufVec.data(), b);
-
+    bitpack32(in.data(), vec.size(), compressedBufVec.data(), b);
     benchmark::ClobberMemory();
   }
+
 }
 
 
 void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec, benchmark::State& state) {
   std::vector<uint32_t> in(vec);
-  std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 1024);
+  in.resize(vec.size() + 4096);
+  std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 4096);
   uint32_t max = 0;
 
   for (const auto v : in) {
@@ -47,9 +49,9 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
 
   uint32_t b = log2(max +1) + 1;
 
-  bitpack32(in.data(), in.size(), compressedBufVec.data(), b);
+  bitpack32(in.data(), vec.size(), compressedBufVec.data(), b);
 
-  std::vector<uint32_t> dec(in.size());
+  std::vector<uint32_t> dec(vec.size() + 4096);
 
   benchmark::DoNotOptimize(dec.data());
 
@@ -62,7 +64,7 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
 
   for (auto _ : state) {
 
-    bitunpack32(compressedBufVec.data(), in.size(), dec.data(), b);
+    bitunpack32(compressedBufVec.data(), vec.size(), dec.data(), b);
 
     // for (int i = 0; i < in.size(); i++) {
     //   points[i] = dec[i];
@@ -80,7 +82,8 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
 
 void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
   std::vector<uint32_t> in(vec);
-  std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 1024);
+
+  std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 4096);
   uint32_t max = 0;
 
   for (const auto v : in) {
@@ -139,6 +142,7 @@ void turboPFOR_bitcompression_benchmark_decoding_points_nocopy(const std::vector
 
 float turboPFOR_bitcompression_compute_bitsPerInt(std::vector<ValueT>& vec) {
   std::vector<uint32_t> in(vec);
+  in.resize(vec.size() + 4096);
   std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 1024);
   uint32_t max = 0;
 
@@ -149,7 +153,7 @@ float turboPFOR_bitcompression_compute_bitsPerInt(std::vector<ValueT>& vec) {
   uint32_t b = log2(max +1) + 1;
   benchmark::DoNotOptimize(compressedBufVec.data());
 
-  unsigned char * end = bitpack32(in.data(), in.size(), compressedBufVec.data(), b);
+  unsigned char * end = bitpack32(in.data(), vec.size(), compressedBufVec.data(), b);
 
   auto length_bytes = end - ((unsigned char *) compressedBufVec.data());
 
