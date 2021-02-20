@@ -13,9 +13,9 @@ std::unique_ptr<BaseVectorDecompressor> TurboPForBitpackingVector::on_create_bas
 
 TurboPForBitpackingDecompressor TurboPForBitpackingVector::on_create_decompressor() const { return TurboPForBitpackingDecompressor(_data, _b, _size); }
 
-TurboPForBitpackingIterator TurboPForBitpackingVector::on_begin() const { return TurboPForBitpackingIterator{_data, _b, 0u}; }
+TurboPForBitpackingIterator TurboPForBitpackingVector::on_begin() const { return TurboPForBitpackingIterator{_data, _b,_size, 0u}; }
 
-TurboPForBitpackingIterator TurboPForBitpackingVector::on_end() const { return TurboPForBitpackingIterator{_data, _b, _size}; }
+TurboPForBitpackingIterator TurboPForBitpackingVector::on_end() const { return TurboPForBitpackingIterator{_data, _b, _size, _size}; }
 
 std::unique_ptr<const BaseCompressedVector> TurboPForBitpackingVector::on_copy_using_allocator(
     const PolymorphicAllocator<size_t>& alloc) const {

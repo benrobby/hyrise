@@ -15,8 +15,13 @@ namespace opossum {
 class TurboPForBitpackingIterator : public BaseCompressedVectorIterator<TurboPForBitpackingIterator> {
 
  public:
-  explicit TurboPForBitpackingIterator(const pmr_vector<uint8_t>& data, uint8_t b, const size_t absolute_index = 0u)
-    : _data{data}, _absolute_index{absolute_index}, _b{b} {}
+  explicit TurboPForBitpackingIterator(const pmr_vector<uint8_t>& data, uint8_t b, const size_t size, const size_t absolute_index = 0u)
+    : _data{data}, _absolute_index{absolute_index}, _b{b} {
+      _decompressed_data = std::vector<uint32_t>(size + 2048);
+      pmr_vector<uint8_t> in(data);
+      in.resize(in.size() + 2048);
+      bitunpack32(in.data(), size, _decompressed_data.data(), b);
+    }
 
   TurboPForBitpackingIterator(const TurboPForBitpackingIterator& other) = default;
   TurboPForBitpackingIterator(TurboPForBitpackingIterator&& other) = default;
@@ -53,12 +58,13 @@ class TurboPForBitpackingIterator : public BaseCompressedVectorIterator<TurboPFo
   }
 
   uint32_t dereference() const { 
-    return bitgetx32(_data.data(), _absolute_index, _b); 
+    return _decompressed_data[_absolute_index]; 
   }
 
 
  private:
   const pmr_vector<uint8_t>& _data;
+  std::vector<uint32_t> _decompressed_data;
   size_t _absolute_index;
   const uint8_t _b;
 };
