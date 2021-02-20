@@ -11,7 +11,7 @@ namespace opossum {
 
 class TurboPForBitpackingVector : public CompressedVector<TurboPForBitpackingVector> {
  public:
-  explicit TurboPForBitpackingVector(pmr_vector<uint8_t>&& data, size_t size, uint8_t b);
+  explicit TurboPForBitpackingVector(pmr_vector<uint32_t>&& data, size_t size, uint8_t b);
   ~TurboPForBitpackingVector() override = default;
 
   size_t on_size() const;
@@ -28,7 +28,7 @@ class TurboPForBitpackingVector : public CompressedVector<TurboPForBitpackingVec
  private:
   friend class TurboPForBitpackingDecompressor;
 
-  const pmr_vector<uint8_t> _data;
+  const pmr_vector<uint32_t> _data;
   const size_t _size;
   const uint8_t _b;
 };

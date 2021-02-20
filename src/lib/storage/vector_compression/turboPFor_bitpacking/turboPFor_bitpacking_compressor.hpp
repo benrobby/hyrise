@@ -3,6 +3,10 @@
 
 #include "storage/vector_compression/base_vector_compressor.hpp"
 
+#include "include/codecfactory.h"
+#include "include/intersection.h"
+#include "include/frameofreference.h"
+
 #include "turboPFor_bitpacking_vector.hpp"
 
 #include "types.hpp"
@@ -17,8 +21,6 @@ class TurboPForBitpackingCompressor : public BaseVectorCompressor {
 
   std::unique_ptr<BaseVectorCompressor> create_new() const final;
     
-  private:
-    uint32_t _find_max_value(const pmr_vector<uint32_t>& vector) const;
 };
 
 }  // namespace opossum

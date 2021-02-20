@@ -15,12 +15,14 @@ namespace opossum {
 class TurboPForBitpackingIterator : public BaseCompressedVectorIterator<TurboPForBitpackingIterator> {
 
  public:
-  explicit TurboPForBitpackingIterator(const pmr_vector<uint8_t>& data, uint8_t b, const size_t size, const size_t absolute_index = 0u)
+  explicit TurboPForBitpackingIterator(const pmr_vector<uint32_t>& data, uint8_t b, const size_t size, const size_t absolute_index = 0u)
     : _data{data}, _absolute_index{absolute_index}, _b{b} {
-      _decompressed_data = std::vector<uint32_t>(size + 2048);
-      pmr_vector<uint8_t> in(data);
-      in.resize(in.size() + 2048);
-      bitunpack32(in.data(), size, _decompressed_data.data(), b);
+      _decompressed_data = std::vector<uint32_t>(size * 2 + 2048);
+      SIMDCompressionLib::IntegerCODEC &codec = *SIMDCompressionLib::CODECFactory::getFromName("simdframeofreference");
+      size_t recovered_size = size;
+      if (size > 0) {
+        codec.decodeArray(data.data(), data.size(), _decompressed_data.data(), recovered_size);
+      }
     }
 
   TurboPForBitpackingIterator(const TurboPForBitpackingIterator& other) = default;
@@ -63,7 +65,7 @@ class TurboPForBitpackingIterator : public BaseCompressedVectorIterator<TurboPFo
 
 
  private:
-  const pmr_vector<uint8_t>& _data;
+  const pmr_vector<uint32_t>& _data;
   std::vector<uint32_t> _decompressed_data;
   size_t _absolute_index;
   const uint8_t _b;

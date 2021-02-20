@@ -653,6 +653,7 @@ set(
 
 set(
     LIBRARIES
+    custom_SIMDCompressionAndIntersection
     turboPFOR
     lz4
     sqlparser
