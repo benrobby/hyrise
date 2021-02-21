@@ -78,7 +78,7 @@ void compactVector_benchmark_decoding(const std::vector<ValueT>& vec, benchmark:
 }
 
 
-void _compactVector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
+void _compactVector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, int mode) {
   std::vector<uint32_t> in(vec);
   uint32_t max = 0;
   for (const auto v : vec) {
@@ -99,27 +99,31 @@ void _compactVector_benchmark_decoding_points(const std::vector<ValueT>& vec, co
   uint32_t val;
 
   for (auto _ : state) {
-    if (nocopy) {
+    
 
-      for (size_t i = 0; i < pointIndices.size(); i++) {
-        val = compressedVector[pointIndices[i]];
-        sum += val;
-        if (val != in[pointIndices[i]]) {
-           std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+    switch (mode) {
+      case 0: {
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          val = compressedVector[pointIndices[i]];
+          sum += val;
+          // if (val != in[pointIndices[i]]) {
+          //    std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+          // }
         }
+        break;
       }
-
-    } else {
-
-      for (size_t i = 0; i < pointIndices.size(); i++) {
-        val = compressedVector[pointIndices[i]];
-        points[i] = val;
-        if (val != in[pointIndices[i]]) {
-           std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+      case 1: {
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          val = compressedVector[pointIndices[i]];
+          points[i] = val;
+          // if (val != in[pointIndices[i]]) {
+          //   std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+          // }
         }
+        break;
       }
-
     }
+   
     benchmark::ClobberMemory();
 	}
 	if (sum) {
@@ -128,10 +132,10 @@ void _compactVector_benchmark_decoding_points(const std::vector<ValueT>& vec, co
 }
 
 void compactVector_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
-  return _compactVector_benchmark_decoding_points(vec, pointIndices, state, false);
+  return _compactVector_benchmark_decoding_points(vec, pointIndices, state, 1);
 }
 void compactVector_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
-  return _compactVector_benchmark_decoding_points(vec, pointIndices, state, true);
+  return _compactVector_benchmark_decoding_points(vec, pointIndices, state, 0);
 }
 
 float compactVector_compute_bitsPerInt(std::vector<ValueT>& vec) {

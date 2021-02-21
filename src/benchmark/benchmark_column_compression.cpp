@@ -32,7 +32,7 @@
 
 #include "benchmark_column_compression_data.hpp"
 
-#define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(benchmarkName)                                    \
+#define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_NO_POINT_ALL_DATA(benchmarkName)                                    \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_small_numbers, benchmarkName##_benchmark_encoding,      \
                                                  benchmarkName##_benchmark_decoding);                             \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_encoding, \
@@ -47,6 +47,22 @@
                                                  benchmarkName##_benchmark_decoding);                            \
   COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING(get_with_av_numbers, benchmarkName##_benchmark_encoding,        \
   benchmarkName##_benchmark_decoding);                            \
+
+#define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(benchmarkName)                                    \
+  COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_NO_POINT_ALL_DATA(benchmarkName);\
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points); \
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points_nocopy); \
+  COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points_seq); \
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_month_categorical_numbers, benchmarkName##_benchmark_decoding_points_nocopy); \
+
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points);
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_sequential_sorted_numbers, benchmarkName##_benchmark_decoding_points_nocopy);
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points); 
+  // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_month_categorical_numbers, benchmarkName##_benchmark_decoding_points); 
+
+
+#define COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(benchmarkName)                                    \
+  COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_NO_POINT_ALL_DATA(benchmarkName);\
   COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points); \
   COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_av_numbers, benchmarkName##_benchmark_decoding_points_nocopy);
   // COLUMN_COMPRESSION_BENCHMARK_DECODING_POINT(get_with_month_categorical_numbers, benchmarkName##_benchmark_decoding_points_nocopy); \
@@ -230,8 +246,8 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(dictionary);
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(compactVector);
 
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct); // fixed with chunking
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_direct_chunking);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_bitcompression);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(turboPFOR_direct_chunking);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(turboPFOR_bitcompression);
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR); // 
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(turboPFOR_block);
 
@@ -299,13 +315,13 @@ COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndInters
 COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_for);
 
 // for the ones that support point access, also benchmark this
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_simdframeofreference_with_select);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_for_with_select);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_maskedvbyte_with_select);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_streamvbyte_with_select);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_varint_with_select);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_vbyte_with_select);
-COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_varintgb_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(SIMDCompressionAndIntersection_simdframeofreference_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(SIMDCompressionAndIntersection_for_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(SIMDCompressionAndIntersection_maskedvbyte_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(SIMDCompressionAndIntersection_streamvbyte_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(SIMDCompressionAndIntersection_varint_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(SIMDCompressionAndIntersection_vbyte_with_select);
+COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA_WITH_SEQ_POINTS(SIMDCompressionAndIntersection_varintgb_with_select);
 
 // Broken
 // COLUMN_COMPRESSION_BENCHMARK_ENCODING_DECODING_ALL_DATA(SIMDCompressionAndIntersection_frameofreference_with_select); // bug

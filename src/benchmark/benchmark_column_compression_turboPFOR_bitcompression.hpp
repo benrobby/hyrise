@@ -80,7 +80,7 @@ void turboPFOR_bitcompression_benchmark_decoding(const std::vector<ValueT>& vec,
 }
 
 
-void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
+void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, int mode) {
   std::vector<uint32_t> in(vec);
 
   std::vector<unsigned char> compressedBufVec(vec.size() * sizeof(uint32_t) + 4096);
@@ -108,23 +108,39 @@ void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<Value
   benchmark::DoNotOptimize(sum);
 
   for (auto _ : state) {
-    if (nocopy) {
-      for (size_t i = 0; i < pointIndices.size(); i++) {
-        val = bitgetx32(compressedBufVec.data(), pointIndices[i], b);
-        sum += val;
-        if (val != in[pointIndices[i]]) {
-           std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+    switch (mode) {
+      case 0: {
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          val = bitgetx32(compressedBufVec.data(), pointIndices[i], b);
+          sum += val;
+          // if (val != in[pointIndices[i]]) {
+          //   std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+          // }
         }
+        break;
       }
-    } else {
-      for (size_t i = 0; i < pointIndices.size(); i++) {
-        val = bitgetx32(compressedBufVec.data(), pointIndices[i], b);
-        points[i] = val;
-        if (val != in[pointIndices[i]]) {
-           std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+      case 1: {
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          val = bitgetx32(compressedBufVec.data(), pointIndices[i], b);
+          points[i] = val;
+          if (val != in[pointIndices[i]]) {
+            std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+          }
+        }
+        break;
+      } case 2: {
+        std::vector<uint32_t> dec(vec.size() + 4096);
+        bitunpack32(compressedBufVec.data(), vec.size(), dec.data(), b);
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          val = dec[pointIndices[i]];
+          sum += val;
+          // if (val != in[pointIndices[i]]) {
+          //   std::cout << "not equal" << val << "    " << in[pointIndices[i]] << std::endl;
+          // }
         }
       }
     }
+    
     benchmark::ClobberMemory();
 	}
 	if (sum) {
@@ -134,10 +150,13 @@ void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<Value
 }
 
 void turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
-  return _turboPFOR_bitcompression_benchmark_decoding_points(vec, pointIndices, state, false);
+  return _turboPFOR_bitcompression_benchmark_decoding_points(vec, pointIndices, state, 1);
 }
 void turboPFOR_bitcompression_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
-  return _turboPFOR_bitcompression_benchmark_decoding_points(vec, pointIndices, state, true);
+  return _turboPFOR_bitcompression_benchmark_decoding_points(vec, pointIndices, state, 0);
+}
+void turboPFOR_bitcompression_benchmark_decoding_points_seq(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _turboPFOR_bitcompression_benchmark_decoding_points(vec, pointIndices, state, 2);
 }
 
 float turboPFOR_bitcompression_compute_bitsPerInt(std::vector<ValueT>& vec) {

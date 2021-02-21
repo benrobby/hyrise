@@ -135,7 +135,7 @@ void turboPFOR_direct_chunking_benchmark_decoding(const std::vector<ValueT>& vec
 }
 
 
-void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, bool nocopy) {
+void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state, int mode) {
     
   encodedTurboPForVector e = p4EncodeVector(vec);
 
@@ -164,8 +164,9 @@ void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<Valu
   size_t idx;
 
   for (auto _ : state) {
-    if (nocopy) {
-      for (size_t i = 0; i < pointIndices.size(); i++) {
+    switch (mode) {
+      case 0: {
+         for (size_t i = 0; i < pointIndices.size(); i++) {
 
         
         idx = pointIndices[i];
@@ -178,9 +179,10 @@ void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<Valu
 
         sum += p4getx32(&p4, p1, idx - offset_to_block, b);
       }
-    } else {
-
-      for (size_t i = 0; i < pointIndices.size(); i++) {
+        break;
+      }
+      case 1: {
+        for (size_t i = 0; i < pointIndices.size(); i++) {
         idx = pointIndices[i];
 
         size_t offset_to_block = ROUND_DOWN(idx, P4_BLOCK_SIZE);
@@ -192,6 +194,16 @@ void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<Valu
 
         points[i] = p4getx32(&p4, p1, idx - offset_to_block, b);
       }
+        break;
+      }
+      case 2: {
+        auto decodedVector = p4DecodeVectorSequential(&e);
+
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          sum += decodedVector[pointIndices[i]];
+        }
+        break;
+      }
     }
     benchmark::ClobberMemory();
   }
@@ -201,10 +213,13 @@ void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<Valu
 }
 
 void turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
-  return _turboPFOR_direct_chunking_benchmark_decoding_points(vec, pointIndices, state, false);
+  return _turboPFOR_direct_chunking_benchmark_decoding_points(vec, pointIndices, state, 1);
 }
 void turboPFOR_direct_chunking_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
-  return _turboPFOR_direct_chunking_benchmark_decoding_points(vec, pointIndices, state, true);
+  return _turboPFOR_direct_chunking_benchmark_decoding_points(vec, pointIndices, state, 0);
+}
+void turboPFOR_direct_chunking_benchmark_decoding_points_seq(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) {
+  return _turboPFOR_direct_chunking_benchmark_decoding_points(vec, pointIndices, state, 2);
 }
 
 float turboPFOR_direct_chunking_compute_bitsPerInt(std::vector<ValueT>& vec) {

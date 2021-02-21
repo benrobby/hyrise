@@ -41,6 +41,9 @@ namespace opossum {
   void SIMDCompressionAndIntersection_ ## codec ## _with_select_benchmark_decoding_points_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) { \
     SIMDCompressionAndIntersection_benchmark_decoding_points_select_nocopy(vec, pointIndices, *SIMDCompressionLib::CODECFactory::getFromName(#codec), state); \
   }; \
+  void SIMDCompressionAndIntersection_ ## codec ## _with_select_benchmark_decoding_points_seq(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, benchmark::State& state) { \
+    SIMDCompressionAndIntersection_benchmark_decoding_points_select_seq(vec, pointIndices, *SIMDCompressionLib::CODECFactory::getFromName(#codec), state); \
+  }; \
   float SIMDCompressionAndIntersection_ ## codec ## _with_select_compute_bitsPerInt(std::vector<ValueT>& _vec) {                              \
      return SIMDCompressionAndIntersection_compute_bitsPerInt_select(_vec, *SIMDCompressionLib::CODECFactory::getFromName(#codec)); \
   };
@@ -122,33 +125,49 @@ void SIMDCompressionAndIntersection_benchmark_decoding_points_nocopy(const std::
   return _SIMDCompressionAndIntersection_benchmark_decoding_points(vec, pointIndices, codec, state, true);
 }
 
-void _SIMDCompressionAndIntersection_benchmark_decoding_points_select(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, SIMDCompressionLib::IntegerCODEC &codec, benchmark::State& state, bool nocopy) {
+void _SIMDCompressionAndIntersection_benchmark_decoding_points_select(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, SIMDCompressionLib::IntegerCODEC &codec, benchmark::State& state, int mode) {
   // Encode
   std::vector<uint32_t> compressed_output(2 * vec.size() + 1024);
   size_t compressedsize = compressed_output.size();
   codec.encodeArray(const_cast<uint32_t*>(vec.data()), vec.size(), compressed_output.data(), compressedsize);
 
   // Decode
-  std::vector<uint32_t> dec(vec.size());
-  size_t recoveredsize = dec.size();
   std::vector<ValueT> points = std::vector<ValueT>(vec.size());
-  benchmark::DoNotOptimize(dec.data());
 
   ValueT sum = 0;
   benchmark::DoNotOptimize(sum);
 
   for (auto _ : state) {
-    size_t size = recoveredsize;
-    // codec.decodeArray(compressed_output.data(), compressedsize, dec.data(), size);
-    if (nocopy) {
-      for (size_t i = 0; i < pointIndices.size(); i++) {
-        sum += codec.select(compressed_output.data(), pointIndices[i]);
+
+    switch (mode) {
+      case 0: {
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          sum += codec.select(compressed_output.data(), pointIndices[i]);
+        }
+        break;
       }
-    } else {
-      for (size_t i = 0; i < pointIndices.size(); i++) {
-        points[i] = codec.select(compressed_output.data(), pointIndices[i]);
+      case 1: {
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          points[i] = codec.select(compressed_output.data(), pointIndices[i]);
+        }
+        break;
+      }
+      case 2: {
+        std::vector<uint32_t> dec(vec.size());
+
+        size_t recoveredsize = dec.size();
+
+        size_t size = recoveredsize;
+
+        codec.decodeArray(compressed_output.data(), compressedsize, dec.data(), size);
+        for (size_t i = 0; i < pointIndices.size(); i++) {
+          sum += dec[pointIndices[i]];
+        }
+        break;
       }
     }
+    
+  
     benchmark::ClobberMemory();
 	}
 	if (sum) {
@@ -157,11 +176,15 @@ void _SIMDCompressionAndIntersection_benchmark_decoding_points_select(const std:
 }
 
 void SIMDCompressionAndIntersection_benchmark_decoding_points_select(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, SIMDCompressionLib::IntegerCODEC &codec, benchmark::State& state) {
-  return _SIMDCompressionAndIntersection_benchmark_decoding_points_select(vec, pointIndices, codec, state, false);
+  return _SIMDCompressionAndIntersection_benchmark_decoding_points_select(vec, pointIndices, codec, state, 1);
 }
 
 void SIMDCompressionAndIntersection_benchmark_decoding_points_select_nocopy(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, SIMDCompressionLib::IntegerCODEC &codec, benchmark::State& state) {
-  return _SIMDCompressionAndIntersection_benchmark_decoding_points_select(vec, pointIndices, codec, state, true);
+  return _SIMDCompressionAndIntersection_benchmark_decoding_points_select(vec, pointIndices, codec, state, 0);
+}
+
+void SIMDCompressionAndIntersection_benchmark_decoding_points_select_seq(const std::vector<ValueT>& vec, const std::vector<size_t>& pointIndices, SIMDCompressionLib::IntegerCODEC &codec, benchmark::State& state) {
+  return _SIMDCompressionAndIntersection_benchmark_decoding_points_select(vec, pointIndices, codec, state, 2);
 }
 
 float SIMDCompressionAndIntersection_compute_bitsPerInt(std::vector<ValueT>& vec, SIMDCompressionLib::IntegerCODEC &codec) {
