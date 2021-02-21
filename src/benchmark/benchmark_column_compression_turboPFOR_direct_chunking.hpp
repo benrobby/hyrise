@@ -54,39 +54,6 @@ encodedTurboPForVector p4EncodeVector(const std::vector<uint32_t> vec) {
   return e;
 }
 
-uint8_t* p4EncodeVector1(const std::vector<uint32_t> vec, encodedTurboPForVector e) {
-  size_t numElements = vec.size();
-  size_t numElementsAligned = numElements + P4_BLOCK_SIZE; // todo better bounds
-
-  std::vector<uint32_t> v1(vec);
-  v1.resize(numElements + P4_BLOCK_SIZE + 32); 
-  // lib apparently has some out of bounds accesses that we want to catch with this. 
-  // also ensure that we have a multiple of P4_BLOCK_SIZE values in here so we can compress full blocks only.
-
-  uint32_t* inData = (uint32_t*) v1.data();
-
-  std::vector<unsigned char> compressedBufferVec(P4NENC_BOUND(v1.size(), sizeof(uint32_t)));
-  uint8_t *out_ptr, *compressedBufferVecPtr;
-  out_ptr = (uint8_t*) compressedBufferVec.data();
-  compressedBufferVecPtr = out_ptr;
-
-  std::vector<uint32_t> offsets;
-  offsets.push_back(0);
-  for(size_t i = 0; i < (numElementsAligned&~(P4_BLOCK_SIZE - 1)); i += P4_BLOCK_SIZE) { 
-    uint8_t* next_ptr = p4encx32(inData + i, P4_BLOCK_SIZE, out_ptr);
-    offsets.push_back(next_ptr - compressedBufferVecPtr);
-    out_ptr = next_ptr;
-    // todo: increment out_ptr?
-  }
-  
-
-  e.compressedBuffer = compressedBufferVec;
-  e.offsets = offsets;
-  e.size = numElements;
-
-  return out_ptr;
-}
-
 
 std::vector<uint32_t> p4DecodeVectorSequential(encodedTurboPForVector *e) {
   size_t numElements = e->size;
@@ -273,12 +240,14 @@ float turboPFOR_direct_chunking_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // }
 
 
-  encodedTurboPForVector e;
-  uint8_t * end = p4EncodeVector1(vec, e);
-  uint8_t *outBuffer = e.compressedBuffer.data();
+  encodedTurboPForVector e = p4EncodeVector(vec);
 
   // # bits (encoded) / # elements to encode
-  int size_in_bytes = (end - outBuffer) * sizeof(unsigned char);
+  // std::cout << e.offsets.size() << std::endl;
+  // std::cout << e.offsets[0] << std::endl;
+  // std::cout << e.offsets[1] << std::endl;
+  // std::cout << e.offsets[e.offsets.size() - 1] << std::endl;
+  int size_in_bytes = (e.offsets[e.offsets.size() - 1]) * sizeof(unsigned char);
   return size_in_bytes * 8.0 / vec.size();
 }
 
