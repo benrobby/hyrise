@@ -247,7 +247,7 @@ float turboPFOR_direct_chunking_compute_bitsPerInt(std::vector<ValueT>& vec) {
   // std::cout << e.offsets[0] << std::endl;
   // std::cout << e.offsets[1] << std::endl;
   // std::cout << e.offsets[e.offsets.size() - 1] << std::endl;
-  int size_in_bytes = (e.offsets[e.offsets.size() - 1]) * sizeof(unsigned char);
+  int size_in_bytes = (e.offsets[e.offsets.size() - 1]) * sizeof(unsigned char) + e.offsets.size() * sizeof(uint32_t) + sizeof(size_t);
   return size_in_bytes * 8.0 / vec.size();
 }
 
