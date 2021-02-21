@@ -2,7 +2,6 @@
 
 #include <atomic>
 #include <memory>
-#include <random>
 #include <thread>
 #include <vector>
 
@@ -67,9 +66,6 @@ class Worker : public std::enable_shared_from_this<Worker>, private Noncopyable 
   CpuID _cpu_id;
   std::thread _thread;
   std::atomic<uint64_t> _num_finished_tasks{0};
-
-  std::vector<int> _random{};
-  size_t _next_random{};
 };
 
 }  // namespace opossum
