@@ -44,8 +44,8 @@ std::vector<size_t> get_poslist_10000() {
   return getUniformlyDistributedVector(10000,0,CHUNK_SIZE);
 }
 
-std::vector<size_t> get_poslist_65000() {
-  return getUniformlyDistributedVector(65000,0,CHUNK_SIZE);
+std::vector<size_t> get_poslist_100000() {
+  return getUniformlyDistributedVector(100000,0,CHUNK_SIZE);
 }
 
 std::vector<size_t> get_poslist_10000_sorted() {
@@ -54,8 +54,8 @@ std::vector<size_t> get_poslist_10000_sorted() {
   return poslist;
 }
 
-std::vector<size_t> get_poslist_65000_sorted() {
-  vector<size_t> vec(65000);
+std::vector<size_t> get_poslist_100000_sorted() {
+  vector<size_t> vec(100000);
   int i = 0;
   generate(vec.begin(), vec.end(), [&]() {
     return i++;
