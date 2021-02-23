@@ -52,8 +52,7 @@ void _oroch_integerArray_benchmark_decoding_points(const std::vector<ValueT>& ve
 
   // Decode
 
-  std::vector<ValueT> points {};
-  points.resize(pointIndices.size());
+  std::vector<ValueT> points(pointIndices.size());
   benchmark::DoNotOptimize(points.data());
 
   ValueT sum = 0;

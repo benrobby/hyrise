@@ -90,7 +90,7 @@ void _SIMDCompressionAndIntersection_benchmark_decoding_points(const std::vector
   // Decode
   std::vector<uint32_t> dec(vec.size());
   size_t recoveredsize = dec.size();
-  std::vector<ValueT> points = std::vector<ValueT>(vec.size());
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
   benchmark::DoNotOptimize(dec.data());
 
   ValueT sum = 0;
@@ -132,7 +132,7 @@ void _SIMDCompressionAndIntersection_benchmark_decoding_points_select(const std:
   codec.encodeArray(const_cast<uint32_t*>(vec.data()), vec.size(), compressed_output.data(), compressedsize);
 
   // Decode
-  std::vector<ValueT> points = std::vector<ValueT>(vec.size());
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
 
   ValueT sum = 0;
   benchmark::DoNotOptimize(sum);

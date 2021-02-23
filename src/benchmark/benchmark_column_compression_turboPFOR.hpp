@@ -45,7 +45,7 @@ void _turboPFOR_benchmark_decoding_points(const std::vector<ValueT>& vec, const 
 
   // Decode
   ValueT* decompressedData = (ValueT*) malloc(vec.size() * sizeof(ValueT));
-  std::vector<ValueT> points = std::vector<ValueT>(vec.size());
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
   benchmark::DoNotOptimize(decompressedData);
 
 

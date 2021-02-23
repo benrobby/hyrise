@@ -87,7 +87,7 @@ void _turboPFOR_block_benchmark_decoding_points(const std::vector<ValueT>& vec, 
   turboPfor.enc(vec);
 
   // Decode
-  std::vector<ValueT> points = std::vector<ValueT>(vec.size());
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
   benchmark::DoNotOptimize(points);
 
 

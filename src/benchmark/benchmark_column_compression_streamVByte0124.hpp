@@ -38,7 +38,7 @@ void _streamVByte0124_benchmark_decoding_points(const std::vector<ValueT>& vec, 
 
   // Decode
   std::vector<ValueT> dec = std::vector<uint32_t>(vec.size());
-  std::vector<ValueT> points = std::vector<ValueT>(vec.size());
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
   benchmark::DoNotOptimize(dec.data());
 
 

@@ -59,8 +59,8 @@ void _sdsl_lite_dac_vector_benchmark_decoding_points(const std::vector<ValueT>& 
   sdsl::dac_vector<> encoded(vec);
 
   // Decode
-  std::vector<ValueT> decoded = std::vector<ValueT>(vec.size());
-  benchmark::DoNotOptimize(decoded.data());
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
+  benchmark::DoNotOptimize(points.data());
 
   ValueT sum = 0;
   benchmark::DoNotOptimize(sum);
@@ -72,7 +72,7 @@ void _sdsl_lite_dac_vector_benchmark_decoding_points(const std::vector<ValueT>& 
       }
     } else {
       for (size_t i = 0; i < pointIndices.size(); i++) {
-        decoded[i] = encoded[pointIndices[i]];
+        points[i] = encoded[pointIndices[i]];
       }
     }
 
