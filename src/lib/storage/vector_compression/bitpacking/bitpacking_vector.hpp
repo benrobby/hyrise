@@ -13,10 +13,10 @@ namespace opossum {
 
 class BitpackingVector : public CompressedVector<BitpackingVector> {
  public:
-  explicit BitpackingVector(const pmr_bitpacking_vector<uint32_t>& data);
+  explicit BitpackingVector(const pmr_bitpacking_vector<uint32_t, 16>& data);
   ~BitpackingVector() override = default;
 
-  const pmr_bitpacking_vector<uint32_t>& data() const;
+  const pmr_bitpacking_vector<uint32_t, 16>& data() const;
 
   size_t on_size() const;
   size_t on_data_size() const;
@@ -32,7 +32,7 @@ class BitpackingVector : public CompressedVector<BitpackingVector> {
  private:
   friend class BitpackingDecompressor;
 
-  const pmr_bitpacking_vector<uint32_t> _data;
+  const pmr_bitpacking_vector<uint32_t, 16> _data;
 };
 
 }  // namespace opossum

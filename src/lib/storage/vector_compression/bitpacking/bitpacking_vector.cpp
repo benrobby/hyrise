@@ -4,9 +4,9 @@
 
 namespace opossum {
 
-BitpackingVector::BitpackingVector(const pmr_bitpacking_vector<uint32_t>& data) : _data{data} {}
+BitpackingVector::BitpackingVector(const pmr_bitpacking_vector<uint32_t, 16>& data) : _data{data} {}
 
-const pmr_bitpacking_vector<uint32_t>& BitpackingVector::data() const { return _data; }
+const pmr_bitpacking_vector<uint32_t, 16>& BitpackingVector::data() const { return _data; }
 
 size_t BitpackingVector::on_size() const { return _data.size(); }
 size_t BitpackingVector::on_data_size() const { return _data.bytes(); }
@@ -23,7 +23,8 @@ BitpackingIterator BitpackingVector::on_end() const { return BitpackingIterator(
 
 std::unique_ptr<const BaseCompressedVector> BitpackingVector::on_copy_using_allocator(
     const PolymorphicAllocator<size_t>& alloc) const {
-  auto data_copy = pmr_bitpacking_vector<uint32_t>(_data.used_bits(), _data.size(), alloc);
+  auto data_copy = pmr_bitpacking_vector<uint32_t, 16>(alloc);
+  data_copy.resize(_data.size());
   for (int i = 0; i < _data.size(); i++) {
     data_copy[i] = _data[i];
   }

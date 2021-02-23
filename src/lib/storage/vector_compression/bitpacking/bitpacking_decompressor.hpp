@@ -11,7 +11,7 @@ class BitpackingVector;
 
 class BitpackingDecompressor : public BaseVectorDecompressor {
  public:
-  explicit BitpackingDecompressor(const pmr_bitpacking_vector<uint32_t>& data) : _data{data} {}
+  explicit BitpackingDecompressor(const pmr_bitpacking_vector<uint32_t, 16>& data) : _data{data} {}
   BitpackingDecompressor(const BitpackingDecompressor& other) = default;
   BitpackingDecompressor(BitpackingDecompressor&& other) = default;
 
@@ -34,7 +34,7 @@ class BitpackingDecompressor : public BaseVectorDecompressor {
   size_t size() const final { return _data.size(); }
 
  private:
-  const pmr_bitpacking_vector<uint32_t>& _data;
+  const pmr_bitpacking_vector<uint32_t, 16>& _data;
 };
 
 }  // namespace opossum
