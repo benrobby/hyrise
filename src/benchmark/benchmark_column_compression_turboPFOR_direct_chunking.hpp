@@ -141,8 +141,7 @@ void _turboPFOR_direct_chunking_benchmark_decoding_points(const std::vector<Valu
 
 
   // Decode
-  unsigned int n = vec.size();
-  std::vector<ValueT> points = std::vector<ValueT>(n);
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
   benchmark::DoNotOptimize(points);
 
   ValueT sum = 0;

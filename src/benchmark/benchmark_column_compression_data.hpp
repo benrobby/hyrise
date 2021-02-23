@@ -24,48 +24,37 @@ vector<size_t> getUniformlyDistributedVector(const int size, size_t start, size_
   return vec;
 }
 
-std::vector<size_t> get_poslist_1() {
-  return getUniformlyDistributedVector(10,0,CHUNK_SIZE);
-}
+#define POSLIST_METHOD(size) \
+  std::vector<size_t> get_poslist_##size () { \
+    return getUniformlyDistributedVector(size,0,CHUNK_SIZE); \
+  };
 
-std::vector<size_t> get_poslist_10() {
-  return getUniformlyDistributedVector(10,0,CHUNK_SIZE);
-}
+POSLIST_METHOD(1)
+POSLIST_METHOD(10)
+POSLIST_METHOD(100)
+POSLIST_METHOD(1000)
+POSLIST_METHOD(10000)
+POSLIST_METHOD(100000)
+POSLIST_METHOD(1000000)
 
-std::vector<size_t> get_poslist_100() {
-  return getUniformlyDistributedVector(100,0,CHUNK_SIZE);
-}
+#define POSLIST_METHOD_SORTED(size) \
+  std::vector<size_t> get_poslist_##size##_sorted () { \
+    vector<size_t> vec(size); \
+    int i = 0; \
+    generate(vec.begin(), vec.end(), [&]() { \
+      i = (i + 1) % CHUNK_SIZE; \
+      return i; \
+    }); \
+    return vec; \
+  }; \
 
-std::vector<size_t> get_poslist_1000() {
-  return getUniformlyDistributedVector(1000,0,CHUNK_SIZE);
-}
-
-std::vector<size_t> get_poslist_10000() {
-  return getUniformlyDistributedVector(10000,0,CHUNK_SIZE);
-}
-
-std::vector<size_t> get_poslist_100000() {
-  return getUniformlyDistributedVector(100000,0,CHUNK_SIZE);
-}
-
-std::vector<size_t> get_poslist_1000000() {
-  return getUniformlyDistributedVector(100000,0,CHUNK_SIZE);
-}
-
-std::vector<size_t> get_poslist_10000_sorted() {
-  auto poslist = getUniformlyDistributedVector(10000,0,CHUNK_SIZE);
-  std::sort(poslist.begin(), poslist.end());
-  return poslist;
-}
-
-std::vector<size_t> get_poslist_100000_sorted() {
-  vector<size_t> vec(100000);
-  int i = 0;
-  generate(vec.begin(), vec.end(), [&]() {
-    return i++;
-  });
-  return vec;
-}
+POSLIST_METHOD_SORTED(1)
+POSLIST_METHOD_SORTED(10)
+POSLIST_METHOD_SORTED(100)
+POSLIST_METHOD_SORTED(1000)
+POSLIST_METHOD_SORTED(10000)
+POSLIST_METHOD_SORTED(100000)
+POSLIST_METHOD_SORTED(1000000)
 
 // Data
 

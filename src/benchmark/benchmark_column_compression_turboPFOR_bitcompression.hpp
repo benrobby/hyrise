@@ -100,8 +100,7 @@ void _turboPFOR_bitcompression_benchmark_decoding_points(const std::vector<Value
 
   uint32_t val;
 
-  unsigned int n = vec.size();
-  std::vector<ValueT> points = std::vector<ValueT>(n);
+  std::vector<ValueT> points = std::vector<ValueT>(pointIndices.size());
   benchmark::DoNotOptimize(points);
 
   ValueT sum = 0;
