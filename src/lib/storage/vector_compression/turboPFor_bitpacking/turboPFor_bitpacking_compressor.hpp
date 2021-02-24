@@ -3,10 +3,6 @@
 
 #include "storage/vector_compression/base_vector_compressor.hpp"
 
-#include "include/codecfactory.h"
-#include "include/intersection.h"
-#include "include/frameofreference.h"
-
 #include "turboPFor_bitpacking_vector.hpp"
 
 #include "types.hpp"

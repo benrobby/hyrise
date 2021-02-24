@@ -12,8 +12,6 @@ std::unique_ptr<const BaseCompressedVector> TurboPForBitpackingCompressor::compr
     const pmr_vector<uint32_t>& vector, const PolymorphicAllocator<size_t>& alloc,
     const UncompressedVectorInfo& meta_info) {
   
-  SIMDCompressionLib::IntegerCODEC &codec = *SIMDCompressionLib::CODECFactory::getFromName("simdframeofreference");
-
   
   auto data = pmr_vector<uint32_t>(alloc);
 
@@ -22,15 +20,11 @@ std::unique_ptr<const BaseCompressedVector> TurboPForBitpackingCompressor::compr
       return std::make_unique<TurboPForBitpackingVector>(std::move(data), vector.size(), 0);
   }
 
-  data.resize(2 * vector.size() + 1024);
+  data.resize(vector.size());
 
-  auto encodedValuesSize = data.size();
-  pmr_vector<uint32_t> in(vector);
-  codec.encodeArray(in.data(), vector.size(), data.data(), encodedValuesSize);
-
-
-  data.resize(encodedValuesSize);
-  data.shrink_to_fit();
+  for (int i = 0; i < vector.size(); i++) {
+    data[i] = vector[i];
+  }
 
   return std::make_unique<TurboPForBitpackingVector>(std::move(data), vector.size(), 0);
 }
