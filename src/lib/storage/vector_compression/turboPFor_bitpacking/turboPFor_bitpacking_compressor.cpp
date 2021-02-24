@@ -3,6 +3,7 @@
 #include "conf.h"
 #include "bitpack.h"
 #include "math.h"
+#include <cmath>
 
 namespace opossum {
 
@@ -18,7 +19,15 @@ std::unique_ptr<const BaseCompressedVector> TurboPForBitpackingCompressor::compr
   pmr_vector<uint32_t> in(vector);
 
   const auto max_value = _find_max_value(vector);
-  const auto b = log2(max_value +1) + 1;
+  
+  uint32_t b;
+  if (max_value <= 0) {
+    b = 1;
+  } else if (max_value == 1) {
+    b = 1;
+  } else {
+    b = std::ceil(log2(max_value + 1));
+  }
 
   if (vector.size() == 0) {
       data.resize(0);
