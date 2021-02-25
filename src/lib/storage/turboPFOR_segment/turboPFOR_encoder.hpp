@@ -51,23 +51,32 @@ class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
     auto data = pmr_vector<uint8_t>(allocator);
     data.resize(values.size() * sizeof(uint32_t) + 1024);
 
+    // Set Bit Width
     uint32_t max = 0;
     for (const auto v : values) {
       max |= v;
     }
-    const auto b = log2(max + 1) + 1;
+    uint32_t b;
+    if (max <= 0) {
+     b = 1;
+    } else if (max == 1) {
+     b = 1;
+    } else {
+     b = std::ceil(log2(max + 1));
+    }
     const uint8_t b_1 = static_cast<uint8_t>(b);
 
+    // Handle Edge Cases
     if (values.size() == 0) {
       data.resize(0);
       return std::make_shared<TurboPFORSegment<T>>(std::move(std::make_shared<pmr_vector<uint8_t>>(data)), values.size(), b_1, std::move(null_values), values.size());
     }
 
+    // Encode with TurboPFOR Library
     uint8_t * out_end = bitpack32(values.data(), values.size(), data.data(), b);
     int bytes_written = (out_end) - data.data();
-
     data.resize(bytes_written + 32);
- 
+
     if (segment_contains_null_values) {
       return std::make_shared<TurboPFORSegment<T>>(std::move(std::make_shared<pmr_vector<uint8_t>>(data)), values.size(), b_1, std::move(null_values), values.size());
     } else {
