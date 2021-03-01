@@ -64,10 +64,13 @@ private:
               _chunk_offset{chunk_offset},
               _codec_id{codec_id} {
           
-          _decoded_values = std::vector<uint32_t>(size);
+          _decoded_values = std::vector<uint32_t>(2*size + 1024);
           size_t recovered_size = _decoded_values.size();
           FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdpfor");
-          codec.decodeArray(_encoded_values->data(), _encoded_values->size(), _decoded_values.data(), recovered_size);
+          if (size > 0) {
+            codec.decodeArray(_encoded_values->data(), _encoded_values->size(), _decoded_values.data(), recovered_size);
+            _decoded_values.resize(size);
+          }
         }
 
     private:
@@ -131,10 +134,13 @@ private:
                   _null_values{null_values},
                   _codec_id{codec_id} {
 
-          _decoded_values = std::vector<uint32_t>(size);
+          _decoded_values = std::vector<uint32_t>(2*size + 1024);
           size_t recovered_size = _decoded_values.size();
           FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdpfor");
-          codec.decodeArray(_encoded_values->data(), _encoded_values->size(), _decoded_values.data(), recovered_size);
+           if (size > 0) {
+            codec.decodeArray(_encoded_values->data(), _encoded_values->size(), _decoded_values.data(), recovered_size);
+            _decoded_values.resize(size);
+          }
         }
 
     private:
