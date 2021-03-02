@@ -55,6 +55,7 @@ class FastPFORSegment : public AbstractEncodedSegment {
        return std::nullopt;
      }
 
+
     auto decoded_values = std::vector<uint32_t>(2*_size + 1024);
     size_t recovered_size = decoded_values.size();
     FastPForLib::IntegerCODEC &codec = *FastPForLib::CODECFactory::getFromName("simdpfor");
