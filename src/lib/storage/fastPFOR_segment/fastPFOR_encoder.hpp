@@ -49,6 +49,7 @@ class FastPFOREncoder : public SegmentEncoder<FastPFOREncoder> {
     codec.encodeArray(values.data(), values.size(), encodedValues->data(), encodedValuesSize);
 
     encodedValues->resize(encodedValuesSize);
+    encodedValues->shrink_to_fit();
 
     if (segment_contains_null_values) {
        return std::make_shared<FastPFORSegment<T>>(encodedValues, std::move(null_values), codec_id, values.size());
