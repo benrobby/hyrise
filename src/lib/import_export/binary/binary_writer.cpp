@@ -247,6 +247,14 @@ void BinaryWriter::_write_segment(const RunLengthSegment<T>& run_length_segment,
   export_values(ofstream, *run_length_segment.end_positions());
 }
 
+template <typename T>
+void BinaryWriter::_write_segment(const TurboPFORSegment<T>& turboPFOR_segment, bool column_is_nullable,
+                                  std::ofstream& ofstream) {
+  export_value(ofstream, EncodingType::TurboPFOR);
+
+  // WRONG
+}
+
 template <>
 void BinaryWriter::_write_segment(const FrameOfReferenceSegment<int32_t>& frame_of_reference_segment,
                                   bool column_is_nullable, std::ofstream& ofstream) {

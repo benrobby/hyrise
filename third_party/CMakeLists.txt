@@ -99,6 +99,10 @@ target_include_directories(
     ${LZ4_LIBRARY_DIR}
 )
 
+# Add compact_vector
+add_library(compact_vector INTERFACE)
+target_include_directories(compact_vector INTERFACE compactvector/include)
+
 target_compile_options(lz4 PRIVATE -fPIC)
 
 ## Build zstd
