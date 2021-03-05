@@ -251,6 +251,10 @@ std::string Print::_segment_type(const std::shared_ptr<AbstractSegment>& segment
           segment_type += ":BP";
           break;
         }
+        case CompressedVectorType::TurboPForBitpacking: {
+          segment_type += ":PForBP";
+          break;
+        }
       }
     }
   } else {
