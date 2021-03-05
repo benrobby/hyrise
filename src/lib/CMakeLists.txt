@@ -651,7 +651,7 @@ set(
 
 set(
     LIBRARIES
-    compact_vector
+    turboPFOR
     lz4
     sqlparser
     uninitialized_vector

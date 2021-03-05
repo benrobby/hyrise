@@ -252,7 +252,17 @@ void BinaryWriter::_write_segment(const TurboPFORSegment<T>& turboPFOR_segment, 
                                   std::ofstream& ofstream) {
   export_value(ofstream, EncodingType::TurboPFOR);
 
-  // WRONG
+  // Write size and values
+  export_value(ofstream, static_cast<uint32_t>(turboPFOR_segment.encoded_values()->size));
+  export_values(ofstream, turboPFOR_segment.encoded_values()->compressedBuffer);
+  export_values(ofstream, turboPFOR_segment.encoded_values()->offsets);
+
+  // Write flag if optional NULL value vector is written
+  export_value(ofstream, static_cast<BoolAsByteType>(turboPFOR_segment.null_values().has_value()));
+  if (turboPFOR_segment.null_values()) {
+    // Write NULL values
+    export_values(ofstream, *turboPFOR_segment.null_values());
+  }
 }
 
 template <>
