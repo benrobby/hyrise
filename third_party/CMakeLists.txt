@@ -80,6 +80,9 @@ add_subdirectory(libpqxx)
 add_subdirectory(tpch-dbgen)
 add_subdirectory(nlohmann_json)
 add_subdirectory(robin-map)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/FastPFor_custom/CMakeLists.txt DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/FastPFor)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/FastPFor_custom/common.h DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/FastPFor/headers)
+add_subdirectory(FastPFor)
 
 ## Build lz4
 set(LZ4_LIBRARY_DIR lz4/lib)

@@ -440,6 +440,10 @@ set(
     storage/dictionary_segment/dictionary_segment_iterable.hpp
     storage/encoding_type.cpp
     storage/encoding_type.hpp
+    storage/fastPFOR_segment.cpp
+    storage/fastPFOR_segment.hpp
+    storage/fastPFOR_segment/fastPFOR_encoder.hpp
+    storage/fastPFOR_segment/fastPFOR_segment_iterable.hpp
     storage/fixed_string_dictionary_segment.cpp
     storage/fixed_string_dictionary_segment.hpp
     storage/fixed_string_dictionary_segment/fixed_string.cpp
@@ -647,6 +651,7 @@ set(
 
 set(
     LIBRARIES
+    FastPFOR
     lz4
     sqlparser
     uninitialized_vector

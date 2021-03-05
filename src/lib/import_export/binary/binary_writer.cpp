@@ -247,6 +247,26 @@ void BinaryWriter::_write_segment(const RunLengthSegment<T>& run_length_segment,
   export_values(ofstream, *run_length_segment.end_positions());
 }
 
+template <typename T>
+void BinaryWriter::_write_segment(const FastPFORSegment<T>& fastPFOR_segment, bool column_is_nullable,
+                                  std::ofstream& ofstream) {
+  export_value(ofstream, EncodingType::FastPFOR);
+
+  // Write size and values
+  export_value(ofstream, static_cast<uint32_t>(fastPFOR_segment.encoded_values()->size()));
+  export_values(ofstream, *fastPFOR_segment.encoded_values());
+
+  // Write flag if optional NULL value vector is written
+  export_value(ofstream, static_cast<BoolAsByteType>(fastPFOR_segment.null_values().has_value()));
+  if (fastPFOR_segment.null_values()) {
+    // Write NULL values
+    export_values(ofstream, *fastPFOR_segment.null_values());
+  }
+
+  // Write Codec id (to be mapped to actual codec name)
+  export_value(ofstream, fastPFOR_segment.codec_id());
+}
+
 template <>
 void BinaryWriter::_write_segment(const FrameOfReferenceSegment<int32_t>& frame_of_reference_segment,
                                   bool column_is_nullable, std::ofstream& ofstream) {
