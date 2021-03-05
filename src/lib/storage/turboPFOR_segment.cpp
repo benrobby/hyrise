@@ -12,14 +12,14 @@ namespace opossum {
 #define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
 
 template <typename T, typename U>
-TurboPFORSegment<T, U>::TurboPFORSegment(const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values, std::optional<pmr_vector<bool>> null_values, ChunkOffset size)
+TurboPFORSegment<T, U>::TurboPFORSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values, std::optional<pmr_vector<bool>> null_values, ChunkOffset size)
     : AbstractEncodedSegment(data_type_from_type<T>()),
       _encoded_values{encoded_values},
       _null_values{null_values},
       _size{size} { }
 
 template <typename T, typename U>
-const std::shared_ptr<turboPFOR::EncodedTurboPForVector> TurboPFORSegment<T, U>::encoded_values() const {
+const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> TurboPFORSegment<T, U>::encoded_values() const {
   return _encoded_values;
 }
 
@@ -46,13 +46,17 @@ ChunkOffset TurboPFORSegment<T,U>::size() const {
 template <typename T, typename U>
 std::shared_ptr<AbstractSegment> TurboPFORSegment<T,U>::copy_using_allocator(
     const PolymorphicAllocator<size_t>& alloc) const {
-  auto new_encoded_values = std::make_shared<turboPFOR::EncodedTurboPForVector>(*_encoded_values);
+    
+    auto copied_data = std::make_shared<pmr_bitpacking_vector<uint32_t>>(_encoded_values->bytes(), alloc);
+    for (int i = 0; i < _encoded_values->size(); i++) {
+      copied_data->push_back((*_encoded_values)[i]);
+    }
 
   std::optional<pmr_vector<bool>> new_null_values;
   if (_null_values) {
     new_null_values = pmr_vector<bool>(*_null_values, alloc);
   }
-  auto copy = std::make_shared<TurboPFORSegment<T,U>>(new_encoded_values, std::move(new_null_values), _size);
+  auto copy = std::make_shared<TurboPFORSegment<T,U>>(copied_data, std::move(new_null_values), _size);
 
   copy->access_counter = access_counter;
 
@@ -65,10 +69,8 @@ size_t TurboPFORSegment<T,U>::memory_usage([[maybe_unused]] const MemoryUsageCal
   if (_null_values) {
     segment_size += _null_values->capacity() / CHAR_BIT;
   }
-  segment_size += _encoded_values->size_in_bytes();
+  segment_size += _encoded_values->bytes();
   segment_size += 4; // size
-  segment_size += 4; // b
-  segment_size += 58; //vp4
 
   return segment_size;
 }

@@ -3,10 +3,9 @@
 #include <memory>
 
 #include "storage/base_segment_encoder.hpp"
-#include "storage/turboPFOR_segment.hpp"
-#include "turboPFOR_wrapper.hpp"
-#include "vp4.h"
+#include "vector_types.hpp"
 #include <fstream>
+#include <limits>
 
 namespace opossum {
 
@@ -45,16 +44,42 @@ class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
     values.shrink_to_fit();
     null_values.shrink_to_fit();
 
-    turboPFOR::EncodedTurboPForVector e = turboPFOR::p4EncodeVector(values); // WRONG, use allocator
-    auto as_pointer = std::make_shared<turboPFOR::EncodedTurboPForVector>(e);
- 
+    uint32_t max_value = _find_max_value(values);
+    uint32_t b = _get_bit_width(max_value);
+    auto data = std::make_shared<pmr_bitpacking_vector<uint32_t>>(b, allocator);
+    for (int i = 0; i < values.size(); i++) {
+      data->push_back(values[i]);
+    }
+
     if (segment_contains_null_values) {
-      return std::make_shared<TurboPFORSegment<T>>(std::move(as_pointer), std::move(null_values), values.size());
+      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::move(null_values), values.size());
     } else {
-      return std::make_shared<TurboPFORSegment<T>>(std::move(as_pointer), std::nullopt, values.size());
+      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::nullopt, values.size());
     }
   }
+
+uint32_t _find_max_value(const std::vector<uint32_t>& vector) const {
+  uint32_t max = 0;
+  for (const auto v : vector) {
+    max |= v;
+  }
+  return max;
+}
+
+uint32_t _get_bit_width(uint32_t max_value) {
+  uint32_t b_1;
+  if (max_value <= 0) {
+    b_1 = 1;
+  } else if (max_value == 1) {
+    b_1 = 1;
+  } else if (max_value == std::numeric_limits<unsigned int>::max()) {
+    b_1 = std::ceil(log2(max_value));
+  } else { 
+    b_1 = std::ceil(log2(max_value + 1));
+  }
+  uint32_t b = std::min(b_1, std::max(compact::vector<unsigned int, 32>::required_bits(max_value), 1u));
+  return b;
+}
 };
+} // namespace opposum
 
-
-}  // namespace opossum

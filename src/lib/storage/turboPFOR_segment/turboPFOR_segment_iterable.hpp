@@ -9,9 +9,6 @@
 
 #include "utils/performance_warning.hpp"
 
-#include "bitpack.h"
-#include "vp4.h"
-
 #define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
 
 namespace opossum {
@@ -59,17 +56,21 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
       using EndPositionIterator = typename pmr_vector<ChunkOffset>::const_iterator;
 
     public:
-      explicit Iterator(const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values,
+      explicit Iterator(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
                         const std::optional<pmr_vector<bool>>* null_values,
                         ChunkOffset size,
                         ChunkOffset chunk_offset)
           : _encoded_values{encoded_values},
             _null_values{null_values},
             _chunk_offset{chunk_offset} {
-              _decoded_values = std::vector<uint32_t>(size);
-              // Using the p4DecodeVectorSequential function still leads to a Segmentation Fault
-              // in the benchmark.
-              _decoded_values = p4DecodeVectorSequential(*_encoded_values);
+      }
+
+      Iterator& operator=(const Iterator& other) {
+        if (this == &other) return *this;
+
+        DebugAssert(_encoded_values == other._encoded_values, "Cannot reassign BitpackingIterator");
+        _chunk_offset = other._chunk_offset;
+        return *this;
       }
 
     private:
@@ -99,15 +100,13 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
 
       SegmentPosition<T> dereference() const {
         const auto is_null = *_null_values ? (**_null_values)[_chunk_offset] : false;
-        const auto value = static_cast<T>(_decoded_values[_chunk_offset]);
+        const auto value = (*_encoded_values)[_chunk_offset];
         return SegmentPosition<T>{value, is_null, _chunk_offset};
       }
 
       private:
-      std::shared_ptr<turboPFOR::EncodedTurboPForVector> _encoded_values;
-      turboPFOR::PointBasedCache p4_cache;
+      const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
       const std::optional<pmr_vector<bool>>* _null_values;
-      std::vector<uint32_t> _decoded_values;
 
       ChunkOffset _chunk_offset;
   };
@@ -120,7 +119,7 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
     using ValueType = T;
     using IterableType = TurboPFORSegmentIterable<T>;
 
-    explicit PointAccessIterator(const std::shared_ptr<turboPFOR::EncodedTurboPForVector> encoded_values,
+    explicit PointAccessIterator(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
                                  const std::optional<pmr_vector<bool>>* null_values,
                                  ChunkOffset size,
                                  const PosListIteratorType position_filter_begin,
@@ -130,8 +129,14 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
         _encoded_values{encoded_values},
         _null_values{null_values} 
         {
-           p4_cache = turboPFOR::calculateP4Ini(*_encoded_values);
         }
+     
+     PointAccessIterator& operator=(const PointAccessIterator& other) {
+        if (this == &other) return *this;
+
+        DebugAssert(_encoded_values == other._encoded_values, "Cannot reassign BitpackingIterator");
+        return *this;
+      }
 
     private:
     friend class boost::iterator_core_access;  // grants the boost::iterator_facade access to the private interface
@@ -141,13 +146,12 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
       const auto current_offset = chunk_offsets.offset_in_referenced_chunk;
 
       const auto is_null = *_null_values ? (**_null_values)[current_offset] : false;
-      const auto value = turboPFOR::p4GetValueNoInit(*_encoded_values, p4_cache, current_offset);
+      const auto value = (*_encoded_values)[current_offset];
       return SegmentPosition<T>{value, is_null, chunk_offsets.offset_in_poslist};
     }
 
     private:
-    std::shared_ptr<turboPFOR::EncodedTurboPForVector> _encoded_values;
-    turboPFOR::PointBasedCache p4_cache;
+    const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
     const std::optional<pmr_vector<bool>>* _null_values;
   };
 };
