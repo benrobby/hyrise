@@ -79,7 +79,7 @@ std::vector<ValueT> get_with_sequential_sorted_numbers() {
 }
 
 std::vector<ValueT> get_with_huge_numbers() {
-  std::vector<size_t> vec = getUniformlyDistributedVector(CHUNK_SIZE, 0, 1'000'000'000);
+  std::vector<size_t> vec = getUniformlyDistributedVector(CHUNK_SIZE, 0, 4'294'967'295);
   return std::vector<ValueT>(vec.begin(), vec.end());
 }
 
