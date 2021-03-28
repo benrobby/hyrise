@@ -18,7 +18,7 @@ std::unique_ptr<const BaseCompressedVector> BitpackingCompressor::compress(
   auto data = pmr_bitpacking_vector<uint32_t, 16>(alloc);
   data.resize(vector.size());
   for (int i = 0; i < vector.size(); i++) {
-    data.push_back(vector[i]);
+    data[i] = vector[i];
   }
   // data.resize(data.size());
 
