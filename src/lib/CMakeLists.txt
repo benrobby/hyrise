@@ -548,6 +548,12 @@ set(
     storage/vector_compression/simd_bp128/simd_bp128_packing.hpp
     storage/vector_compression/simd_bp128/simd_bp128_vector.cpp
     storage/vector_compression/simd_bp128/simd_bp128_vector.hpp
+    storage/vector_compression/bitpacking/bitpacking_compressor.cpp
+    storage/vector_compression/bitpacking/bitpacking_compressor.hpp
+    storage/vector_compression/bitpacking/bitpacking_iterator.hpp
+    storage/vector_compression/bitpacking/bitpacking_decompressor.hpp
+    storage/vector_compression/bitpacking/bitpacking_vector.hpp
+    storage/vector_compression/bitpacking/bitpacking_vector.cpp
     storage/vector_compression/vector_compression.cpp
     storage/vector_compression/vector_compression.hpp
     strong_typedef.hpp
@@ -725,6 +731,8 @@ endif()
 target_link_libraries_system(hyrise_impl nlohmann_json::nlohmann_json)
 target_link_libraries_system(hyrise_impl robin_map)
 target_include_directories(hyrise_impl PUBLIC ${CMAKE_BINARY_DIR})
+target_include_directories(hyrise_impl PUBLIC ${CMAKE_SOURCE_DIR}/third_party/compact_vector/include)
+
 
 # Precompile the most expensive headers. Only add headers here if you know what you are doing, as this has the potential
 # of negatively affecting the build time.

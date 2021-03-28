@@ -39,7 +39,7 @@ const boost::bimap<EncodingType, std::string> encoding_type_to_string = make_bim
     {EncodingType::FixedStringDictionary, "FixedStringDictionary"},
     {EncodingType::FrameOfReference, "FrameOfReference"},
     {EncodingType::LZ4, "LZ4"},
-    {EncodingType::Unencoded, "Unencoded"},
+    {EncodingType::Unencoded, "Unencoded"}
 });
 
 const boost::bimap<FileType, std::string> file_type_to_string = make_bimap<FileType, std::string>(
@@ -52,6 +52,7 @@ const boost::bimap<VectorCompressionType, std::string> vector_compression_type_t
     make_bimap<VectorCompressionType, std::string>({
         {VectorCompressionType::FixedSizeByteAligned, "Fixed-size byte-aligned"},
         {VectorCompressionType::SimdBp128, "SIMD-BP128"},
+        {VectorCompressionType::Bitpacking, "Bitpacking"},
     });
 
 std::ostream& operator<<(std::ostream& stream, const AggregateFunction aggregate_function) {
@@ -98,6 +99,10 @@ std::ostream& operator<<(std::ostream& stream, const CompressedVectorType compre
     }
     case CompressedVectorType::SimdBp128: {
       stream << "SimdBp128";
+      break;
+    }
+    case CompressedVectorType::Bitpacking: {
+      stream << "Bitpacking";
       break;
     }
     default:
