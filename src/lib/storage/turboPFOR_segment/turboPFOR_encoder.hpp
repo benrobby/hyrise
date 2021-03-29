@@ -47,8 +47,9 @@ class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
     uint32_t max_value = _find_max_value(values);
     uint32_t b = _get_bit_width(max_value);
     auto data = std::make_shared<pmr_bitpacking_vector<uint32_t>>(b, allocator);
+    data->resize(values.size());
     for (int i = 0; i < values.size(); i++) {
-      data->push_back(values[i]);
+      (*data)[i] = values[i];
     }
 
     if (segment_contains_null_values) {
