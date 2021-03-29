@@ -48,7 +48,7 @@ std::shared_ptr<AbstractSegment> TurboPFORSegment<T,U>::copy_using_allocator(
     const PolymorphicAllocator<size_t>& alloc) const {
     
     auto copied_data = std::make_shared<pmr_bitpacking_vector<uint32_t>>(_encoded_values->bytes(), alloc);
-    copied_data.resize(_encoded_values->size());
+    copied_data->resize(_encoded_values->size());
     for (int i = 0; i < _encoded_values->size(); i++) {
       (*copied_data)[i] = (*_encoded_values)[i];
     }
