@@ -14,8 +14,6 @@
 #include "storage/chunk.hpp"
 #include "storage/encoding_type.hpp"
 #include "storage/vector_compression/fixed_size_byte_aligned/fixed_size_byte_aligned_vector.hpp"
-#include "storage/vector_compression/simd_bp128/oversized_types.hpp"
-#include "storage/vector_compression/simd_bp128/simd_bp128_vector.hpp"
 
 #include "utils/assert.hpp"
 
@@ -268,26 +266,12 @@ std::shared_ptr<LZ4Segment<T>> BinaryParser::_import_lz4_segment(std::ifstream& 
   const auto dictionary_size = _read_value<uint32_t>(file);
   auto dictionary = pmr_vector<char>(_read_values<char>(file, dictionary_size));
 
-  const auto string_offsets_size = _read_value<uint32_t>(file);
-
-  if (string_offsets_size > 0) {
-    const auto string_offsets_data_size = _read_value<uint32_t>(file);
-
-    // so far, only SimdBp128 compression is supported
-    auto string_offsets =
-        std::make_unique<SimdBp128Vector>(_read_values<uint128_t>(file, string_offsets_data_size), string_offsets_size);
-
+  if (std::is_same<T, pmr_string>::value) {
     return std::make_shared<LZ4Segment<T>>(std::move(lz4_blocks), std::move(null_values), std::move(dictionary),
-                                           std::move(string_offsets), block_size, last_block_size, compressed_size,
-                                           num_elements);
+                                            nullptr, block_size, last_block_size, compressed_size, num_elements);
   } else {
-    if (std::is_same<T, pmr_string>::value) {
-      return std::make_shared<LZ4Segment<T>>(std::move(lz4_blocks), std::move(null_values), std::move(dictionary),
-                                             nullptr, block_size, last_block_size, compressed_size, num_elements);
-    } else {
-      return std::make_shared<LZ4Segment<T>>(std::move(lz4_blocks), std::move(null_values), std::move(dictionary),
-                                             block_size, last_block_size, compressed_size, num_elements);
-    }
+    return std::make_shared<LZ4Segment<T>>(std::move(lz4_blocks), std::move(null_values), std::move(dictionary),
+                                            block_size, last_block_size, compressed_size, num_elements);
   }
 }
 

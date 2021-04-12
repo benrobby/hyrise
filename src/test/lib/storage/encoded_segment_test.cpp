@@ -445,7 +445,7 @@ TEST_F(EncodedSegmentTest, SegmentReencoding) {
             (SegmentEncodingSpec{EncodingType::Dictionary, VectorCompressionType::FixedSizeByteAligned}));
   EXPECT_SEGMENT_EQ_ORDERED(value_segment, encoded_segment);
   encoded_segment = this->_encode_segment(
-      value_segment, DataType::Int, SegmentEncodingSpec{EncodingType::Dictionary, VectorCompressionType::SimdBp128});
+      value_segment, DataType::Int, SegmentEncodingSpec{EncodingType::Dictionary });
   EXPECT_SEGMENT_EQ_ORDERED(value_segment, encoded_segment);
   encoded_segment =
       this->_encode_segment(value_segment, DataType::Int,
@@ -459,9 +459,9 @@ TEST_F(EncodedSegmentTest, SegmentReencoding) {
   // FrameOfReference
   encoded_segment =
       this->_encode_segment(value_segment, DataType::Int,
-                            SegmentEncodingSpec{EncodingType::FrameOfReference, VectorCompressionType::SimdBp128});
+                            SegmentEncodingSpec{EncodingType::FrameOfReference});
   EXPECT_EQ(get_segment_encoding_spec(encoded_segment),
-            (SegmentEncodingSpec{EncodingType::FrameOfReference, VectorCompressionType::SimdBp128}));
+            (SegmentEncodingSpec{EncodingType::FrameOfReference}));
   EXPECT_SEGMENT_EQ_ORDERED(value_segment, encoded_segment);
   encoded_segment = this->_encode_segment(
       value_segment, DataType::Int,
@@ -481,7 +481,7 @@ TEST_F(EncodedSegmentTest, SegmentReencoding) {
       value_segment, DataType::Int, SegmentEncodingSpec{EncodingType::LZ4, VectorCompressionType::FixedSizeBitAligned});
   EXPECT_SEGMENT_EQ_ORDERED(value_segment, encoded_segment);
   encoded_segment = this->_encode_segment(value_segment, DataType::Int,
-                                          SegmentEncodingSpec{EncodingType::LZ4, VectorCompressionType::SimdBp128});
+                                          SegmentEncodingSpec{EncodingType::LZ4 });
   EXPECT_SEGMENT_EQ_ORDERED(value_segment, encoded_segment);
 }
 
