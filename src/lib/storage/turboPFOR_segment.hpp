@@ -37,8 +37,7 @@ template <typename T, typename = std::enable_if_t<encoding_supports_data_type(
 class TurboPFORSegment : public AbstractEncodedSegment {
  public:
   explicit TurboPFORSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
-                           std::optional<pmr_vector<bool>> null_values,
-                           ChunkOffset size);
+                           std::optional<pmr_vector<bool>> null_values);
 
   const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values() const;
   const std::optional<pmr_vector<bool>>& null_values() const;
@@ -79,8 +78,6 @@ class TurboPFORSegment : public AbstractEncodedSegment {
 
  protected:
   const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
-  const std::optional<pmr_vector<bool>> _null_values;
-  ChunkOffset _size;
-};
+  const std::optional<pmr_vector<bool>> _null_values;};
 
 }  // namespace opossum
