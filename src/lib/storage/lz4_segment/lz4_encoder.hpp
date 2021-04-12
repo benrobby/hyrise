@@ -13,8 +13,6 @@
 #include "storage/lz4_segment.hpp"
 #include "storage/value_segment.hpp"
 #include "storage/value_segment/value_segment_iterable.hpp"
-#include "storage/vector_compression/simd_bp128/simd_bp128_compressor.hpp"
-#include "storage/vector_compression/simd_bp128/simd_bp128_vector.hpp"
 #include "storage/vector_compression/vector_compression.hpp"
 #include "types.hpp"
 #include "utils/assert.hpp"
@@ -227,8 +225,7 @@ class LZ4Encoder : public SegmentEncoder<LZ4Encoder> {
     // SimdBp128 is chosen over fixed size byte-aligned (FSBA) vector compression, since it compresses better and the
     // performance advantage of FSBA is neglectable, because runtime is dominated by the LZ4 encoding/decoding anyways.
     // Prohibiting FSBA here reduces the compile time.
-    Assert(vector_compression_type() == VectorCompressionType::SimdBp128, "Only SimdBp128 is supported for LZ4");
-    auto compressed_offsets = compress_vector(offsets, VectorCompressionType::SimdBp128, allocator, {offsets.back()});
+    auto compressed_offsets = compress_vector(offsets, VectorCompressionType::FixedSizeBitAligned, allocator, {offsets.back()});
 
     /**
      * Pre-compute a zstd dictionary if the input data is split among multiple blocks. This dictionary allows

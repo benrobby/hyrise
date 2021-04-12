@@ -220,8 +220,7 @@ TEST_F(ChunkEncoderTest, ReencodingTable) {
       {SegmentEncodingSpec{EncodingType::Unencoded}, SegmentEncodingSpec{EncodingType::RunLength},
        SegmentEncodingSpec{EncodingType::Dictionary, VectorCompressionType::FixedSizeBitAligned}},
       {SegmentEncodingSpec{EncodingType::Dictionary},
-       SegmentEncodingSpec{EncodingType::Dictionary, VectorCompressionType::FixedSizeByteAligned},
-       SegmentEncodingSpec{EncodingType::Dictionary, VectorCompressionType::SimdBp128}},
+       SegmentEncodingSpec{EncodingType::Dictionary, VectorCompressionType::FixedSizeByteAligned}},
       {SegmentEncodingSpec{EncodingType::Unencoded}, SegmentEncodingSpec{EncodingType::Unencoded},
        SegmentEncodingSpec{EncodingType::Unencoded}}};
   const auto column_data_types = _table->column_data_types();
