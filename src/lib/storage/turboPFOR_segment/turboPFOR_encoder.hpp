@@ -53,9 +53,9 @@ class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
     }
 
     if (segment_contains_null_values) {
-      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::move(null_values), values.size());
+      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::move(null_values));
     } else {
-      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::nullopt, values.size());
+      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::nullopt);
     }
   }
 

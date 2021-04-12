@@ -1,0 +1,11 @@
+- Writing benchmark results to '../JOB_Dictionary_singlethreaded.json'
+- Running in single-threaded mode
+- 1 simulated client is scheduling items
+- Running benchmark in 'Ordered' mode
+- Encoding is custom from ../encoding_Dictionary.json
+- Chunk size is 65535
+- Executing items until max duration is up:
+- Max duration per item is 60 seconds
+- No warmup runs are performed
+- Not caching tables as binary files
+- Not tracking SQL metrics

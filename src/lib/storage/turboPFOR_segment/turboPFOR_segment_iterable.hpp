@@ -65,14 +65,6 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
             _chunk_offset{chunk_offset} {
       }
 
-      Iterator& operator=(const Iterator& other) {
-        if (this == &other) return *this;
-
-        DebugAssert(_encoded_values == other._encoded_values, "Cannot reassign BitpackingIterator");
-        _chunk_offset = other._chunk_offset;
-        return *this;
-      }
-
     private:
       friend class boost::iterator_core_access;  // grants the boost::iterator_facade access to the private interface
 
@@ -105,7 +97,7 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
       }
 
       private:
-      const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
+      std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
       const std::optional<pmr_vector<bool>>* _null_values;
 
       ChunkOffset _chunk_offset;
@@ -130,13 +122,6 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
         _null_values{null_values} 
         {
         }
-     
-     PointAccessIterator& operator=(const PointAccessIterator& other) {
-        if (this == &other) return *this;
-
-        DebugAssert(_encoded_values == other._encoded_values, "Cannot reassign BitpackingIterator");
-        return *this;
-      }
 
     private:
     friend class boost::iterator_core_access;  // grants the boost::iterator_facade access to the private interface
@@ -151,7 +136,7 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
     }
 
     private:
-    const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
+    std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
     const std::optional<pmr_vector<bool>>* _null_values;
   };
 };
