@@ -161,12 +161,12 @@ std::shared_ptr<AbstractSegment> BinaryParser::_import_segment(std::ifstream& fi
       }
     case EncodingType::LZ4:
       return _import_lz4_segment<ColumnDataType>(file, row_count);
-    case EncodingType::TurboPFOR:
-      if constexpr (encoding_supports_data_type(enum_c<EncodingType, EncodingType::TurboPFOR>,
+    case EncodingType::Bitpacking:
+      if constexpr (encoding_supports_data_type(enum_c<EncodingType, EncodingType::Bitpacking>,
                                                 hana::type_c<ColumnDataType>)) {
-        return _import_TurboPFOR_segment<ColumnDataType>(file, row_count);
+        return _import_bitpacking_segment<ColumnDataType>(file, row_count);
       } else {
-        Fail("Unsupported data type for TurboPFOR encoding");
+        Fail("Unsupported data type for Bitpacking encoding");
       }
   }
 
@@ -223,7 +223,7 @@ std::shared_ptr<RunLengthSegment<T>> BinaryParser::_import_run_length_segment(st
 }
 
 template <typename T>
-std::shared_ptr<TurboPFORSegment<T>> BinaryParser::_import_TurboPFOR_segment(std::ifstream& file,
+std::shared_ptr<BitpackingSegment<T>> BinaryParser::_import_bitpacking_segment(std::ifstream& file,
                                                                            ChunkOffset row_count) {
 
   // Empty, WRONG

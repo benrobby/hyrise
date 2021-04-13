@@ -248,9 +248,9 @@ void BinaryWriter::_write_segment(const RunLengthSegment<T>& run_length_segment,
 }
 
 template <typename T>
-void BinaryWriter::_write_segment(const TurboPFORSegment<T>& turboPFOR_segment, bool column_is_nullable,
+void BinaryWriter::_write_segment(const BitpackingSegment<T>& bitpacking_segment, bool column_is_nullable,
                                   std::ofstream& ofstream) {
-  export_value(ofstream, EncodingType::TurboPFOR);
+  export_value(ofstream, EncodingType::Bitpacking);
 
   // WRONG
 }

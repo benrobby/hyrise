@@ -233,8 +233,8 @@ std::string Print::_segment_type(const std::shared_ptr<AbstractSegment>& segment
         segment_type += "LZ4";
         break;
       }
-      case EncodingType::TurboPFOR: {
-        segment_type += "TurboPFOR";
+      case EncodingType::Bitpacking: {
+        segment_type += "BitP";
         break;
       }
     }

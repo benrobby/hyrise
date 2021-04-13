@@ -12,7 +12,7 @@ namespace opossum {
 class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
 
  public:
-  static constexpr auto _encoding_type = enum_c<EncodingType, EncodingType::TurboPFOR>;
+  static constexpr auto _encoding_type = enum_c<EncodingType, EncodingType::Bitpacking>;
   static constexpr auto _uses_vector_compression = false;
 
   template <typename T>
@@ -53,9 +53,9 @@ class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
     }
 
     if (segment_contains_null_values) {
-      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::move(null_values));
+      return std::make_shared<BitpackingSegment<T>>(std::move(data), std::move(null_values));
     } else {
-      return std::make_shared<TurboPFORSegment<T>>(std::move(data), std::nullopt);
+      return std::make_shared<BitpackingSegment<T>>(std::move(data), std::nullopt);
     }
   }
 

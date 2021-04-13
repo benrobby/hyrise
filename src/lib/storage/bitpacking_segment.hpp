@@ -12,7 +12,7 @@
 #include "abstract_encoded_segment.hpp"
 #include "types.hpp"
 
-#include "turboPFOR_segment/vector_types.hpp"
+#include "bitpacking_segment/vector_types.hpp"
 
 namespace opossum {
 
@@ -33,10 +33,10 @@ class BaseCompressedVector;
  * whether that instantiation actually takes place." Draft Std. N4800 12.8.1.8
  */
 template <typename T, typename = std::enable_if_t<encoding_supports_data_type(
-    enum_c<EncodingType, EncodingType::TurboPFOR>, hana::type_c<T>)>>
-class TurboPFORSegment : public AbstractEncodedSegment {
+    enum_c<EncodingType, EncodingType::Bitpacking>, hana::type_c<T>)>>
+class BitpackingSegment : public AbstractEncodedSegment {
  public:
-  explicit TurboPFORSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
+  explicit BitpackingSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
                            std::optional<pmr_vector<bool>> null_values);
 
   const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values() const;
