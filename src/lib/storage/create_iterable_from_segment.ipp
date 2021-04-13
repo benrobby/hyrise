@@ -56,7 +56,7 @@ auto create_iterable_from_segment(const BitpackingSegment<T, Enabled>& segment) 
   if constexpr (EraseSegmentType) {
     return create_any_segment_iterable<T>(segment);
   } else {
-    return TurboPFORSegmentIterable<T>{segment};
+    return BitpackingSegmentIterable<T>{segment};
   }
 #endif
 }

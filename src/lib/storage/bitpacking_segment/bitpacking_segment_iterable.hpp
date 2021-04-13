@@ -10,11 +10,11 @@
 namespace opossum {
 
 template <typename T>
-class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFORSegmentIterable<T>> {
+class BitpackingSegmentIterable : public PointAccessibleSegmentIterable<BitpackingSegmentIterable<T>> {
  public:
   using ValueType = T;
 
-  explicit TurboPFORSegmentIterable(const BitpackingSegment<T>& segment) : _segment{segment} {}
+  explicit BitpackingSegmentIterable(const BitpackingSegment<T>& segment) : _segment{segment} {}
 
   template <typename Functor>
   void _on_with_iterators(const Functor& functor) const {
@@ -48,7 +48,7 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
   class Iterator : public AbstractSegmentIterator<Iterator, SegmentPosition<T>> {
     public:
       using ValueType = T;
-      using IterableType = TurboPFORSegmentIterable<T>;
+      using IterableType = BitpackingSegmentIterable<T>;
       using EndPositionIterator = typename pmr_vector<ChunkOffset>::const_iterator;
 
     public:
@@ -105,7 +105,7 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
       SegmentPosition<T>, PosListIteratorType> {
     public:
     using ValueType = T;
-    using IterableType = TurboPFORSegmentIterable<T>;
+    using IterableType = BitpackingSegmentIterable<T>;
 
     explicit PointAccessIterator(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
                                  const std::optional<pmr_vector<bool>>* null_values,

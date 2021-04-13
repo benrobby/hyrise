@@ -9,7 +9,7 @@
 
 namespace opossum {
 
-class TurboPFOREncoder : public SegmentEncoder<TurboPFOREncoder> {
+class BitpackingEncoder : public SegmentEncoder<BitpackingEncoder> {
 
  public:
   static constexpr auto _encoding_type = enum_c<EncodingType, EncodingType::Bitpacking>;
