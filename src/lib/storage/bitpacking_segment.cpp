@@ -6,7 +6,6 @@
 #include "utils/performance_warning.hpp"
 #include "utils/size_estimation_utils.hpp"
 
-
 namespace opossum {
 
 #define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))

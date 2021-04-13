@@ -1,7 +1,5 @@
 #pragma once
 
-#define TURBOPFOR_DAC
-
 #include <memory>
 #include <type_traits>
 

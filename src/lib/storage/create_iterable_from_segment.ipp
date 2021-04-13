@@ -49,7 +49,7 @@ auto create_iterable_from_segment(const RunLengthSegment<T>& segment) {
 
 template <typename T, typename Enabled, bool EraseSegmentType>
 auto create_iterable_from_segment(const BitpackingSegment<T, Enabled>& segment) {
-#ifdef HYRISE_ERASE_TURBOPFOR
+#ifdef HYRISE_ERASE_BITPACKING
   PerformanceWarning("BitpackingSegment erased by compile-time setting");
  return AnySegmentIterable<T>(BitpackingSegment<T>(segment));
 #else
