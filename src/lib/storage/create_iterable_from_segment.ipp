@@ -4,7 +4,7 @@
 #include "storage/frame_of_reference_segment/frame_of_reference_segment_iterable.hpp"
 #include "storage/lz4_segment/lz4_segment_iterable.hpp"
 #include "storage/run_length_segment/run_length_segment_iterable.hpp"
-#include "storage/turboPFOR_segment/turboPFOR_segment_iterable.hpp"
+#include "storage/bitpacking_segment/bitpacking_segment_iterable.hpp"
 #include "storage/segment_iterables/any_segment_iterable.hpp"
 #include "storage/value_segment/value_segment_iterable.hpp"
 
@@ -48,10 +48,10 @@ auto create_iterable_from_segment(const RunLengthSegment<T>& segment) {
 }
 
 template <typename T, typename Enabled, bool EraseSegmentType>
-auto create_iterable_from_segment(const TurboPFORSegment<T, Enabled>& segment) {
+auto create_iterable_from_segment(const BitpackingSegment<T, Enabled>& segment) {
 #ifdef HYRISE_ERASE_TURBOPFOR
-  PerformanceWarning("TurboPFORSegment erased by compile-time setting");
- return AnySegmentIterable<T>(TurboPFORSegment<T>(segment));
+  PerformanceWarning("BitpackingSegment erased by compile-time setting");
+ return AnySegmentIterable<T>(BitpackingSegment<T>(segment));
 #else
   if constexpr (EraseSegmentType) {
     return create_any_segment_iterable<T>(segment);

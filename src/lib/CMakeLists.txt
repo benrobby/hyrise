@@ -440,10 +440,10 @@ set(
     storage/dictionary_segment/dictionary_segment_iterable.hpp
     storage/encoding_type.cpp
     storage/encoding_type.hpp
-    storage/turboPFOR_segment.cpp
-    storage/turboPFOR_segment.hpp
-    storage/turboPFOR_segment/turboPFOR_encoder.hpp
-    storage/turboPFOR_segment/turboPFOR_segment_iterable.hpp
+    storage/bitpacking_segment.cpp
+    storage/bitpacking_segment.hpp
+    storage/bitpacking_segment/bitpacking_encoder.hpp
+    storage/bitpacking_segment/bitpacking_segment_iterable.hpp
     storage/fixed_string_dictionary_segment.cpp
     storage/fixed_string_dictionary_segment.hpp
     storage/fixed_string_dictionary_segment/fixed_string.cpp

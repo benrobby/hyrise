@@ -1,4 +1,4 @@
-#include "turboPFOR_segment.hpp"
+#include "bitpacking_segment.hpp"
 
 #include <algorithm>
 
@@ -12,23 +12,23 @@ namespace opossum {
 #define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
 
 template <typename T, typename U>
-TurboPFORSegment<T, U>::TurboPFORSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values, std::optional<pmr_vector<bool>> null_values)
+BitpackingSegment<T, U>::BitpackingSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values, std::optional<pmr_vector<bool>> null_values)
     : AbstractEncodedSegment(data_type_from_type<T>()),
       _encoded_values{encoded_values},
       _null_values{std::move(null_values)} { }
 
 template <typename T, typename U>
-const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> TurboPFORSegment<T, U>::encoded_values() const {
+const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> BitpackingSegment<T, U>::encoded_values() const {
   return _encoded_values;
 }
 
 template <typename T, typename U>
-const std::optional<pmr_vector<bool>>& TurboPFORSegment<T, U>::null_values() const {
+const std::optional<pmr_vector<bool>>& BitpackingSegment<T, U>::null_values() const {
   return _null_values;
 }
 
 template <typename T, typename U>
-AllTypeVariant TurboPFORSegment<T,U>::operator[](const ChunkOffset chunk_offset) const {
+AllTypeVariant BitpackingSegment<T,U>::operator[](const ChunkOffset chunk_offset) const {
   PerformanceWarning("operator[] used");
   const auto typed_value = get_typed_value(chunk_offset);
   if (!typed_value) {
@@ -38,12 +38,12 @@ AllTypeVariant TurboPFORSegment<T,U>::operator[](const ChunkOffset chunk_offset)
 }
 
 template <typename T, typename U>
-ChunkOffset TurboPFORSegment<T,U>::size() const {
+ChunkOffset BitpackingSegment<T,U>::size() const {
   return _encoded_values->size();
 }
 
 template <typename T, typename U>
-std::shared_ptr<AbstractSegment> TurboPFORSegment<T,U>::copy_using_allocator(
+std::shared_ptr<AbstractSegment> BitpackingSegment<T,U>::copy_using_allocator(
   const PolymorphicAllocator<size_t>& alloc) const {
   
   auto copied_data = std::make_shared<pmr_bitpacking_vector<uint32_t>>(_encoded_values->bits(), alloc);
@@ -56,7 +56,7 @@ std::shared_ptr<AbstractSegment> TurboPFORSegment<T,U>::copy_using_allocator(
   if (_null_values) {
     new_null_values = pmr_vector<bool>(*_null_values, alloc);
   }
-  auto copy = std::make_shared<TurboPFORSegment<T,U>>(copied_data, std::move(new_null_values));
+  auto copy = std::make_shared<BitpackingSegment<T,U>>(copied_data, std::move(new_null_values));
 
   copy->access_counter = access_counter;
 
@@ -64,7 +64,7 @@ std::shared_ptr<AbstractSegment> TurboPFORSegment<T,U>::copy_using_allocator(
 }
 
 template <typename T, typename U>
-size_t TurboPFORSegment<T,U>::memory_usage([[maybe_unused]] const MemoryUsageCalculationMode mode) const {
+size_t BitpackingSegment<T,U>::memory_usage([[maybe_unused]] const MemoryUsageCalculationMode mode) const {
   size_t segment_size = sizeof(*this);
   if (_null_values) {
     segment_size += _null_values->capacity() / CHAR_BIT;
@@ -74,16 +74,16 @@ size_t TurboPFORSegment<T,U>::memory_usage([[maybe_unused]] const MemoryUsageCal
 }
 
 template <typename T, typename U>
-EncodingType TurboPFORSegment<T,U>::encoding_type() const {
-  return EncodingType::TurboPFOR;
+EncodingType BitpackingSegment<T,U>::encoding_type() const {
+  return EncodingType::Bitpacking;
 }
 
 template <typename T, typename U>
-std::optional<CompressedVectorType> TurboPFORSegment<T,U>::compressed_vector_type() const {
+std::optional<CompressedVectorType> BitpackingSegment<T,U>::compressed_vector_type() const {
   return std::nullopt;
 }
 
-template class TurboPFORSegment<int32_t>;
+template class BitpackingSegment<int32_t>;
 // int64_t disabled for now, todo enable
 // template class FrameOfReferenceSegment<int64_t>;
 

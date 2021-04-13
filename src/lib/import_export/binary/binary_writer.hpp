@@ -4,13 +4,13 @@
 #include <string>
 #include <vector>
 
+#include "storage/bitpacking_segment.hpp"
 #include "storage/dictionary_segment.hpp"
 #include "storage/fixed_string_dictionary_segment.hpp"
 #include "storage/frame_of_reference_segment.hpp"
 #include "storage/lz4_segment.hpp"
 #include "storage/reference_segment.hpp"
 #include "storage/run_length_segment.hpp"
-#include "storage/turboPFOR_segment.hpp"
 #include "storage/value_segment.hpp"
 #include "utils/assert.hpp"
 
@@ -157,7 +157,7 @@ class BinaryWriter {
                              std::ofstream& ofstream);
 
   /**
-    * SIMDCAISegments are dumped with the following layout:
+    * BitpackingSegments are dumped with the following layout:
     *
     * Description                 | Type                                | Size in bytes
     * --------------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ class BinaryWriter {
     * The type of the column can be found in the global header of the file.
     */
   template <typename T>
-  static void _write_segment(const TurboPFORSegment<T>& turboPFOR_segment, bool column_is_nullable,
+  static void _write_segment(const BitpackingSegment<T>& bitpacking_segment, bool column_is_nullable,
                              std::ofstream& ofstream);
 
   /**

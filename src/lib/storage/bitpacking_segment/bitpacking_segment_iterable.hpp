@@ -1,15 +1,11 @@
 #pragma once
 
-#define TURBOPFOR_DAC
-
 #include <algorithm>
 
+#include "storage/bitpacking_segment.hpp"
 #include "storage/segment_iterables.hpp"
-#include "storage/turboPFOR_segment.hpp"
 
 #include "utils/performance_warning.hpp"
-
-#define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
 
 namespace opossum {
 
@@ -18,7 +14,7 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
  public:
   using ValueType = T;
 
-  explicit TurboPFORSegmentIterable(const TurboPFORSegment<T>& segment) : _segment{segment} {}
+  explicit TurboPFORSegmentIterable(const BitpackingSegment<T>& segment) : _segment{segment} {}
 
   template <typename Functor>
   void _on_with_iterators(const Functor& functor) const {
@@ -46,7 +42,7 @@ class TurboPFORSegmentIterable : public PointAccessibleSegmentIterable<TurboPFOR
   size_t _on_size() const { return _segment.size(); }
 
  private:
-  const TurboPFORSegment<T>& _segment;
+  const BitpackingSegment<T>& _segment;
 
  private:
   class Iterator : public AbstractSegmentIterator<Iterator, SegmentPosition<T>> {

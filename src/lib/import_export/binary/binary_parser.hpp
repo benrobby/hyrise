@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "storage/abstract_segment.hpp"
+#include "storage/bitpacking_segment.hpp"
 #include "storage/dictionary_segment.hpp"
 #include "storage/encoding_type.hpp"
 #include "storage/fixed_string_dictionary_segment.hpp"
 #include "storage/frame_of_reference_segment.hpp"
 #include "storage/lz4_segment.hpp"
 #include "storage/run_length_segment.hpp"
-#include "storage/turboPFOR_segment.hpp"
 #include "storage/table.hpp"
 #include "storage/value_segment.hpp"
 
@@ -83,7 +83,7 @@ class BinaryParser {
   static std::shared_ptr<RunLengthSegment<T>> _import_run_length_segment(std::ifstream& file, ChunkOffset row_count);
 
   template <typename T>
-  static std::shared_ptr<TurboPFORSegment<T>> _import_TurboPFOR_segment(std::ifstream& file, ChunkOffset row_count);
+  static std::shared_ptr<BitpackingSegment<T>> _import_bitpacking_segment(std::ifstream& file, ChunkOffset row_count);
 
   template <typename T>
   static std::shared_ptr<FrameOfReferenceSegment<T>> _import_frame_of_reference_segment(std::ifstream& file,
