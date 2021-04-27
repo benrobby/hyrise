@@ -8,8 +8,6 @@
 
 namespace opossum {
 
-#define ROUND_UP(_n_, _a_) (((_n_) + ((_a_)-1)) & ~((_a_)-1))
-
 template <typename T, typename U>
 BitpackingSegment<T, U>::BitpackingSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values, std::optional<pmr_vector<bool>> null_values)
     : AbstractEncodedSegment(data_type_from_type<T>()),
