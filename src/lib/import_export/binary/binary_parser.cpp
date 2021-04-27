@@ -233,7 +233,7 @@ std::shared_ptr<RunLengthSegment<T>> BinaryParser::_import_run_length_segment(st
 template <typename T>
 std::shared_ptr<BitpackingSegment<T>> BinaryParser::_import_bitpacking_segment(std::ifstream& file,
                                                                            ChunkOffset row_count) {
-  auto encoded_values = std::make_shared<pmr_bitpacking_vector<uint32_t>>(_read_values_compact_vector<uint32_t>(file, row_count));
+  auto encoded_values = std::make_shared<pmr_compact_vector<uint32_t>>(_read_values_compact_vector<uint32_t>(file, row_count));
 
   const auto null_values_stored = _read_value<BoolAsByteType>(file);
   std::optional<pmr_vector<bool>> null_values;

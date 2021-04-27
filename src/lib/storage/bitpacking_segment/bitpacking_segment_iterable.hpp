@@ -52,7 +52,7 @@ class BitpackingSegmentIterable : public PointAccessibleSegmentIterable<Bitpacki
       using EndPositionIterator = typename pmr_vector<ChunkOffset>::const_iterator;
 
     public:
-      explicit Iterator(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
+      explicit Iterator(const std::shared_ptr<pmr_compact_vector<uint32_t>> encoded_values,
                         const std::optional<pmr_vector<bool>>* null_values,
                         ChunkOffset size,
                         ChunkOffset chunk_offset)
@@ -93,7 +93,7 @@ class BitpackingSegmentIterable : public PointAccessibleSegmentIterable<Bitpacki
       }
 
       private:
-      std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
+      std::shared_ptr<pmr_compact_vector<uint32_t>> _encoded_values;
       const std::optional<pmr_vector<bool>>* _null_values;
 
       ChunkOffset _chunk_offset;
@@ -107,7 +107,7 @@ class BitpackingSegmentIterable : public PointAccessibleSegmentIterable<Bitpacki
     using ValueType = T;
     using IterableType = BitpackingSegmentIterable<T>;
 
-    explicit PointAccessIterator(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
+    explicit PointAccessIterator(const std::shared_ptr<pmr_compact_vector<uint32_t>> encoded_values,
                                  const std::optional<pmr_vector<bool>>* null_values,
                                  ChunkOffset size,
                                  const PosListIteratorType position_filter_begin,
@@ -132,7 +132,7 @@ class BitpackingSegmentIterable : public PointAccessibleSegmentIterable<Bitpacki
     }
 
     private:
-    std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
+    std::shared_ptr<pmr_compact_vector<uint32_t>> _encoded_values;
     const std::optional<pmr_vector<bool>>* _null_values;
   };
 };

@@ -34,10 +34,10 @@ template <typename T, typename = std::enable_if_t<encoding_supports_data_type(
     enum_c<EncodingType, EncodingType::Bitpacking>, hana::type_c<T>)>>
 class BitpackingSegment : public AbstractEncodedSegment {
  public:
-  explicit BitpackingSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values,
+  explicit BitpackingSegment(const std::shared_ptr<pmr_compact_vector<uint32_t>> encoded_values,
                            std::optional<pmr_vector<bool>> null_values);
 
-  const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values() const;
+  const std::shared_ptr<pmr_compact_vector<uint32_t>> encoded_values() const;
   const std::optional<pmr_vector<bool>>& null_values() const;
   ChunkOffset size() const final;
 
@@ -75,7 +75,7 @@ class BitpackingSegment : public AbstractEncodedSegment {
   /**@}*/
 
  protected:
-  const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> _encoded_values;
+  const std::shared_ptr<pmr_compact_vector<uint32_t>> _encoded_values;
   const std::optional<pmr_vector<bool>> _null_values;};
 
 }  // namespace opossum
