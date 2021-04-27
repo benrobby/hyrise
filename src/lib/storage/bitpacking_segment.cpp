@@ -9,13 +9,13 @@
 namespace opossum {
 
 template <typename T, typename U>
-BitpackingSegment<T, U>::BitpackingSegment(const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> encoded_values, std::optional<pmr_vector<bool>> null_values)
+BitpackingSegment<T, U>::BitpackingSegment(const std::shared_ptr<pmr_compact_vector<uint32_t>> encoded_values, std::optional<pmr_vector<bool>> null_values)
     : AbstractEncodedSegment(data_type_from_type<T>()),
       _encoded_values{encoded_values},
       _null_values{std::move(null_values)} { }
 
 template <typename T, typename U>
-const std::shared_ptr<pmr_bitpacking_vector<uint32_t>> BitpackingSegment<T, U>::encoded_values() const {
+const std::shared_ptr<pmr_compact_vector<uint32_t>> BitpackingSegment<T, U>::encoded_values() const {
   return _encoded_values;
 }
 
@@ -43,7 +43,7 @@ template <typename T, typename U>
 std::shared_ptr<AbstractSegment> BitpackingSegment<T,U>::copy_using_allocator(
   const PolymorphicAllocator<size_t>& alloc) const {
   
-  auto copied_data = std::make_shared<pmr_bitpacking_vector<uint32_t>>(_encoded_values->bits(), alloc);
+  auto copied_data = std::make_shared<pmr_compact_vector<uint32_t>>(_encoded_values->bits(), alloc);
   copied_data->resize(_encoded_values->size());
   for (int i = 0; i < _encoded_values->size(); i++) {
     (*copied_data)[i] = (*_encoded_values)[i];

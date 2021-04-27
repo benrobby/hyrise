@@ -115,11 +115,6 @@ class BinaryParser {
   // Reads a single value of type T from the input file.
   template <typename T>
   static T _read_value(std::ifstream& file);
-
-  // Reads bit width and row_count many values and returns them in a bitpacked compact_vector of type T
-  template <typename T>
-  static pmr_bitpacking_vector<T> _read_values_compact_vector(std::ifstream& file, const size_t count);
-
 };
 
 }  // namespace opossum
