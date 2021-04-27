@@ -162,11 +162,9 @@ class BinaryWriter {
     * Description                 | Type                                | Size in bytes
     * --------------------------------------------------------------------------------------------------------
     * Encoding Type               | EncodingType                        | 1
-    * Encoded Values size         | uint32_t                            | 4
-    * Encoded Values              | uint32_t                            | Encoded Values size * sizeof(uint32_t)
+    * Encoded Values              | pmr_bitpacking_vector               | variable
     * Stores NULL values          | bool (stored as BoolAsByteType)     | 1
     * NULL values (optional)      | vector<bool> (BoolAsByteType)       | Run count * 1
-    * codec id                    | uint8_t                             | 1
     *
     * Please note that the number of rows are written in the header of the chunk.
     * The type of the column can be found in the global header of the file.

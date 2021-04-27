@@ -266,8 +266,6 @@ void BinaryWriter::_write_segment(const BitpackingSegment<T>& bitpacking_segment
     // Write NULL values
     export_values(ofstream, *bitpacking_segment.null_values());
   }
-
-
 }
 
 template <>
