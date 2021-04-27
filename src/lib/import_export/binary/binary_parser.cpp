@@ -35,6 +35,14 @@ std::shared_ptr<Table> BinaryParser::parse(const std::string& filename) {
 }
 
 template <typename T>
+pmr_bitpacking_vector<T> BinaryParser::_read_values_compact_vector(std::ifstream& file, const size_t count) {
+  const auto bit_width = _read_value<uint8_t>(file);
+  const auto values = pmr_bitpacking_vector<T>(bit_width, count);
+  file.read(reinterpret_cast<char*>(const_cast<uint64_t*>(values.get())), values.bytes());
+  return values;
+}
+
+template <typename T>
 pmr_vector<T> BinaryParser::_read_values(std::ifstream& file, const size_t count) {
   pmr_vector<T> values(count);
   file.read(reinterpret_cast<char*>(values.data()), values.size() * sizeof(T));
@@ -225,9 +233,15 @@ std::shared_ptr<RunLengthSegment<T>> BinaryParser::_import_run_length_segment(st
 template <typename T>
 std::shared_ptr<BitpackingSegment<T>> BinaryParser::_import_bitpacking_segment(std::ifstream& file,
                                                                            ChunkOffset row_count) {
+  auto encoded_values = std::make_shared<pmr_bitpacking_vector<uint32_t>>(_read_values_compact_vector<uint32_t>(file, row_count));
 
-  // Empty, WRONG
-  return nullptr;
+  const auto null_values_stored = _read_value<BoolAsByteType>(file);
+  std::optional<pmr_vector<bool>> null_values;
+  if (null_values_stored) {
+    null_values = pmr_vector<bool>(_read_values<bool>(file, row_count));
+  }                                            
+  
+  return std::make_shared<BitpackingSegment<T>>(encoded_values, null_values);
 }
 
 template <typename T>

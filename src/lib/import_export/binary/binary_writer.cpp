@@ -86,6 +86,11 @@ void export_value(std::ofstream& ofstream, const T& value) {
   ofstream.write(reinterpret_cast<const char*>(&value), sizeof(T));
 }
 
+template <typename T>
+void export_compact_vector(std::ofstream& ofstream, const pmr_bitpacking_vector<T>& values) {
+  export_value(ofstream, static_cast<uint8_t>(values.bits()));
+  ofstream.write(reinterpret_cast<const char*>(values.get()), values.bytes());
+}
 }  // namespace
 
 namespace opossum {
@@ -252,7 +257,17 @@ void BinaryWriter::_write_segment(const BitpackingSegment<T>& bitpacking_segment
                                   std::ofstream& ofstream) {
   export_value(ofstream, EncodingType::Bitpacking);
 
-  // WRONG
+  // Write size and values
+  export_compact_vector(ofstream, *bitpacking_segment.encoded_values());
+
+  // Write flag if optional NULL value vector is written
+  export_value(ofstream, static_cast<BoolAsByteType>(bitpacking_segment.null_values().has_value()));
+  if (bitpacking_segment.null_values()) {
+    // Write NULL values
+    export_values(ofstream, *bitpacking_segment.null_values());
+  }
+
+
 }
 
 template <>

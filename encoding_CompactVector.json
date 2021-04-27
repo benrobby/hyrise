@@ -4,7 +4,7 @@
 	},
 	"type": {
 		"int": {
-			"encoding": "TurboPFOR"	
+			"encoding": "Bitpacking"	
 		} 
 	}
 }
