@@ -1,7 +1,5 @@
 #include "turboPFor_bitpacking_compressor.hpp"
 
-#include "conf.h"
-#include "bitpack.h"
 #include "math.h"
 
 namespace opossum {
@@ -11,8 +9,8 @@ class TurboPForBitpackingVector;
 std::unique_ptr<const BaseCompressedVector> TurboPForBitpackingCompressor::compress(
     const pmr_vector<uint32_t>& vector, const PolymorphicAllocator<size_t>& alloc,
     const UncompressedVectorInfo& meta_info) {
-  
-  
+
+
   auto data = pmr_vector<uint32_t>(alloc);
 
   if (vector.size() == 0) {

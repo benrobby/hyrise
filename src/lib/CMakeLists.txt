@@ -653,7 +653,6 @@ set(
 
 set(
     LIBRARIES
-    turboPFOR
     lz4
     sqlparser
     uninitialized_vector
