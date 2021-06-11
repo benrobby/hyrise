@@ -1,11 +1,10 @@
-
 {
 	"default": {
 		"encoding": "Dictionary"
 	},
 	"type": {
 		"int": {
-			"encoding": "Bitpacking"
-		}
+			"encoding": "TurboPFOR"	
+		} 
 	}
 }
