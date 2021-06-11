@@ -1,0 +1,11 @@
+
+{
+	"default": {
+		"encoding": "Dictionary"
+	},
+	"type": {
+		"int": {
+			"encoding": "Bitpacking"	
+		} 
+	}
+}
