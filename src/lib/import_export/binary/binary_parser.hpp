@@ -17,7 +17,6 @@
 #include "storage/run_length_segment.hpp"
 #include "storage/table.hpp"
 #include "storage/value_segment.hpp"
-#include "storage/vector_compression/bitpacking/bitpacking_vector_type.hpp"
 
 namespace opossum {
 

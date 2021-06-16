@@ -16,7 +16,6 @@
 #include "storage/vector_compression/fixed_size_byte_aligned/fixed_size_byte_aligned_vector.hpp"
 #include "storage/vector_compression/simd_bp128/oversized_types.hpp"
 #include "storage/vector_compression/simd_bp128/simd_bp128_vector.hpp"
-#include "storage/vector_compression/bitpacking/bitpacking_vector.hpp"
 
 #include "utils/assert.hpp"
 
