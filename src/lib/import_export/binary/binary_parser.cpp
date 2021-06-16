@@ -16,6 +16,7 @@
 #include "storage/vector_compression/fixed_size_byte_aligned/fixed_size_byte_aligned_vector.hpp"
 #include "storage/vector_compression/simd_bp128/oversized_types.hpp"
 #include "storage/vector_compression/simd_bp128/simd_bp128_vector.hpp"
+#include "storage/vector_compression/bitpacking/bitpacking_vector.hpp"
 
 #include "utils/assert.hpp"
 
@@ -35,10 +36,10 @@ std::shared_ptr<Table> BinaryParser::parse(const std::string& filename) {
 }
 
 template <typename T>
-pmr_bitpacking_vector<T> BinaryParser::_read_values_compact_vector(std::ifstream& file, const size_t count) {
+pmr_compact_vector<T> BinaryParser::_read_values_compact_vector(std::ifstream& file, const size_t count) {
   const auto bit_width = _read_value<uint8_t>(file);
-  const auto values = pmr_bitpacking_vector<T>(bit_width, count);
-  file.read(reinterpret_cast<char*>(const_cast<uint64_t*>(values.get())), values.bytes());
+  auto values = pmr_compact_vector<T>(bit_width, count);
+  file.read(reinterpret_cast<char*>(values.get()), values.bytes());
   return values;
 }
 
@@ -239,8 +240,8 @@ std::shared_ptr<BitpackingSegment<T>> BinaryParser::_import_bitpacking_segment(s
   std::optional<pmr_vector<bool>> null_values;
   if (null_values_stored) {
     null_values = pmr_vector<bool>(_read_values<bool>(file, row_count));
-  }                                            
-  
+  }
+
   return std::make_shared<BitpackingSegment<T>>(encoded_values, null_values);
 }
 
