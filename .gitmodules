@@ -58,4 +58,4 @@
 	url = https://github.com/benrobby/SIMDCompressionAndIntersection
 [submodule "third_party/TurboPFor-Integer-Compression"]
 	path = third_party/TurboPFor-Integer-Compression
-	url = git@github.com:linuslh1996/TurboPFor-Integer-Compression.git
+	url = https://github.com/linuslh1996/TurboPFor-Integer-Compression.git
